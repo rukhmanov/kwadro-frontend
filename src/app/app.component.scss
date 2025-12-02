@@ -1,5 +1,11 @@
 // Mobile-first подход - стили для мобильных устройств по умолчанию
 
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -141,20 +147,62 @@ body {
       }
     }
   }
+
+  // Tablet и Desktop - горизонтальная навигация
+  @media (min-width: 768px) {
+    .mobile-menu-toggle {
+      display: none;
+    }
+
+    .nav {
+      position: static;
+      width: auto;
+      max-width: none;
+      height: auto;
+      background: transparent;
+      flex-direction: row;
+      padding: 0;
+      box-shadow: none;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &.mobile-open {
+        right: auto;
+      }
+
+      a {
+        padding: 0.5rem 1rem;
+        margin-bottom: 0;
+        font-size: 0.95rem;
+        white-space: nowrap;
+
+        &:hover, &.active {
+          background: #333;
+        }
+      }
+    }
+  }
 }
 
 .main-content {
-  min-height: calc(100vh - 180px);
-  padding: 1.5rem 0; // Mobile
+  flex: 1;
+  padding: 1.5rem 1rem; // Mobile: вертикальные и горизонтальные отступы
 
   // Tablet
   @media (min-width: 768px) {
-    padding: 2rem 0;
+    padding: 2rem 2rem;
   }
 
   // Desktop
   @media (min-width: 1024px) {
-    padding: 2.5rem 0;
+    padding: 2.5rem 3rem;
+  }
+
+  // Large Desktop
+  @media (min-width: 1440px) {
+    padding: 2.5rem 4rem;
   }
 }
 
@@ -163,8 +211,8 @@ body {
   color: white;
   text-align: center;
   padding: 1.5rem 0;
-  margin-top: 2rem;
   font-size: 0.875rem;
+  margin-top: auto;
 }
 
 // Chat Widget - Mobile First
@@ -498,7 +546,7 @@ body {
   }
 
   .main-content {
-    padding: 2.5rem 0;
+    padding: 2.5rem 2.5rem;
   }
 
   .chat-widget {
