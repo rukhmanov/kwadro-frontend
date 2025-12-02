@@ -29,7 +29,17 @@
           </div>
           <div class="form-group">
             <label>Телефон</label>
-            <input type="tel" [(ngModel)]="contactForm.phone" name="phone">
+            <input 
+              type="tel" 
+              [ngModel]="contactForm.phone" 
+              (ngModelChange)="contactForm.phone = $event"
+              name="phone"
+              (input)="onPhoneInput($event)"
+              (keydown)="onPhoneKeyDown($event)"
+              (focus)="onPhoneFocus($event)"
+              (paste)="onPhonePaste($event)"
+              placeholder="+7 (___) ___-__-__"
+              maxlength="18">
           </div>
           <div class="form-group">
             <label>Сообщение</label>
