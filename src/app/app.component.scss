@@ -72,6 +72,39 @@ body {
     }
   }
 
+  .phone-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    svg {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+    }
+
+    .phone-text {
+      display: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    &:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.95);
+    }
+  }
+
   .mobile-menu-toggle {
     display: flex;
     flex-direction: column;
@@ -152,6 +185,17 @@ body {
   @media (min-width: 768px) {
     .mobile-menu-toggle {
       display: none;
+    }
+
+    .phone-link {
+      .phone-text {
+        display: inline;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
     }
 
     .nav {

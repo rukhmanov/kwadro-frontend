@@ -20,20 +20,45 @@
 
     <div class="products-grid">
       <div *ngFor="let product of products" class="product-card">
-        <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
-        <h3>{{ product.name }}</h3>
-        <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}...</p>
-        <div class="product-info">
-          <span *ngIf="product.engine">Двигатель: {{ product.engine }}</span>
-          <span *ngIf="product.power">Мощность: {{ product.power }}</span>
+        <div class="product-image-wrapper">
+          <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
+          <div *ngIf="product.oldPrice" class="discount-badge">
+            -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
+          </div>
         </div>
-        <p class="price">
-          <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
-          <span class="current-price">{{ product.price }} ₽</span>
-        </p>
-        <div class="actions">
-          <a [routerLink]="['/products', product.id]" class="btn-secondary">Подробнее</a>
-          <button (click)="addToCart(product.id)" class="btn-primary">В корзину</button>
+        <div class="product-content">
+          <h3>{{ product.name }}</h3>
+          <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}...</p>
+          <div class="product-info">
+            <span *ngIf="product.engine" class="info-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+              {{ product.engine }}
+            </span>
+            <span *ngIf="product.power" class="info-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              {{ product.power }}
+            </span>
+          </div>
+          <div class="price-section">
+            <p class="price">
+              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
+              <span class="current-price">{{ product.price | number }} ₽</span>
+            </p>
+          </div>
+          <div class="actions">
+            <a [routerLink]="['/products', product.id]" class="btn-secondary">Подробнее</a>
+            <button (click)="addToCart(product.id)" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14l-5-5-5 5m5-5v8"/>
+              </svg>
+              В корзину
+            </button>
+          </div>
         </div>
       </div>
     </div>

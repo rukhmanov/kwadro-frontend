@@ -16,6 +16,7 @@ export class ProductsComponent implements OnInit {
   products: any[] = [];
   categories: any[] = [];
   selectedCategory: number | null = null;
+  Math = Math; // Для использования Math в шаблоне
 
   constructor(
     private productsService: ProductsService,
