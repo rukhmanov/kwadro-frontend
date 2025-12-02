@@ -332,6 +332,13 @@ body {
       flex: 1;
     }
 
+    .chat-number {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-left: 0.5rem;
+      font-weight: normal;
+    }
+
     .toggle-icon {
       font-size: 1.5rem;
       font-weight: bold;
@@ -374,62 +381,6 @@ body {
 
         &.admin {
           background: #e3f2fd;
-        }
-      }
-    }
-
-    .phone-input-form {
-      padding: 1rem;
-      border-top: 1px solid #e0e0e0;
-      background: #fff3cd;
-      border-radius: 8px;
-      margin: 0.5rem;
-
-      p {
-        margin: 0 0 0.75rem 0;
-        font-size: 0.875rem;
-        color: #856404;
-      }
-
-      input {
-        width: 100%;
-        padding: 0.625rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .phone-buttons {
-        display: flex;
-        gap: 0.5rem;
-
-        button {
-          flex: 1;
-          padding: 0.625rem;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 0.875rem;
-          transition: background 0.3s;
-
-          &.btn-save {
-            background: #1a1a1a;
-            color: white;
-
-            &:active {
-              background: #333;
-            }
-          }
-
-          &.btn-skip {
-            background: #ddd;
-            color: #333;
-
-            &:active {
-              background: #ccc;
-            }
-          }
         }
       }
     }

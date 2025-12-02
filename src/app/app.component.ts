@@ -25,8 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   chatMessages: any[] = [];
   mobileMenuOpen = false;
   chatSessionId: string = '';
-  showPhoneInput = false;
-  phoneNumber = '';
+  chatNumber: number | null = null;
   @ViewChild('chatMessagesContainer', { static: false }) chatMessagesRef?: ElementRef;
   private socket?: Socket;
 
@@ -84,6 +83,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.chatMessages.push(message);
       this.scrollToBottom();
     });
+
+    this.socket.on('chat-number', (data: { chatNumber: number }) => {
+      this.chatNumber = data.chatNumber;
+    });
   }
 
   scrollToBottom() {
@@ -114,34 +117,10 @@ export class AppComponent implements OnInit, OnDestroy {
         sessionId: this.chatSessionId,
         username,
         message: this.chatMessage,
-        isAdmin: this.isLoggedIn,
-        phone: this.phoneNumber || undefined
+        isAdmin: this.isLoggedIn
       });
       this.chatMessage = '';
-      
-      // Если номер телефона еще не указан, показываем форму
-      if (!this.phoneNumber && !this.isLoggedIn) {
-        this.showPhoneInput = true;
-      }
     }
-  }
-
-  savePhone() {
-    if (this.phoneNumber.trim()) {
-      // Отправляем номер телефона на сервер
-      this.socket?.emit('message', {
-        sessionId: this.chatSessionId,
-        username: 'Гость',
-        message: `Номер телефона: ${this.phoneNumber}`,
-        isAdmin: false,
-        phone: this.phoneNumber
-      });
-      this.showPhoneInput = false;
-    }
-  }
-
-  skipPhone() {
-    this.showPhoneInput = false;
   }
 
   logout() {

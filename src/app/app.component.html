@@ -33,7 +33,10 @@
 
 <div class="chat-widget" *ngIf="showChat && !isLoggedIn" [class.chat-open]="chatOpen">
   <div class="chat-header" (click)="toggleChat()">
-    <span *ngIf="chatOpen">Чат поддержки</span>
+    <span *ngIf="chatOpen">
+      Чат поддержки
+      <span *ngIf="chatNumber" class="chat-number">#{{ chatNumber }}</span>
+    </span>
     <span class="toggle-icon">
       <span *ngIf="!chatOpen" class="chat-icon">💬</span>
       <span *ngIf="chatOpen">−</span>
@@ -43,14 +46,6 @@
     <div class="chat-messages" #chatMessagesContainer>
       <div *ngFor="let msg of chatMessages" class="message" [class.admin]="msg.isAdmin">
         <strong>{{ msg.username }}:</strong> {{ msg.message }}
-      </div>
-    </div>
-    <div class="phone-input-form" *ngIf="showPhoneInput && !isLoggedIn">
-      <p>Оставьте, пожалуйста, номер телефона, на случай, если вы уйдете с сайта</p>
-      <input [(ngModel)]="phoneNumber" type="tel" placeholder="+7 (___) ___-__-__" maxlength="20">
-      <div class="phone-buttons">
-        <button (click)="savePhone()" class="btn-save">Сохранить</button>
-        <button (click)="skipPhone()" class="btn-skip">Пропустить</button>
       </div>
     </div>
     <div class="chat-input">
