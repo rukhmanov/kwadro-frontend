@@ -1,65 +1,80 @@
+// Mobile First
 .product-detail {
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 
   .back-link {
     display: inline-block;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     color: #1a1a1a;
     text-decoration: none;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
 
-    &:hover {
+    &:active {
       text-decoration: underline;
     }
   }
 
   .product-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 
     .product-images {
       img {
         width: 100%;
-        border-radius: 8px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       }
     }
 
     .product-info {
       h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
         margin-bottom: 1rem;
       }
 
       .description {
-        margin-bottom: 2rem;
-        line-height: 1.8;
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+        font-size: 0.95rem;
       }
 
       .specs {
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+
+        h3 {
+          font-size: 1.125rem;
+          margin-bottom: 0.75rem;
+        }
 
         ul {
           list-style: none;
           padding: 0;
 
           li {
-            padding: 0.5rem 0;
+            padding: 0.75rem 0;
             border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
           }
         }
       }
 
       .price-section {
+        padding: 1.5rem;
+        background: #f9f9f9;
+        border-radius: 12px;
+
         .price {
-          font-size: 2rem;
+          font-size: 1.75rem;
           font-weight: bold;
-          margin-bottom: 1rem;
+          margin-bottom: 1.5rem;
 
           .old-price {
             text-decoration: line-through;
             color: #999;
             margin-right: 0.5rem;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
           }
 
           .current-price {
@@ -77,9 +92,27 @@
   }
 }
 
-@media (max-width: 768px) {
-  .product-detail .product-content {
-    grid-template-columns: 1fr;
+// Tablet
+@media (min-width: 768px) {
+  .product-detail {
+    padding: 2rem 0;
+
+    .product-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+
+      .product-info {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .price-section {
+          .price {
+            font-size: 2rem;
+          }
+        }
+      }
+    }
   }
 }
-

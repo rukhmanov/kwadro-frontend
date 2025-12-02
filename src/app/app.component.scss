@@ -1,3 +1,5 @@
+// Mobile-first подход - стили для мобильных устройств по умолчанию
+
 * {
   margin: 0;
   padding: 0;
@@ -5,53 +7,111 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   color: #333;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 1rem;
 }
 
+// Header - Mobile First
 .header {
   background: #1a1a1a;
   color: white;
-  padding: 1rem 0;
+  padding: 0.75rem 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
   }
 
   .logo {
     text-decoration: none;
     color: white;
+    z-index: 1001;
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       margin: 0;
+      font-weight: 600;
+    }
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    position: relative;
+
+    span {
+      width: 100%;
+      height: 3px;
+      background: white;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+
+    // Анимация при открытии
+    &:active span:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+    &:active span:nth-child(2) {
+      opacity: 0;
+    }
+    &:active span:nth-child(3) {
+      transform: rotate(-45deg) translate(8px, -8px);
     }
   }
 
   .nav {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    background: #1a1a1a;
+    flex-direction: column;
+    padding: 4rem 1.5rem 2rem;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+
+    &.mobile-open {
+      right: 0;
+    }
 
     a {
       color: white;
       text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
+      padding: 1rem;
+      border-radius: 6px;
       transition: background 0.3s;
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
 
       &:hover, &.active {
         background: #333;
@@ -60,60 +120,83 @@ body {
       &.logout {
         cursor: pointer;
       }
+
+      .cart-link {
+        font-weight: 500;
+      }
     }
   }
 }
 
 .main-content {
-  min-height: calc(100vh - 200px);
-  padding: 2rem 0;
+  min-height: calc(100vh - 180px);
+  padding: 1.5rem 0;
 }
 
 .footer {
   background: #1a1a1a;
   color: white;
   text-align: center;
-  padding: 2rem 0;
-  margin-top: 4rem;
+  padding: 1.5rem 0;
+  margin-top: 2rem;
+  font-size: 0.875rem;
 }
 
+// Chat Widget - Mobile First
 .chat-widget {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 300px;
+  bottom: 1rem;
+  right: 1rem;
+  width: calc(100% - 2rem);
+  max-width: 320px;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 1000;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 999;
+  overflow: hidden;
 
   .chat-header {
     background: #1a1a1a;
     color: white;
-    padding: 1rem;
-    border-radius: 8px 8px 0 0;
+    padding: 0.875rem 1rem;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    .toggle-icon {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
   }
 
   .chat-body {
     display: flex;
     flex-direction: column;
-    height: 400px;
+    height: 350px;
+    max-height: 60vh;
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
       padding: 1rem;
-      max-height: 300px;
+      max-height: 250px;
 
       .message {
-        margin-bottom: 0.5rem;
-        padding: 0.5rem;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
         background: #f5f5f5;
-        border-radius: 4px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        word-wrap: break-word;
+
+        strong {
+          display: block;
+          margin-bottom: 0.25rem;
+          font-size: 0.8rem;
+        }
 
         &.admin {
           background: #e3f2fd;
@@ -123,58 +206,177 @@ body {
 
     .chat-input {
       display: flex;
-      padding: 1rem;
-      border-top: 1px solid #ddd;
+      padding: 0.75rem;
+      border-top: 1px solid #e0e0e0;
+      gap: 0.5rem;
 
       input {
         flex: 1;
-        padding: 0.5rem;
+        padding: 0.625rem;
         border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-right: 0.5rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
       }
 
       button {
-        padding: 0.5rem 1rem;
+        padding: 0.625rem 1rem;
         background: #1a1a1a;
         color: white;
         border: none;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
+        font-size: 0.875rem;
+        white-space: nowrap;
       }
     }
   }
 }
 
+// Buttons - Mobile First
 .btn-primary {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   background: #1a1a1a;
   color: white;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
 
-  &:hover {
+  &:hover, &:active {
     background: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
 .btn-secondary {
   display: inline-block;
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   background: #666;
   color: white;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
 
-  &:hover {
+  &:hover, &:active {
     background: #777;
+    transform: translateY(-1px);
   }
 }
 
+// Tablet styles
+@media (min-width: 768px) {
+  .container {
+    padding: 0 2rem;
+  }
+
+  .header {
+    padding: 1rem 0;
+
+    .logo h1 {
+      font-size: 1.5rem;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+    }
+
+    .nav {
+      position: static;
+      width: auto;
+      height: auto;
+      max-width: none;
+      background: transparent;
+      flex-direction: row;
+      padding: 0;
+      box-shadow: none;
+      overflow: visible;
+
+      &.mobile-open {
+        right: auto;
+      }
+
+      a {
+        padding: 0.5rem 1rem;
+        margin-bottom: 0;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .main-content {
+    padding: 2rem 0;
+  }
+
+  .footer {
+    padding: 2rem 0;
+  }
+
+  .chat-widget {
+    width: 320px;
+    max-width: none;
+    bottom: 1.5rem;
+    right: 1.5rem;
+
+    .chat-body {
+      height: 400px;
+    }
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: auto;
+    max-width: none;
+  }
+}
+
+// Desktop styles
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2.5rem;
+  }
+
+  .header {
+    .nav {
+      gap: 0.5rem;
+
+      a {
+        padding: 0.625rem 1.25rem;
+      }
+    }
+  }
+
+  .main-content {
+    padding: 2.5rem 0;
+  }
+
+  .chat-widget {
+    width: 350px;
+  }
+}
+
+// Large Desktop
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+}

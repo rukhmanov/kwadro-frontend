@@ -16,13 +16,14 @@ import { io, Socket } from 'socket.io-client';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'KWADRO SHOP';
+  title = 'Motomarket52';
   isLoggedIn = false;
   cartCount = 0;
   showChat = true;
   chatOpen = false;
   chatMessage = '';
   chatMessages: any[] = [];
+  mobileMenuOpen = false;
   @ViewChild('chatMessagesContainer', { static: false }) chatMessagesRef?: ElementRef;
   private socket?: Socket;
 
@@ -63,6 +64,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleChat() {
     this.chatOpen = !this.chatOpen;
+  }
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.mobileMenuOpen = false;
   }
 
   sendMessage() {

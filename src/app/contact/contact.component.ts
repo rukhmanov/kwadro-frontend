@@ -42,7 +42,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
           });
 
           const placemark = new ymaps.Placemark([56.3269, 44.0075], {
-            balloonContent: 'KWADRO SHOP<br>ул. Магистральная, 21А/к3'
+            balloonContent: 'Motomarket52<br>ул. Магистральная, 21А/к3'
           });
 
           map.geoObjects.add(placemark);

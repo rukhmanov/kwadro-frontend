@@ -1,21 +1,26 @@
 <header class="header">
   <div class="container">
     <div class="header-content">
-      <a routerLink="/" class="logo">
-        <h1>KWADRO SHOP</h1>
+      <a routerLink="/" class="logo" (click)="closeMobileMenu()">
+        <h1>Motomarket52</h1>
       </a>
-      <nav class="nav">
-        <a routerLink="/" routerLinkActive="active">Главная</a>
-        <a routerLink="/products" routerLinkActive="active">Каталог</a>
-        <a routerLink="/news" routerLinkActive="active">Новости</a>
-        <a routerLink="/about" routerLinkActive="active">О нас</a>
-        <a routerLink="/contact" routerLinkActive="active">Контакты</a>
-        <a routerLink="/cart" routerLinkActive="active" class="cart-link">
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Меню">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav" [class.mobile-open]="mobileMenuOpen">
+        <a routerLink="/" routerLinkActive="active" (click)="closeMobileMenu()">Главная</a>
+        <a routerLink="/products" routerLinkActive="active" (click)="closeMobileMenu()">Каталог</a>
+        <a routerLink="/news" routerLinkActive="active" (click)="closeMobileMenu()">Новости</a>
+        <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">О нас</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Контакты</a>
+        <a routerLink="/cart" routerLinkActive="active" class="cart-link" (click)="closeMobileMenu()">
           Корзина <span *ngIf="cartCount > 0">({{ cartCount }})</span>
         </a>
-        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active">Вход</a>
-        <a *ngIf="isLoggedIn" routerLink="/admin" routerLinkActive="active">Админ</a>
-        <a *ngIf="isLoggedIn" (click)="logout()" class="logout">Выход</a>
+        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Вход</a>
+        <a *ngIf="isLoggedIn" routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Админ</a>
+        <a *ngIf="isLoggedIn" (click)="logout(); closeMobileMenu()" class="logout">Выход</a>
       </nav>
     </div>
   </div>
@@ -45,6 +50,6 @@
 
 <footer class="footer">
   <div class="container">
-    <p>&copy; 2024 KWADRO SHOP. Все права защищены.</p>
+    <p>&copy; 2024 Motomarket52. Все права защищены.</p>
   </div>
 </footer>

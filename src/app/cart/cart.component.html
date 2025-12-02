@@ -9,7 +9,7 @@
 
     <div *ngIf="cartItems.length > 0">
       <div class="cart-items">
-        <div *ngFor="let item of cartItems" class="cart-item">
+        <div *ngFor="let item of cartItems" class="cart-item" style="position: relative;">
           <img [src]="item.product.image || '/assets/placeholder.jpg'" [alt]="item.product.name">
           <div class="item-info">
             <h3>{{ item.product.name }}</h3>
