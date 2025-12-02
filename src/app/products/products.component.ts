@@ -17,6 +17,8 @@ export class ProductsComponent implements OnInit {
   categories: any[] = [];
   selectedCategory: number | null = null;
   Math = Math; // Для использования Math в шаблоне
+  loading = true;
+  error: string | null = null;
 
   constructor(
     private productsService: ProductsService,
@@ -26,8 +28,16 @@ export class ProductsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.categoriesService.getCategories().subscribe(categories => {
-      this.categories = categories;
+    this.loading = true;
+    this.error = null;
+    
+    this.categoriesService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки категорий:', err);
+      }
     });
 
     this.route.queryParams.subscribe(params => {
@@ -42,8 +52,20 @@ export class ProductsComponent implements OnInit {
   }
 
   loadProducts(categoryId?: number) {
-    this.productsService.getProducts(categoryId).subscribe(products => {
-      this.products = products;
+    this.loading = true;
+    this.error = null;
+    
+    this.productsService.getProducts(categoryId).subscribe({
+      next: (products) => {
+        this.products = products || [];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки товаров:', err);
+        this.error = 'Не удалось загрузить товары. Попробуйте обновить страницу.';
+        this.loading = false;
+        this.products = [];
+      }
     });
   }
 

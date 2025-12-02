@@ -2,23 +2,35 @@
   <div class="container">
     <h1>Каталог товаров</h1>
     
-    <div class="filters">
+    <div class="tabs">
       <button 
         (click)="filterByCategory(null)" 
         [class.active]="selectedCategory === null"
-        class="filter-btn">
+        class="tab-btn">
         Все товары
       </button>
       <button 
         *ngFor="let category of categories"
         (click)="filterByCategory(category.id)"
         [class.active]="selectedCategory === category.id"
-        class="filter-btn">
+        class="tab-btn">
         {{ category.name }}
       </button>
     </div>
 
-    <div class="products-grid">
+    <div *ngIf="loading" class="loading-message">
+      <p>Загрузка товаров...</p>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!loading && !error && products.length === 0" class="empty-message">
+      <p>Товары не найдены</p>
+    </div>
+
+    <div *ngIf="!loading && !error && products.length > 0" class="products-grid">
       <div *ngFor="let product of products" class="product-card">
         <div class="product-image-wrapper">
           <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
