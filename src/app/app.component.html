@@ -30,10 +30,13 @@
   <router-outlet></router-outlet>
 </main>
 
-<div class="chat-widget" *ngIf="showChat">
+<div class="chat-widget" *ngIf="showChat" [class.chat-open]="chatOpen">
   <div class="chat-header" (click)="toggleChat()">
-    <span>Чат поддержки</span>
-    <span class="toggle-icon">{{ chatOpen ? '−' : '+' }}</span>
+    <span *ngIf="chatOpen">Чат поддержки</span>
+    <span class="toggle-icon">
+      <span *ngIf="!chatOpen" class="chat-icon">💬</span>
+      <span *ngIf="chatOpen">−</span>
+    </span>
   </div>
   <div class="chat-body" *ngIf="chatOpen">
     <div class="chat-messages" #chatMessagesContainer>
@@ -50,6 +53,6 @@
 
 <footer class="footer">
   <div class="container">
-    <p>&copy; 2024 Motomarket52. Все права защищены.</p>
+    <p>&copy; 2026 Motomarket52. Все права защищены.</p>
   </div>
 </footer>
