@@ -10,7 +10,8 @@
         <span></span>
       </button>
       <nav class="nav" [class.mobile-open]="mobileMenuOpen">
-        <a routerLink="/" routerLinkActive="active" (click)="closeMobileMenu()">Главная</a>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()">Главная</a>
         <a routerLink="/products" routerLinkActive="active" (click)="closeMobileMenu()">Каталог</a>
         <a routerLink="/news" routerLinkActive="active" (click)="closeMobileMenu()">Новости</a>
         <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">О нас</a>

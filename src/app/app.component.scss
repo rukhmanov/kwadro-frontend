@@ -19,7 +19,22 @@ body {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1rem; // Mobile: 16px
+
+  // Tablet
+  @media (min-width: 768px) {
+    padding: 0 2rem; // 32px
+  }
+
+  // Desktop
+  @media (min-width: 1024px) {
+    padding: 0 3rem; // 48px
+  }
+
+  // Large Desktop
+  @media (min-width: 1440px) {
+    padding: 0 4rem; // 64px
+  }
 }
 
 // Header - Mobile First
@@ -130,7 +145,17 @@ body {
 
 .main-content {
   min-height: calc(100vh - 180px);
-  padding: 1.5rem 0;
+  padding: 1.5rem 0; // Mobile
+
+  // Tablet
+  @media (min-width: 768px) {
+    padding: 2rem 0;
+  }
+
+  // Desktop
+  @media (min-width: 1024px) {
+    padding: 2.5rem 0;
+  }
 }
 
 .footer {
