@@ -24,22 +24,18 @@
         <h2>Свяжитесь с нами</h2>
         <form (ngSubmit)="onSubmit()" #form="ngForm">
           <div class="form-group">
-            <label>Имя *</label>
-            <input type="text" [(ngModel)]="contactForm.name" name="name" required>
-          </div>
-          <div class="form-group">
-            <label>Email *</label>
-            <input type="email" [(ngModel)]="contactForm.email" name="email" required>
+            <label>Имя</label>
+            <input type="text" [(ngModel)]="contactForm.name" name="name">
           </div>
           <div class="form-group">
             <label>Телефон</label>
             <input type="tel" [(ngModel)]="contactForm.phone" name="phone">
           </div>
           <div class="form-group">
-            <label>Сообщение *</label>
-            <textarea [(ngModel)]="contactForm.message" name="message" rows="5" required></textarea>
+            <label>Сообщение</label>
+            <textarea [(ngModel)]="contactForm.message" name="message" rows="5"></textarea>
           </div>
-          <button type="submit" class="btn-primary" [disabled]="!form.valid">Отправить</button>
+          <button type="submit" class="btn-primary" [disabled]="!isFormValid()">Отправить</button>
         </form>
         <p *ngIf="submitted" class="success-message">Сообщение отправлено!</p>
       </div>

@@ -15,13 +15,17 @@ declare var ymaps: any;
 export class ContactComponent implements OnInit, AfterViewInit {
   contactForm = {
     name: '',
-    email: '',
     phone: '',
     message: ''
   };
   submitted = false;
 
   constructor(private contactService: ContactService) {}
+
+  isFormValid(): boolean {
+    // Хотя бы одно из полей должно быть заполнено: телефон или сообщение
+    return this.contactForm.phone.trim() !== '' || this.contactForm.message.trim() !== '';
+  }
 
   ngOnInit() {
     // Загружаем Яндекс.Карты
@@ -54,7 +58,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
   onSubmit() {
     this.contactService.sendMessage(this.contactForm).subscribe(() => {
       this.submitted = true;
-      this.contactForm = { name: '', email: '', phone: '', message: '' };
+      this.contactForm = { name: '', phone: '', message: '' };
       setTimeout(() => {
         this.submitted = false;
       }, 3000);
