@@ -1,0 +1,38 @@
+<section class="hero">
+  <div class="container">
+    <h1>Добро пожаловать в KWADRO SHOP</h1>
+    <p>Лучшая мототехника и комплектующие</p>
+    <a routerLink="/products" class="btn-primary">Перейти в каталог</a>
+  </div>
+</section>
+
+<section class="featured-products">
+  <div class="container">
+    <h2>Популярные товары</h2>
+    <div class="products-grid">
+      <div *ngFor="let product of featuredProducts" class="product-card">
+        <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
+        <h3>{{ product.name }}</h3>
+        <p class="price">
+          <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
+          <span class="current-price">{{ product.price }} ₽</span>
+        </p>
+        <a [routerLink]="['/products', product.id]" class="btn-secondary">Подробнее</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="latest-news">
+  <div class="container">
+    <h2>Последние новости</h2>
+    <div class="news-grid">
+      <div *ngFor="let news of latestNews" class="news-card">
+        <img *ngIf="news.image" [src]="news.image" [alt]="news.title">
+        <h3>{{ news.title }}</h3>
+        <p>{{ news.content | slice:0:150 }}...</p>
+        <a [routerLink]="['/news', news.id]">Читать далее</a>
+      </div>
+    </div>
+  </div>
+</section>

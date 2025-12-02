@@ -1,0 +1,41 @@
+<div class="products-page">
+  <div class="container">
+    <h1>Каталог товаров</h1>
+    
+    <div class="filters">
+      <button 
+        (click)="filterByCategory(null)" 
+        [class.active]="selectedCategory === null"
+        class="filter-btn">
+        Все товары
+      </button>
+      <button 
+        *ngFor="let category of categories"
+        (click)="filterByCategory(category.id)"
+        [class.active]="selectedCategory === category.id"
+        class="filter-btn">
+        {{ category.name }}
+      </button>
+    </div>
+
+    <div class="products-grid">
+      <div *ngFor="let product of products" class="product-card">
+        <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
+        <h3>{{ product.name }}</h3>
+        <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}...</p>
+        <div class="product-info">
+          <span *ngIf="product.engine">Двигатель: {{ product.engine }}</span>
+          <span *ngIf="product.power">Мощность: {{ product.power }}</span>
+        </div>
+        <p class="price">
+          <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
+          <span class="current-price">{{ product.price }} ₽</span>
+        </p>
+        <div class="actions">
+          <a [routerLink]="['/products', product.id]" class="btn-secondary">Подробнее</a>
+          <button (click)="addToCart(product.id)" class="btn-primary">В корзину</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

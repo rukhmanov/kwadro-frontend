@@ -1,0 +1,38 @@
+<div class="product-detail" *ngIf="product">
+  <div class="container">
+    <a routerLink="/products" class="back-link">← Назад к каталогу</a>
+    
+    <div class="product-content">
+      <div class="product-images">
+        <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name" class="main-image">
+        <div class="thumbnails" *ngIf="product.images && product.images.length > 0">
+          <img *ngFor="let img of product.images" [src]="img" [alt]="product.name">
+        </div>
+      </div>
+      
+      <div class="product-info">
+        <h1>{{ product.name }}</h1>
+        <p class="description">{{ product.description }}</p>
+        
+        <div class="specs" *ngIf="product.engine || product.power">
+          <h3>Характеристики:</h3>
+          <ul>
+            <li *ngIf="product.engine">Двигатель: {{ product.engine }}</li>
+            <li *ngIf="product.power">Мощность: {{ product.power }}</li>
+            <li>Наличие: {{ product.stock > 0 ? 'В наличии' : 'Нет в наличии' }}</li>
+          </ul>
+        </div>
+        
+        <div class="price-section">
+          <p class="price">
+            <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
+            <span class="current-price">{{ product.price }} ₽</span>
+          </p>
+          <button (click)="addToCart()" class="btn-primary" [disabled]="product.stock === 0">
+            {{ product.stock > 0 ? 'Добавить в корзину' : 'Нет в наличии' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

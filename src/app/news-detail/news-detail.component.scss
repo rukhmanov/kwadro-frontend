@@ -1,0 +1,41 @@
+.news-detail {
+  padding: 2rem 0;
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 2rem;
+    color: #1a1a1a;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .news-article {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .date {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .news-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .content {
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+  }
+}
+

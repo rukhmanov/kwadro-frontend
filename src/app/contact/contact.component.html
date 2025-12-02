@@ -1,0 +1,53 @@
+<div class="contact-page">
+  <div class="container">
+    <h1>Контакты</h1>
+    
+    <div class="contact-content">
+      <div class="contact-info">
+        <h2>Наши контакты</h2>
+        <div class="info-item">
+          <h3>Адрес:</h3>
+          <p>Ниж. область, д. Афонино, ул. Магистральная, 21А/к3</p>
+        </div>
+        <div class="info-item">
+          <h3>Телефон:</h3>
+          <p>8 (831) 235-07-63</p>
+          <p>8 (800) 350-91-54 (бесплатно по РФ)</p>
+        </div>
+        <div class="info-item">
+          <h3>Режим работы:</h3>
+          <p>Пн-Вс: 9:00 - 20:00</p>
+        </div>
+      </div>
+
+      <div class="contact-form-section">
+        <h2>Свяжитесь с нами</h2>
+        <form (ngSubmit)="onSubmit()" #form="ngForm">
+          <div class="form-group">
+            <label>Имя *</label>
+            <input type="text" [(ngModel)]="contactForm.name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" [(ngModel)]="contactForm.email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="tel" [(ngModel)]="contactForm.phone" name="phone">
+          </div>
+          <div class="form-group">
+            <label>Сообщение *</label>
+            <textarea [(ngModel)]="contactForm.message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn-primary" [disabled]="!form.valid">Отправить</button>
+        </form>
+        <p *ngIf="submitted" class="success-message">Сообщение отправлено!</p>
+      </div>
+    </div>
+
+    <div class="map-container">
+      <h2>Как нас найти</h2>
+      <div id="yandex-map" style="width: 100%; height: 400px;"></div>
+    </div>
+  </div>
+</div>

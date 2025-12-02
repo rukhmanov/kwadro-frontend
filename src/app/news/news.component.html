@@ -1,0 +1,17 @@
+<div class="news-page">
+  <div class="container">
+    <h1>Новости</h1>
+    
+    <div class="news-list">
+      <div *ngFor="let item of news" class="news-card">
+        <img *ngIf="item.image" [src]="item.image" [alt]="item.title">
+        <div class="news-content">
+          <h2>{{ item.title }}</h2>
+          <p class="date">{{ item.createdAt | date:'dd.MM.yyyy' }}</p>
+          <p>{{ item.content | slice:0:200 }}...</p>
+          <a [routerLink]="['/news', item.id]" class="read-more">Читать далее</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

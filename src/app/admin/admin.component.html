@@ -1,0 +1,89 @@
+<div class="admin-page">
+  <div class="container">
+    <h1>Админ-панель</h1>
+    
+    <div class="tabs">
+      <button (click)="setTab('products')" [class.active]="activeTab === 'products'">Товары</button>
+      <button (click)="setTab('news')" [class.active]="activeTab === 'news'">Новости</button>
+      <button (click)="setTab('categories')" [class.active]="activeTab === 'categories'">Категории</button>
+    </div>
+
+    <!-- Products Tab -->
+    <div *ngIf="activeTab === 'products'" class="tab-content">
+      <h2>{{ editingProduct ? 'Редактировать товар' : 'Добавить товар' }}</h2>
+      <form (ngSubmit)="saveProduct()">
+        <input [(ngModel)]="productForm.name" name="name" placeholder="Название" required>
+        <textarea [(ngModel)]="productForm.description" name="description" placeholder="Описание"></textarea>
+        <input type="number" [(ngModel)]="productForm.price" name="price" placeholder="Цена" required>
+        <input type="number" [(ngModel)]="productForm.oldPrice" name="oldPrice" placeholder="Старая цена">
+        <input [(ngModel)]="productForm.image" name="image" placeholder="URL изображения">
+        <input [(ngModel)]="productForm.engine" name="engine" placeholder="Двигатель">
+        <input [(ngModel)]="productForm.power" name="power" placeholder="Мощность">
+        <input type="number" [(ngModel)]="productForm.stock" name="stock" placeholder="Количество" value="0">
+        <select [(ngModel)]="productForm.categoryId" name="categoryId" required>
+          <option value="">Выберите категорию</option>
+          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+        <button type="submit" class="btn-primary">Сохранить</button>
+        <button type="button" (click)="resetForms()" *ngIf="editingProduct">Отмена</button>
+      </form>
+
+      <h2>Список товаров</h2>
+      <div class="list">
+        <div *ngFor="let product of products" class="list-item">
+          <span>{{ product.name }}</span>
+          <div>
+            <button (click)="editProduct(product)">Редактировать</button>
+            <button (click)="deleteProduct(product.id)" class="delete">Удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- News Tab -->
+    <div *ngIf="activeTab === 'news'" class="tab-content">
+      <h2>{{ editingNews ? 'Редактировать новость' : 'Добавить новость' }}</h2>
+      <form (ngSubmit)="saveNews()">
+        <input [(ngModel)]="newsForm.title" name="title" placeholder="Заголовок" required>
+        <textarea [(ngModel)]="newsForm.content" name="content" placeholder="Содержание" rows="10" required></textarea>
+        <input [(ngModel)]="newsForm.image" name="image" placeholder="URL изображения">
+        <button type="submit" class="btn-primary">Сохранить</button>
+        <button type="button" (click)="resetForms()" *ngIf="editingNews">Отмена</button>
+      </form>
+
+      <h2>Список новостей</h2>
+      <div class="list">
+        <div *ngFor="let item of news" class="list-item">
+          <span>{{ item.title }}</span>
+          <div>
+            <button (click)="editNews(item)">Редактировать</button>
+            <button (click)="deleteNews(item.id)" class="delete">Удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Tab -->
+    <div *ngIf="activeTab === 'categories'" class="tab-content">
+      <h2>{{ editingCategory ? 'Редактировать категорию' : 'Добавить категорию' }}</h2>
+      <form (ngSubmit)="saveCategory()">
+        <input [(ngModel)]="categoryForm.name" name="name" placeholder="Название" required>
+        <textarea [(ngModel)]="categoryForm.description" name="description" placeholder="Описание"></textarea>
+        <input [(ngModel)]="categoryForm.image" name="image" placeholder="URL изображения">
+        <button type="submit" class="btn-primary">Сохранить</button>
+        <button type="button" (click)="resetForms()" *ngIf="editingCategory">Отмена</button>
+      </form>
+
+      <h2>Список категорий</h2>
+      <div class="list">
+        <div *ngFor="let category of categories" class="list-item">
+          <span>{{ category.name }}</span>
+          <div>
+            <button (click)="editCategory(category)">Редактировать</button>
+            <button (click)="deleteCategory(category.id)" class="delete">Удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

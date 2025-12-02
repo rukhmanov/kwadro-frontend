@@ -1,0 +1,12 @@
+<div class="news-detail" *ngIf="newsItem">
+  <div class="container">
+    <a routerLink="/news" class="back-link">← Назад к новостям</a>
+    
+    <article class="news-article">
+      <h1>{{ newsItem.title }}</h1>
+      <p class="date">{{ newsItem.createdAt | date:'dd.MM.yyyy' }}</p>
+      <img *ngIf="newsItem.image" [src]="newsItem.image" [alt]="newsItem.title" class="news-image">
+      <div class="content" [innerHTML]="newsItem.content"></div>
+    </article>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+.about-page {
+  padding: 2rem 0;
+
+  h1 {
+    margin-bottom: 2rem;
+  }
+
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+
+    ul {
+      margin-left: 2rem;
+      margin-bottom: 1rem;
+
+      li {
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+      }
+    }
+  }
+}
+
