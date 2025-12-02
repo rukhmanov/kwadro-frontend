@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,7 +16,9 @@ import { io, Socket } from 'socket.io-client';
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent implements OnInit, OnDestroy {
+export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('chatMessagesView') chatMessagesView?: ElementRef;
+  
   activeTab: 'products' | 'news' | 'categories' | 'chats' = 'products';
   products: any[] = [];
   news: any[] = [];
@@ -35,6 +37,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   editingCategory: any = null;
   
   private socket?: Socket;
+  private shouldScrollToBottom = false;
 
   constructor(
     private authService: AuthService,
@@ -52,11 +55,36 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
     this.loadData();
     this.initChatSocket();
+    // Закрытие чата по Escape
+    document.addEventListener('keydown', this.handleEscapeKey);
   }
 
   ngOnDestroy() {
     if (this.socket) {
       this.socket.disconnect();
+    }
+    document.removeEventListener('keydown', this.handleEscapeKey);
+  }
+
+  handleEscapeKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this.selectedChatSession) {
+      this.closeChatSession();
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
+  }
+
+  scrollToBottom() {
+    if (this.chatMessagesView) {
+      const element = this.chatMessagesView.nativeElement;
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 0);
     }
   }
 
@@ -73,6 +101,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       // Если это сообщение для текущей выбранной сессии, добавляем его
       if (this.selectedChatSession && data.sessionId === this.selectedChatSession.sessionId && data.message) {
         this.chatMessages.push(data.message);
+        this.shouldScrollToBottom = true;
       }
     });
 
@@ -82,7 +111,26 @@ export class AdminComponent implements OnInit, OnDestroy {
         // Сообщение содержит sessionId в payload или в session
         const messageSessionId = message.sessionId || message.session?.sessionId;
         if (messageSessionId === this.selectedChatSession.sessionId) {
-          this.chatMessages.push(message);
+          // Проверяем, нет ли уже этого сообщения (чтобы избежать дубликатов)
+          const exists = this.chatMessages.some(m => 
+            m.id === message.id || 
+            (m.id === message.id && m.message === message.message && m.createdAt === message.createdAt)
+          );
+          if (!exists) {
+            // Если есть временное сообщение с таким же текстом, заменяем его
+            const tempIndex = this.chatMessages.findIndex(m => 
+              m.id && m.id > 1000000000000 && // Временные ID - timestamp
+              m.message === message.message &&
+              m.username === 'Администратор'
+            );
+            if (tempIndex !== -1) {
+              this.chatMessages[tempIndex] = message;
+            } else {
+              this.chatMessages.push(message);
+            }
+            // Прокручиваем вниз при получении нового сообщения
+            this.shouldScrollToBottom = true;
+          }
         }
       }
     });
@@ -107,9 +155,19 @@ export class AdminComponent implements OnInit, OnDestroy {
     return this.chatSessions.filter(s => s.hasUnreadMessages).length;
   }
 
+  getChatTitle(session: any): string {
+    const index = this.chatSessions.findIndex(s => s.id === session.id || s.sessionId === session.sessionId);
+    return index !== -1 ? `Чат #${this.chatSessions.length - index}` : 'Чат';
+  }
+
   loadChatSessions() {
     this.apiService.get<any[]>('/chat/sessions').subscribe((sessions) => {
-      this.chatSessions = sessions || [];
+      // Сортируем по дате обновления: новые вверху, старые внизу
+      this.chatSessions = (sessions || []).sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+        const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+        return dateB - dateA; // Обратная сортировка - новые вверху
+      });
     });
   }
 
@@ -130,16 +188,43 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.apiService.put(`/chat/sessions/${session.sessionId}/read`, {}).subscribe(() => {
         session.hasUnreadMessages = false;
       });
+      // Прокручиваем вниз после загрузки сообщений
+      this.shouldScrollToBottom = true;
     });
+  }
+
+  closeChatSession() {
+    this.selectedChatSession = null;
+    this.chatMessages = [];
+    this.adminMessage = '';
   }
 
   sendAdminMessage() {
     if (this.adminMessage.trim() && this.selectedChatSession) {
+      const messageText = this.adminMessage.trim();
+      
+      // Оптимистичное обновление - добавляем сообщение сразу
+      const tempMessage = {
+        id: Date.now(), // Временный ID
+        username: 'Администратор',
+        message: messageText,
+        isAdmin: true,
+        createdAt: new Date().toISOString(),
+        sessionId: this.selectedChatSession.sessionId
+      };
+      this.chatMessages.push(tempMessage);
+      
+      // Очищаем поле ввода
+      this.adminMessage = '';
+      
+      // Прокручиваем вниз после добавления сообщения
+      this.shouldScrollToBottom = true;
+      
+      // Отправляем на сервер
       this.socket?.emit('admin-message', {
         sessionId: this.selectedChatSession.sessionId,
-        message: this.adminMessage
+        message: messageText
       });
-      this.adminMessage = '';
     }
   }
 

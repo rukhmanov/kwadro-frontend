@@ -101,13 +101,13 @@
             Нет активных чатов
           </div>
           <div 
-            *ngFor="let session of chatSessions" 
+            *ngFor="let session of chatSessions; let i = index" 
             class="chat-session-item"
             [class.active]="selectedChatSession?.id === session.id"
             [class.unread]="session.hasUnreadMessages"
             (click)="selectChatSession(session)">
             <div class="session-header">
-              <strong>Сессия: {{ session.sessionId.substring(0, 15) }}...</strong>
+              <strong>Чат #{{ chatSessions.length - i }}</strong>
               <span *ngIf="session.hasUnreadMessages" class="unread-badge">Новое</span>
             </div>
             <div class="session-info">
@@ -116,12 +116,19 @@
             </div>
           </div>
         </div>
-        <div class="chat-view" *ngIf="selectedChatSession">
+      </div>
+      
+      <!-- Fullscreen Chat View -->
+      <div class="chat-fullscreen-overlay" *ngIf="selectedChatSession" (click)="closeChatSession()">
+        <div class="chat-fullscreen" (click)="$event.stopPropagation()">
           <div class="chat-header">
-            <h3>Чат: {{ selectedChatSession.sessionId }}</h3>
-            <span *ngIf="selectedChatSession.phone">📞 {{ selectedChatSession.phone }}</span>
+            <div class="chat-header-content">
+              <h3>{{ getChatTitle(selectedChatSession) }}</h3>
+              <span *ngIf="selectedChatSession.phone">📞 {{ selectedChatSession.phone }}</span>
+            </div>
+            <button class="close-chat-btn" (click)="closeChatSession()" aria-label="Закрыть">×</button>
           </div>
-          <div class="chat-messages-view">
+          <div class="chat-messages-view" #chatMessagesView>
             <div *ngFor="let msg of chatMessages" class="message" [class.admin]="msg.isAdmin">
               <strong>{{ msg.username }}:</strong> {{ msg.message }}
               <span class="message-time">{{ msg.createdAt | date:'dd.MM.yyyy, HH:mm' }}</span>
@@ -131,9 +138,6 @@
             <input [(ngModel)]="adminMessage" (keyup.enter)="sendAdminMessage()" placeholder="Введите ответ...">
             <button (click)="sendAdminMessage()">Отправить</button>
           </div>
-        </div>
-        <div *ngIf="!selectedChatSession" class="no-selection">
-          Выберите чат для просмотра
         </div>
       </div>
     </div>
