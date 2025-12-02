@@ -31,7 +31,7 @@
   <router-outlet></router-outlet>
 </main>
 
-<div class="chat-widget" *ngIf="showChat" [class.chat-open]="chatOpen">
+<div class="chat-widget" *ngIf="showChat && !isLoggedIn" [class.chat-open]="chatOpen">
   <div class="chat-header" (click)="toggleChat()">
     <span *ngIf="chatOpen">Чат поддержки</span>
     <span class="toggle-icon">

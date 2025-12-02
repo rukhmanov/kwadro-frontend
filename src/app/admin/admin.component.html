@@ -112,7 +112,7 @@
             </div>
             <div class="session-info">
               <span *ngIf="session.phone">📞 {{ session.phone }}</span>
-              <span class="session-date">{{ session.updatedAt | date:'short' }}</span>
+              <span class="session-date">{{ session.updatedAt | date:'dd.MM.yyyy, HH:mm' }}</span>
             </div>
           </div>
         </div>
@@ -124,7 +124,7 @@
           <div class="chat-messages-view">
             <div *ngFor="let msg of chatMessages" class="message" [class.admin]="msg.isAdmin">
               <strong>{{ msg.username }}:</strong> {{ msg.message }}
-              <span class="message-time">{{ msg.createdAt | date:'short' }}</span>
+              <span class="message-time">{{ msg.createdAt | date:'dd.MM.yyyy, HH:mm' }}</span>
             </div>
           </div>
           <div class="chat-input-admin">
