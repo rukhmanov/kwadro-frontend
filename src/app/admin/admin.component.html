@@ -6,6 +6,12 @@
       <button (click)="setTab('products')" [class.active]="activeTab === 'products'">Товары</button>
       <button (click)="setTab('news')" [class.active]="activeTab === 'news'">Новости</button>
       <button (click)="setTab('categories')" [class.active]="activeTab === 'categories'">Категории</button>
+      <button (click)="setTab('chats')" [class.active]="activeTab === 'chats'">
+        Чаты
+        <span *ngIf="unreadChatsCount > 0" class="badge">
+          {{ unreadChatsCount }}
+        </span>
+      </button>
     </div>
 
     <!-- Products Tab -->
@@ -82,6 +88,52 @@
             <button (click)="editCategory(category)">Редактировать</button>
             <button (click)="deleteCategory(category.id)" class="delete">Удалить</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chats Tab -->
+    <div *ngIf="activeTab === 'chats'" class="tab-content chats-tab">
+      <div class="chats-layout">
+        <div class="chats-list">
+          <h2>Активные чаты</h2>
+          <div *ngIf="chatSessions.length === 0" class="no-chats">
+            Нет активных чатов
+          </div>
+          <div 
+            *ngFor="let session of chatSessions" 
+            class="chat-session-item"
+            [class.active]="selectedChatSession?.id === session.id"
+            [class.unread]="session.hasUnreadMessages"
+            (click)="selectChatSession(session)">
+            <div class="session-header">
+              <strong>Сессия: {{ session.sessionId.substring(0, 15) }}...</strong>
+              <span *ngIf="session.hasUnreadMessages" class="unread-badge">Новое</span>
+            </div>
+            <div class="session-info">
+              <span *ngIf="session.phone">📞 {{ session.phone }}</span>
+              <span class="session-date">{{ session.updatedAt | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-view" *ngIf="selectedChatSession">
+          <div class="chat-header">
+            <h3>Чат: {{ selectedChatSession.sessionId }}</h3>
+            <span *ngIf="selectedChatSession.phone">📞 {{ selectedChatSession.phone }}</span>
+          </div>
+          <div class="chat-messages-view">
+            <div *ngFor="let msg of chatMessages" class="message" [class.admin]="msg.isAdmin">
+              <strong>{{ msg.username }}:</strong> {{ msg.message }}
+              <span class="message-time">{{ msg.createdAt | date:'short' }}</span>
+            </div>
+          </div>
+          <div class="chat-input-admin">
+            <input [(ngModel)]="adminMessage" (keyup.enter)="sendAdminMessage()" placeholder="Введите ответ...">
+            <button (click)="sendAdminMessage()">Отправить</button>
+          </div>
+        </div>
+        <div *ngIf="!selectedChatSession" class="no-selection">
+          Выберите чат для просмотра
         </div>
       </div>
     </div>

@@ -25,10 +25,27 @@
       transition: all 0.3s;
       white-space: nowrap;
       flex-shrink: 0;
+      position: relative;
 
       &:active, &.active {
         border-bottom-color: #1a1a1a;
         color: #1a1a1a;
+        font-weight: 600;
+      }
+
+      .badge {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background: #ff4444;
+        color: white;
+        border-radius: 50%;
+        width: 1.25rem;
+        height: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
         font-weight: 600;
       }
     }
@@ -108,6 +125,169 @@
           }
         }
       }
+    }
+  }
+
+  .chats-tab {
+    .chats-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 70vh;
+    }
+
+    .chats-list {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 1rem;
+      background: #fafafa;
+
+      h2 {
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+      }
+
+      .no-chats {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+      }
+
+      .chat-session-item {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+
+        &:hover {
+          border-color: #ddd;
+        }
+
+        &.active {
+          border-color: #1a1a1a;
+          background: #f5f5f5;
+        }
+
+        &.unread {
+          border-left: 4px solid #ff4444;
+        }
+
+        .session-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+
+          .unread-badge {
+            background: #ff4444;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+          }
+        }
+
+        .session-info {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.875rem;
+          color: #666;
+
+          .session-date {
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+
+    .chat-view {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: white;
+
+      .chat-header {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        background: #f5f5f5;
+        border-radius: 8px 8px 0 0;
+
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.125rem;
+        }
+      }
+
+      .chat-messages-view {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #fafafa;
+
+        .message {
+          margin-bottom: 1rem;
+          padding: 0.75rem;
+          background: white;
+          border-radius: 8px;
+
+          &.admin {
+            background: #e3f2fd;
+          }
+
+          strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: #1a1a1a;
+          }
+
+          .message-time {
+            display: block;
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 0.25rem;
+          }
+        }
+      }
+
+      .chat-input-admin {
+        display: flex;
+        padding: 1rem;
+        border-top: 1px solid #eee;
+        gap: 0.5rem;
+
+        input {
+          flex: 1;
+          padding: 0.75rem;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+        }
+
+        button {
+          padding: 0.75rem 1.5rem;
+          background: #1a1a1a;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .no-selection {
+      flex: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 1.125rem;
     }
   }
 }

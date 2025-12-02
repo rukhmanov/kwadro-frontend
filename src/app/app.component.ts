@@ -24,6 +24,9 @@ export class AppComponent implements OnInit, OnDestroy {
   chatMessage = '';
   chatMessages: any[] = [];
   mobileMenuOpen = false;
+  chatSessionId: string = '';
+  showPhoneInput = false;
+  phoneNumber = '';
   @ViewChild('chatMessagesContainer', { static: false }) chatMessagesRef?: ElementRef;
   private socket?: Socket;
 
@@ -44,6 +47,21 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.initChat();
+    this.initChatSession();
+  }
+
+  initChatSession() {
+    // Генерируем или получаем уникальный ID сессии из localStorage
+    let sessionId = localStorage.getItem('chatSessionId');
+    if (!sessionId) {
+      sessionId = this.generateSessionId();
+      localStorage.setItem('chatSessionId', sessionId);
+    }
+    this.chatSessionId = sessionId;
+  }
+
+  generateSessionId(): string {
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
   initChat() {
@@ -51,15 +69,30 @@ export class AppComponent implements OnInit, OnDestroy {
     
     this.socket.on('connect', () => {
       console.log('Connected to chat');
+      // Присоединяемся к сессии
+      if (this.chatSessionId) {
+        this.socket?.emit('join-session', { sessionId: this.chatSessionId });
+      }
     });
 
     this.socket.on('messages', (messages: any[]) => {
       this.chatMessages = messages;
+      this.scrollToBottom();
     });
 
     this.socket.on('message', (message: any) => {
       this.chatMessages.push(message);
+      this.scrollToBottom();
     });
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      if (this.chatMessagesRef?.nativeElement) {
+        this.chatMessagesRef.nativeElement.scrollTop = 
+          this.chatMessagesRef.nativeElement.scrollHeight;
+      }
+    }, 100);
   }
 
   toggleChat() {
@@ -78,12 +111,37 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.chatMessage.trim()) {
       const username = this.isLoggedIn ? 'Admin' : 'Гость';
       this.socket?.emit('message', {
+        sessionId: this.chatSessionId,
         username,
         message: this.chatMessage,
-        isAdmin: this.isLoggedIn
+        isAdmin: this.isLoggedIn,
+        phone: this.phoneNumber || undefined
       });
       this.chatMessage = '';
+      
+      // Если номер телефона еще не указан, показываем форму
+      if (!this.phoneNumber && !this.isLoggedIn) {
+        this.showPhoneInput = true;
+      }
     }
+  }
+
+  savePhone() {
+    if (this.phoneNumber.trim()) {
+      // Отправляем номер телефона на сервер
+      this.socket?.emit('message', {
+        sessionId: this.chatSessionId,
+        username: 'Гость',
+        message: `Номер телефона: ${this.phoneNumber}`,
+        isAdmin: false,
+        phone: this.phoneNumber
+      });
+      this.showPhoneInput = false;
+    }
+  }
+
+  skipPhone() {
+    this.showPhoneInput = false;
   }
 
   logout() {

@@ -22,6 +22,10 @@ export class ApiService {
     return this.http.patch<T>(`${API_URL}${endpoint}`, data);
   }
 
+  put<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.put<T>(`${API_URL}${endpoint}`, data);
+  }
+
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${API_URL}${endpoint}`);
   }
