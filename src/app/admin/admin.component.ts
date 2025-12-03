@@ -29,9 +29,22 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   chatMessages: any[] = [];
   adminMessage = '';
   
-  productForm: any = {};
-  newsForm: any = {};
-  categoryForm: any = {};
+  productForm: any = {
+    mainImageFile: null,
+    additionalImagesFiles: [],
+    mainImagePreview: null,
+    additionalImagesPreview: [],
+    videoFile: null,
+    videoPreview: null
+  };
+  newsForm: any = {
+    imageFile: null,
+    imagePreview: null
+  };
+  categoryForm: any = {
+    imageFile: null,
+    imagePreview: null
+  };
   
   editingProduct: any = null;
   editingNews: any = null;
@@ -230,23 +243,205 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   resetForms() {
-    this.productForm = {};
-    this.newsForm = {};
-    this.categoryForm = {};
+    this.productForm = {
+      mainImageFile: null,
+      additionalImagesFiles: [],
+      mainImagePreview: null,
+      additionalImagesPreview: [],
+      videoFile: null,
+      videoPreview: null
+    };
+    this.newsForm = {
+      imageFile: null,
+      imagePreview: null
+    };
+    this.categoryForm = {
+      imageFile: null,
+      imagePreview: null
+    };
     this.editingProduct = null;
     this.editingNews = null;
     this.editingCategory = null;
   }
 
+  // Image handlers for products
+  onMainImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.productForm.mainImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.productForm.mainImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearMainImage() {
+    this.productForm.mainImageFile = null;
+    this.productForm.mainImagePreview = null;
+  }
+
+  onAdditionalImagesSelected(event: any) {
+    const files = Array.from(event.target.files) as File[];
+    if (files.length > 0) {
+      this.productForm.additionalImagesFiles = [...(this.productForm.additionalImagesFiles || []), ...files];
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          if (!this.productForm.additionalImagesPreview) {
+            this.productForm.additionalImagesPreview = [];
+          }
+          this.productForm.additionalImagesPreview.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  removeAdditionalImage(index: number) {
+    this.productForm.additionalImagesFiles.splice(index, 1);
+    this.productForm.additionalImagesPreview.splice(index, 1);
+  }
+
+  // Image handlers for news
+  onNewsImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.newsForm.imageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.newsForm.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearNewsImage() {
+    this.newsForm.imageFile = null;
+    this.newsForm.imagePreview = null;
+  }
+
+  // Image handlers for categories
+  onCategoryImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.categoryForm.imageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.categoryForm.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearCategoryImage() {
+    this.categoryForm.imageFile = null;
+    this.categoryForm.imagePreview = null;
+  }
+
+  // Video handler for products
+  onVideoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.productForm.videoFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.productForm.videoPreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearVideo() {
+    this.productForm.videoFile = null;
+    this.productForm.videoPreview = null;
+  }
+
   // Products
   saveProduct() {
+    const formData = new FormData();
+    
+    // Извлекаем ключи из URL, если они есть (при редактировании)
+    let imageKey = this.productForm.image;
+    let imagesKeys = this.productForm.images;
+    let videoKey = this.productForm.video;
+    
+    if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
+      // Извлекаем ключ из URL: https://s3.twcstorage.ru/bucket/folder/file.ext -> folder/file.ext
+      const parts = imageKey.split('/');
+      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
+      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+        imageKey = parts.slice(bucketIndex + 1).join('/');
+      } else {
+        imageKey = parts.slice(-2).join('/');
+      }
+    }
+    
+    if (imagesKeys && Array.isArray(imagesKeys)) {
+      imagesKeys = imagesKeys.map((img: string) => {
+        if (img && (img.startsWith('http://') || img.startsWith('https://'))) {
+          const parts = img.split('/');
+          const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
+          if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+            return parts.slice(bucketIndex + 1).join('/');
+          } else {
+            return parts.slice(-2).join('/');
+          }
+        }
+        return img;
+      });
+    }
+
+    if (videoKey && (videoKey.startsWith('http://') || videoKey.startsWith('https://'))) {
+      const parts = videoKey.split('/');
+      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
+      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+        videoKey = parts.slice(bucketIndex + 1).join('/');
+      } else {
+        videoKey = parts.slice(-2).join('/');
+      }
+    }
+    
+    // Добавляем текстовые поля
+    formData.append('product', JSON.stringify({
+      name: this.productForm.name,
+      description: this.productForm.description,
+      price: this.productForm.price,
+      oldPrice: this.productForm.oldPrice,
+      engine: this.productForm.engine,
+      power: this.productForm.power,
+      stock: this.productForm.stock,
+      categoryId: this.productForm.categoryId,
+      image: imageKey, // Ключ изображения (или null, если новое загружается)
+      images: imagesKeys, // Ключи дополнительных изображений
+      video: videoKey // Ключ видео (или null, если новое загружается)
+    }));
+
+    // Добавляем главное изображение, если выбрано
+    if (this.productForm.mainImageFile) {
+      formData.append('images', this.productForm.mainImageFile);
+    }
+
+    // Добавляем дополнительные изображения
+    if (this.productForm.additionalImagesFiles && this.productForm.additionalImagesFiles.length > 0) {
+      this.productForm.additionalImagesFiles.forEach((file: File) => {
+        formData.append('images', file);
+      });
+    }
+
+    // Добавляем видео, если оно есть
+    if (this.productForm.videoFile) {
+      formData.append('video', this.productForm.videoFile);
+    }
+
     if (this.editingProduct) {
-      this.productsService.updateProduct(this.editingProduct.id, this.productForm).subscribe(() => {
+      this.productsService.updateProduct(this.editingProduct.id, formData).subscribe(() => {
         this.loadData();
         this.resetForms();
       });
     } else {
-      this.productsService.createProduct(this.productForm).subscribe(() => {
+      this.productsService.createProduct(formData).subscribe(() => {
         this.loadData();
         this.resetForms();
       });
@@ -255,7 +450,15 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   editProduct(product: any) {
     this.editingProduct = product;
-    this.productForm = { ...product };
+    this.productForm = { 
+      ...product,
+      mainImageFile: null,
+      additionalImagesFiles: [],
+      mainImagePreview: null,
+      additionalImagesPreview: [],
+      videoFile: null,
+      videoPreview: null
+    };
   }
 
   deleteProduct(id: number) {
@@ -268,13 +471,39 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // News
   saveNews() {
+    const formData = new FormData();
+    
+    // Извлекаем ключ из URL, если он есть (при редактировании)
+    let imageKey = this.newsForm.image;
+    if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
+      const parts = imageKey.split('/');
+      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
+      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+        imageKey = parts.slice(bucketIndex + 1).join('/');
+      } else {
+        imageKey = parts.slice(-2).join('/');
+      }
+    }
+    
+    // Добавляем текстовые поля
+    formData.append('news', JSON.stringify({
+      title: this.newsForm.title,
+      content: this.newsForm.content,
+      image: imageKey // Ключ изображения (или null, если новое загружается)
+    }));
+
+    // Добавляем изображение, если выбрано
+    if (this.newsForm.imageFile) {
+      formData.append('image', this.newsForm.imageFile);
+    }
+
     if (this.editingNews) {
-      this.newsService.updateNews(this.editingNews.id, this.newsForm).subscribe(() => {
+      this.newsService.updateNews(this.editingNews.id, formData).subscribe(() => {
         this.loadData();
         this.resetForms();
       });
     } else {
-      this.newsService.createNews(this.newsForm).subscribe(() => {
+      this.newsService.createNews(formData).subscribe(() => {
         this.loadData();
         this.resetForms();
       });
@@ -283,7 +512,11 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   editNews(news: any) {
     this.editingNews = news;
-    this.newsForm = { ...news };
+    this.newsForm = { 
+      ...news,
+      imageFile: null,
+      imagePreview: null
+    };
   }
 
   deleteNews(id: number) {
@@ -296,13 +529,39 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // Categories
   saveCategory() {
+    const formData = new FormData();
+    
+    // Извлекаем ключ из URL, если он есть (при редактировании)
+    let imageKey = this.categoryForm.image;
+    if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
+      const parts = imageKey.split('/');
+      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
+      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+        imageKey = parts.slice(bucketIndex + 1).join('/');
+      } else {
+        imageKey = parts.slice(-2).join('/');
+      }
+    }
+    
+    // Добавляем текстовые поля
+    formData.append('category', JSON.stringify({
+      name: this.categoryForm.name,
+      description: this.categoryForm.description,
+      image: imageKey // Ключ изображения (или null, если новое загружается)
+    }));
+
+    // Добавляем изображение, если выбрано
+    if (this.categoryForm.imageFile) {
+      formData.append('image', this.categoryForm.imageFile);
+    }
+
     if (this.editingCategory) {
-      this.categoriesService.updateCategory(this.editingCategory.id, this.categoryForm).subscribe(() => {
+      this.categoriesService.updateCategory(this.editingCategory.id, formData).subscribe(() => {
         this.loadData();
         this.resetForms();
       });
     } else {
-      this.categoriesService.createCategory(this.categoryForm).subscribe(() => {
+      this.categoriesService.createCategory(formData).subscribe(() => {
         this.loadData();
         this.resetForms();
       });
@@ -311,7 +570,11 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   editCategory(category: any) {
     this.editingCategory = category;
-    this.categoryForm = { ...category };
+    this.categoryForm = { 
+      ...category,
+      imageFile: null,
+      imagePreview: null
+    };
   }
 
   deleteCategory(id: number) {

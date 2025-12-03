@@ -8,6 +8,10 @@
         <div class="thumbnails" *ngIf="product.images && product.images.length > 0">
           <img *ngFor="let img of product.images" [src]="img" [alt]="product.name">
         </div>
+        <div class="product-video" *ngIf="product.video">
+          <h3>Видео</h3>
+          <video [src]="product.video" controls style="width: 100%; max-width: 600px; border-radius: 8px;"></video>
+        </div>
       </div>
       
       <div class="product-info">

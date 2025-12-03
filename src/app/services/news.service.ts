@@ -16,12 +16,12 @@ export class NewsService {
     return this.api.get(`/news/${id}`);
   }
 
-  createNews(news: any): Observable<any> {
-    return this.api.post('/news', news);
+  createNews(news: FormData): Observable<any> {
+    return this.api.postFormData('/news', news);
   }
 
-  updateNews(id: number, news: any): Observable<any> {
-    return this.api.patch(`/news/${id}`, news);
+  updateNews(id: number, news: FormData): Observable<any> {
+    return this.api.patchFormData(`/news/${id}`, news);
   }
 
   deleteNews(id: number): Observable<any> {

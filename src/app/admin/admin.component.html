@@ -17,12 +17,55 @@
     <!-- Products Tab -->
     <div *ngIf="activeTab === 'products'" class="tab-content">
       <h2>{{ editingProduct ? 'Редактировать товар' : 'Добавить товар' }}</h2>
-      <form (ngSubmit)="saveProduct()">
+      <form (ngSubmit)="saveProduct()" enctype="multipart/form-data">
         <input [(ngModel)]="productForm.name" name="name" placeholder="Название" required>
         <textarea [(ngModel)]="productForm.description" name="description" placeholder="Описание"></textarea>
         <input type="number" [(ngModel)]="productForm.price" name="price" placeholder="Цена" required>
         <input type="number" [(ngModel)]="productForm.oldPrice" name="oldPrice" placeholder="Старая цена">
-        <input [(ngModel)]="productForm.image" name="image" placeholder="URL изображения">
+        
+        <div class="image-upload-section">
+          <label>Главное изображение:</label>
+          <input type="file" #mainImageInput (change)="onMainImageSelected($event)" accept="image/*">
+          <div *ngIf="productForm.mainImagePreview" class="image-preview">
+            <img [src]="productForm.mainImagePreview" alt="Предпросмотр">
+            <button type="button" (click)="clearMainImage()">Удалить</button>
+          </div>
+          <div *ngIf="editingProduct && productForm.image && !productForm.mainImagePreview" class="current-image">
+            <label>Текущее изображение:</label>
+            <img [src]="productForm.image" alt="Текущее изображение">
+          </div>
+        </div>
+
+        <div class="image-upload-section">
+          <label>Дополнительные изображения:</label>
+          <input type="file" #additionalImagesInput multiple (change)="onAdditionalImagesSelected($event)" accept="image/*">
+          <div *ngIf="productForm.additionalImagesPreview && productForm.additionalImagesPreview.length > 0" class="images-preview">
+            <div *ngFor="let preview of productForm.additionalImagesPreview; let i = index" class="image-preview-item">
+              <img [src]="preview" alt="Предпросмотр">
+              <button type="button" (click)="removeAdditionalImage(i)">Удалить</button>
+            </div>
+          </div>
+          <div *ngIf="editingProduct && productForm.images && productForm.images.length > 0 && !productForm.additionalImagesPreview" class="current-images">
+            <label>Текущие изображения:</label>
+            <div class="current-images-list">
+              <img *ngFor="let img of productForm.images" [src]="img" alt="Текущее изображение">
+            </div>
+          </div>
+        </div>
+
+        <div class="video-upload-section">
+          <label>Видео:</label>
+          <input type="file" #videoInput (change)="onVideoSelected($event)" accept="video/*">
+          <div *ngIf="productForm.videoPreview" class="video-preview">
+            <video [src]="productForm.videoPreview" controls style="max-width: 300px; max-height: 200px;"></video>
+            <button type="button" (click)="clearVideo()">Удалить</button>
+          </div>
+          <div *ngIf="editingProduct && productForm.video && !productForm.videoPreview" class="current-video">
+            <label>Текущее видео:</label>
+            <video [src]="productForm.video" controls style="max-width: 300px; max-height: 200px;"></video>
+          </div>
+        </div>
+
         <input [(ngModel)]="productForm.engine" name="engine" placeholder="Двигатель">
         <input [(ngModel)]="productForm.power" name="power" placeholder="Мощность">
         <input type="number" [(ngModel)]="productForm.stock" name="stock" placeholder="Количество" value="0">
@@ -49,10 +92,23 @@
     <!-- News Tab -->
     <div *ngIf="activeTab === 'news'" class="tab-content">
       <h2>{{ editingNews ? 'Редактировать новость' : 'Добавить новость' }}</h2>
-      <form (ngSubmit)="saveNews()">
+      <form (ngSubmit)="saveNews()" enctype="multipart/form-data">
         <input [(ngModel)]="newsForm.title" name="title" placeholder="Заголовок" required>
         <textarea [(ngModel)]="newsForm.content" name="content" placeholder="Содержание" rows="10" required></textarea>
-        <input [(ngModel)]="newsForm.image" name="image" placeholder="URL изображения">
+        
+        <div class="image-upload-section">
+          <label>Изображение:</label>
+          <input type="file" #newsImageInput (change)="onNewsImageSelected($event)" accept="image/*">
+          <div *ngIf="newsForm.imagePreview" class="image-preview">
+            <img [src]="newsForm.imagePreview" alt="Предпросмотр">
+            <button type="button" (click)="clearNewsImage()">Удалить</button>
+          </div>
+          <div *ngIf="editingNews && newsForm.image && !newsForm.imagePreview" class="current-image">
+            <label>Текущее изображение:</label>
+            <img [src]="newsForm.image" alt="Текущее изображение">
+          </div>
+        </div>
+
         <button type="submit" class="btn-primary">Сохранить</button>
         <button type="button" (click)="resetForms()" *ngIf="editingNews">Отмена</button>
       </form>
@@ -72,10 +128,23 @@
     <!-- Categories Tab -->
     <div *ngIf="activeTab === 'categories'" class="tab-content">
       <h2>{{ editingCategory ? 'Редактировать категорию' : 'Добавить категорию' }}</h2>
-      <form (ngSubmit)="saveCategory()">
+      <form (ngSubmit)="saveCategory()" enctype="multipart/form-data">
         <input [(ngModel)]="categoryForm.name" name="name" placeholder="Название" required>
         <textarea [(ngModel)]="categoryForm.description" name="description" placeholder="Описание"></textarea>
-        <input [(ngModel)]="categoryForm.image" name="image" placeholder="URL изображения">
+        
+        <div class="image-upload-section">
+          <label>Изображение:</label>
+          <input type="file" #categoryImageInput (change)="onCategoryImageSelected($event)" accept="image/*">
+          <div *ngIf="categoryForm.imagePreview" class="image-preview">
+            <img [src]="categoryForm.imagePreview" alt="Предпросмотр">
+            <button type="button" (click)="clearCategoryImage()">Удалить</button>
+          </div>
+          <div *ngIf="editingCategory && categoryForm.image && !categoryForm.imagePreview" class="current-image">
+            <label>Текущее изображение:</label>
+            <img [src]="categoryForm.image" alt="Текущее изображение">
+          </div>
+        </div>
+
         <button type="submit" class="btn-primary">Сохранить</button>
         <button type="button" (click)="resetForms()" *ngIf="editingCategory">Отмена</button>
       </form>

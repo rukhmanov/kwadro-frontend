@@ -16,12 +16,12 @@ export class CategoriesService {
     return this.api.get(`/categories/${id}`);
   }
 
-  createCategory(category: any): Observable<any> {
-    return this.api.post('/categories', category);
+  createCategory(category: FormData): Observable<any> {
+    return this.api.postFormData('/categories', category);
   }
 
-  updateCategory(id: number, category: any): Observable<any> {
-    return this.api.patch(`/categories/${id}`, category);
+  updateCategory(id: number, category: FormData): Observable<any> {
+    return this.api.patchFormData(`/categories/${id}`, category);
   }
 
   deleteCategory(id: number): Observable<any> {

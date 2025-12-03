@@ -17,12 +17,12 @@ export class ProductsService {
     return this.api.get(`/products/${id}`);
   }
 
-  createProduct(product: any): Observable<any> {
-    return this.api.post('/products', product);
+  createProduct(product: FormData): Observable<any> {
+    return this.api.postFormData('/products', product);
   }
 
-  updateProduct(id: number, product: any): Observable<any> {
-    return this.api.patch(`/products/${id}`, product);
+  updateProduct(id: number, product: FormData): Observable<any> {
+    return this.api.patchFormData(`/products/${id}`, product);
   }
 
   deleteProduct(id: number): Observable<any> {
