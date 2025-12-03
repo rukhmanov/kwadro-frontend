@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { CartService } from './services/cart.service';
 import { ChatService } from './services/chat.service';
+import { SettingsService } from './services/settings.service';
 import { io, Socket } from 'socket.io-client';
 
 @Component({
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private cartService: CartService,
     private chatService: ChatService,
+    private settingsService: SettingsService,
     private router: Router
   ) {}
 
@@ -47,6 +49,25 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.initChat();
     this.initChatSession();
+    this.loadBackgroundImage();
+  }
+
+  loadBackgroundImage() {
+    this.settingsService.getBackgroundImage().subscribe(response => {
+      if (response.url) {
+        document.body.style.backgroundImage = `url(${response.url})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'fixed';
+      } else {
+        document.body.style.backgroundImage = '';
+        document.body.style.backgroundSize = '';
+        document.body.style.backgroundPosition = '';
+        document.body.style.backgroundRepeat = '';
+        document.body.style.backgroundAttachment = '';
+      }
+    });
   }
 
   initChatSession() {

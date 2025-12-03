@@ -6,6 +6,7 @@
       <button (click)="setTab('products')" [class.active]="activeTab === 'products'">Товары</button>
       <button (click)="setTab('news')" [class.active]="activeTab === 'news'">Новости</button>
       <button (click)="setTab('categories')" [class.active]="activeTab === 'categories'">Категории</button>
+      <button (click)="setTab('settings')" [class.active]="activeTab === 'settings'">Настройки</button>
       <button (click)="setTab('chats')" [class.active]="activeTab === 'chats'">
         Чаты
         <span *ngIf="unreadChatsCount > 0" class="badge">
@@ -223,6 +224,34 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div *ngIf="activeTab === 'settings'" class="tab-content">
+      <h2>Настройки сайта</h2>
+      
+      <div class="settings-section">
+        <h3>Фоновое изображение</h3>
+        <p class="settings-description">Загрузите изображение, которое будет использоваться как фон на всех страницах сайта</p>
+        
+        <form (ngSubmit)="saveBackgroundImage()" enctype="multipart/form-data">
+          <div class="image-upload-section">
+            <input type="file" #backgroundImageInput (change)="onBackgroundImageSelected($event)" accept="image/*">
+            <div *ngIf="backgroundImagePreview" class="image-preview">
+              <img [src]="backgroundImagePreview" alt="Предпросмотр фона">
+              <button type="button" (click)="clearBackgroundImage()">Удалить</button>
+            </div>
+            <div *ngIf="currentBackgroundImage && !backgroundImagePreview" class="current-image">
+              <label>Текущее фоновое изображение:</label>
+              <div class="current-image-wrapper">
+                <img [src]="currentBackgroundImage" alt="Текущий фон" (error)="onImageError($event)">
+                <button type="button" (click)="removeBackgroundImage()" class="remove-image-btn">Удалить</button>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" [disabled]="!backgroundImageFile">Сохранить</button>
+        </form>
       </div>
     </div>
 

@@ -20,7 +20,7 @@ import { io, Socket } from 'socket.io-client';
 export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('chatMessagesView') chatMessagesView?: ElementRef;
   
-  activeTab: 'products' | 'news' | 'categories' | 'chats' = 'products';
+  activeTab: 'products' | 'news' | 'categories' | 'settings' | 'chats' = 'products';
   products: any[] = [];
   news: any[] = [];
   categories: any[] = [];
@@ -49,6 +49,9 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     imageFile: null,
     imagePreview: null
   };
+  backgroundImageFile: File | null = null;
+  backgroundImagePreview: string | null = null;
+  currentBackgroundImage: string | null = null;
   
   editingProduct: any = null;
   editingNews: any = null;
@@ -206,11 +209,13 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  setTab(tab: 'products' | 'news' | 'categories' | 'chats') {
+  setTab(tab: 'products' | 'news' | 'categories' | 'settings' | 'chats') {
     this.activeTab = tab;
     this.resetForms();
     if (tab === 'chats') {
       this.loadChatSessions();
+    } else if (tab === 'settings') {
+      this.loadBackgroundImage();
     }
   }
 
@@ -700,5 +705,55 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.loadData();
       }
     });
+  }
+
+  // Background Image handlers
+  onBackgroundImageSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.backgroundImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.backgroundImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearBackgroundImage() {
+    this.backgroundImageFile = null;
+    this.backgroundImagePreview = null;
+  }
+
+  loadBackgroundImage() {
+    this.apiService.get<{ url: string | null }>('/settings/background-image').subscribe(response => {
+      this.currentBackgroundImage = response.url;
+    });
+  }
+
+  saveBackgroundImage() {
+    if (!this.backgroundImageFile) return;
+
+    const formData = new FormData();
+    formData.append('image', this.backgroundImageFile);
+
+    this.apiService.postFormData('/settings/background-image', formData).subscribe(() => {
+      this.loadBackgroundImage();
+      this.clearBackgroundImage();
+      alert('Фоновое изображение сохранено');
+      // Обновляем фон на всех страницах
+      window.location.reload();
+    });
+  }
+
+  removeBackgroundImage() {
+    if (confirm('Удалить фоновое изображение?')) {
+      this.apiService.post('/settings/background-image/remove', {}).subscribe(() => {
+        this.currentBackgroundImage = null;
+        alert('Фоновое изображение удалено');
+        // Обновляем фон на всех страницах
+        window.location.reload();
+      });
+    }
   }
 }
