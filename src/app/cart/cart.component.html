@@ -9,21 +9,32 @@
 
     <div *ngIf="cartItems.length > 0">
       <div class="cart-items">
-        <div *ngFor="let item of cartItems" class="cart-item" style="position: relative;">
-          <img [src]="item.product.image || '/assets/placeholder.jpg'" [alt]="item.product.name">
-          <div class="item-info">
-            <h3>{{ item.product.name }}</h3>
-            <p class="price">{{ item.product.price }} ₽</p>
+        <div *ngFor="let item of cartItems" class="cart-item">
+          <div class="item-header">
+            <div class="item-image-wrapper">
+              <img [src]="item.product.image || '/assets/placeholder.jpg'" [alt]="item.product.name">
+            </div>
+            <div class="item-info">
+              <h3>{{ item.product.name }}</h3>
+              <p class="price">{{ item.product.price }} ₽</p>
+            </div>
           </div>
-          <div class="quantity-controls">
-            <button (click)="updateQuantity(item.id, item.quantity - 1)">−</button>
-            <span>{{ item.quantity }}</span>
-            <button (click)="updateQuantity(item.id, item.quantity + 1)">+</button>
+          <div class="item-actions">
+            <div class="quantity-controls">
+              <button (click)="updateQuantity(item.id, item.quantity - 1)" [disabled]="item.quantity <= 1">−</button>
+              <span>{{ item.quantity }}</span>
+              <button (click)="updateQuantity(item.id, item.quantity + 1)">+</button>
+            </div>
+            <div class="item-total">
+              {{ item.product.price * item.quantity }} ₽
+            </div>
           </div>
-          <div class="item-total">
-            <p>{{ item.product.price * item.quantity }} ₽</p>
-          </div>
-          <button (click)="removeItem(item.id)" class="remove-btn">×</button>
+          <button (click)="removeItem(item.id)" class="remove-btn" aria-label="Удалить товар">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
       </div>
 

@@ -84,8 +84,41 @@
 
         button {
           width: 100%;
-          padding: 1rem;
+          padding: 1.125rem 1.5rem;
           font-size: 1.1rem;
+          font-weight: 600;
+          background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(26, 26, 26, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(26, 26, 26, 0.3);
+            background: linear-gradient(135deg, #333 0%, #1a1a1a 100%);
+          }
+
+          &:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(26, 26, 26, 0.2);
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #999;
+          }
+
+          svg {
+            flex-shrink: 0;
+          }
         }
       }
     }
