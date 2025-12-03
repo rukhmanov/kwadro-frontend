@@ -202,12 +202,12 @@ export class ContactComponent implements OnInit, AfterViewInit {
       if (typeof ymaps !== 'undefined') {
         ymaps.ready(() => {
           const map = new ymaps.Map('yandex-map', {
-            center: [56.3269, 44.0075], // Координаты Афонино
+            center: [56.2417, 43.4556], // Координаты Дзержинска (Гайдара 61 д)
             zoom: 15
           });
 
-          const placemark = new ymaps.Placemark([56.3269, 44.0075], {
-            balloonContent: 'Motomarket52<br>ул. Магистральная, 21А/к3'
+          const placemark = new ymaps.Placemark([56.2417, 43.4556], {
+            balloonContent: 'MOTOмаркет<br>Гайдара 61 д, Дзержинск'
           });
 
           map.geoObjects.add(placemark);

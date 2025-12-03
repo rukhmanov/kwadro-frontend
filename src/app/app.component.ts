@@ -16,7 +16,7 @@ import { io, Socket } from 'socket.io-client';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'Motomarket52';
+  title = 'MOTOмаркет';
   isLoggedIn = false;
   cartCount = 0;
   showChat = true;

@@ -33,7 +33,6 @@ export class ProductDetailComponent implements OnInit {
     if (this.product) {
       this.cartService.addToCart(this.product.id, 1).subscribe(() => {
         this.cartService.loadCartCount();
-        alert('Товар добавлен в корзину');
       });
     }
   }

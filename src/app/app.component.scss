@@ -70,6 +70,13 @@ body {
       margin: 0;
       font-weight: 600;
     }
+
+    .moto-text {
+      color: #ff0000;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 
+                   0 0 10px rgba(255, 0, 0, 0.5);
+    }
   }
 
   .phone-link {
@@ -78,7 +85,8 @@ body {
     gap: 0.5rem;
     color: white;
     text-decoration: none;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
     z-index: 1001;
@@ -178,6 +186,22 @@ body {
       .cart-link {
         font-weight: 500;
       }
+
+      .cart-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background: #ff0000;
+        color: white;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        line-height: 1;
+      }
     }
   }
 
@@ -226,6 +250,22 @@ body {
           background: #333;
         }
       }
+
+      .cart-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background: #ff0000;
+        color: white;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        line-height: 1;
+      }
     }
   }
 }
@@ -258,6 +298,14 @@ body {
   font-size: 0.875rem;
   margin-top: auto;
   flex-shrink: 0;
+
+  .moto-text {
+    color: #ff0000;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 15px rgba(255, 0, 0, 0.7),
+                 0 0 25px rgba(255, 0, 0, 0.4);
+  }
 }
 
 // Chat Widget - Mobile First

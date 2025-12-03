@@ -77,7 +77,6 @@ export class ProductsComponent implements OnInit {
   addToCart(productId: number) {
     this.cartService.addToCart(productId, 1).subscribe(() => {
       this.cartService.loadCartCount();
-      alert('Товар добавлен в корзину');
     });
   }
 }
