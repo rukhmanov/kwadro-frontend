@@ -98,6 +98,9 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
     display: flex;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
     flex-direction: column;
     flex: 0 0 85%;
     max-width: 85%;
@@ -163,6 +166,10 @@
     }
 
     .product-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;

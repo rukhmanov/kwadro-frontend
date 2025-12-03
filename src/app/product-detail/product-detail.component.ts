@@ -15,6 +15,13 @@ export class ProductDetailComponent implements OnInit {
   product: any = null;
   cartItems: any[] = [];
   cartItemsMap: Map<number, any> = new Map();
+  selectedImage: string | null = null;
+  selectedMediaType: 'image' | 'video' | null = null;
+
+  selectMedia(type: 'image' | 'video', image: string | null = null) {
+    this.selectedMediaType = type;
+    this.selectedImage = image;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -27,6 +34,13 @@ export class ProductDetailComponent implements OnInit {
     if (id) {
       this.productsService.getProduct(+id).subscribe(product => {
         this.product = product;
+        // Инициализируем отображение главного изображения или видео
+        if (product.video && !product.image) {
+          this.selectedMediaType = 'video';
+        } else {
+          this.selectedMediaType = 'image';
+          this.selectedImage = null; // null означает главное изображение
+        }
       });
     }
     this.loadCartItems();

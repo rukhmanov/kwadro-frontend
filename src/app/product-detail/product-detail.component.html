@@ -3,19 +3,47 @@
     <a routerLink="/products" class="back-link">← Назад к каталогу</a>
     
     <div class="product-content">
+      <h1 class="product-title">{{ product.name }}</h1>
+      
       <div class="product-images">
-        <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name" class="main-image">
-        <div class="thumbnails" *ngIf="product.images && product.images.length > 0">
-          <img *ngFor="let img of product.images" [src]="img" [alt]="product.name">
+        <div class="main-image-container">
+          <img *ngIf="selectedMediaType === 'image' || (selectedMediaType === null && product.image)" 
+               [src]="selectedImage || product.image || '/assets/placeholder.jpg'" 
+               [alt]="product.name" 
+               class="main-image">
+          <video *ngIf="selectedMediaType === 'video' || (selectedMediaType === null && product.video && !product.image)" 
+                 [src]="product.video" 
+                 controls 
+                 class="product-video-player">
+          </video>
         </div>
-        <div class="product-video" *ngIf="product.video">
-          <h3>Видео</h3>
-          <video [src]="product.video" controls style="width: 100%; max-width: 600px; border-radius: 8px;"></video>
+        <div class="media-thumbnails" *ngIf="(product.images && product.images.length > 0) || product.video">
+          <div *ngIf="product.image" 
+               class="thumbnail-item"
+               [class.active]="selectedMediaType === 'image' && selectedImage === null"
+               (click)="selectMedia('image', null)">
+            <img [src]="product.image" [alt]="product.name">
+          </div>
+          <div *ngFor="let img of product.images; let i = index" 
+               class="thumbnail-item"
+               [class.active]="selectedMediaType === 'image' && selectedImage === img"
+               (click)="selectMedia('image', img)">
+            <img [src]="img" [alt]="product.name">
+          </div>
+          <div *ngIf="product.video" 
+               class="thumbnail-item video-thumbnail"
+               [class.active]="selectedMediaType === 'video'"
+               (click)="selectMedia('video', null)">
+            <div class="video-thumbnail-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
       
       <div class="product-info">
-        <h1>{{ product.name }}</h1>
         <p class="description">{{ product.description }}</p>
         
         <div class="specs" *ngIf="product.specifications && product.specifications.length > 0">

@@ -31,7 +31,7 @@
     </div>
 
     <div *ngIf="!loading && !error && products.length > 0" class="products-grid">
-      <div *ngFor="let product of products" class="product-card">
+      <a *ngFor="let product of products" [routerLink]="['/products', product.id]" class="product-card">
         <div class="product-image-wrapper">
           <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
           <div *ngIf="product.oldPrice" class="discount-badge">
@@ -42,7 +42,7 @@
           <h3>{{ product.name }}</h3>
           <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}...</p>
           <div class="product-info" *ngIf="product.specifications && product.specifications.length > 0">
-            <span *ngFor="let spec of product.specifications.slice(0, 2)" class="info-badge">
+            <span *ngFor="let spec of product.specifications" class="info-badge">
               {{ spec.name }}: {{ spec.value }}
             </span>
           </div>
@@ -52,8 +52,7 @@
               <span class="current-price">{{ product.price | number }} ₽</span>
             </p>
           </div>
-          <div class="actions">
-            <a [routerLink]="['/products', product.id]" class="btn-secondary">Подробнее</a>
+          <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
             <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
               <button (click)="addToCart(product.id)" class="btn-cart">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -71,7 +70,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </div>
