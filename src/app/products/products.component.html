@@ -41,19 +41,9 @@
         <div class="product-content">
           <h3>{{ product.name }}</h3>
           <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}...</p>
-          <div class="product-info">
-            <span *ngIf="product.engine" class="info-badge">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-              {{ product.engine }}
-            </span>
-            <span *ngIf="product.power" class="info-badge">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-              </svg>
-              {{ product.power }}
+          <div class="product-info" *ngIf="product.specifications && product.specifications.length > 0">
+            <span *ngFor="let spec of product.specifications.slice(0, 2)" class="info-badge">
+              {{ spec.name }}: {{ spec.value }}
             </span>
           </div>
           <div class="price-section">

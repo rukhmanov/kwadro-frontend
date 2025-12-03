@@ -37,8 +37,10 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     videoFile: null,
     videoPreview: null,
     removedMainImage: false,
-    removedAdditionalImages: []
+    removedAdditionalImages: [],
+    specifications: []
   };
+  categorySpecifications: string[] = [];
   newsForm: any = {
     imageFile: null,
     imagePreview: null
@@ -270,8 +272,10 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       videoFile: null,
       videoPreview: null,
       removedMainImage: false,
-      removedAdditionalImages: []
+      removedAdditionalImages: [],
+      specifications: []
     };
+    this.categorySpecifications = [];
     this.newsForm = {
       imageFile: null,
       imagePreview: null
@@ -456,19 +460,23 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     }
     
+    // Фильтруем характеристики - убираем пустые
+    const validSpecifications = (this.productForm.specifications || []).filter(
+      (spec: { name: string; value: string }) => spec.name && spec.value
+    );
+
     // Добавляем текстовые поля
     formData.append('product', JSON.stringify({
       name: this.productForm.name,
       description: this.productForm.description,
       price: this.productForm.price,
       oldPrice: this.productForm.oldPrice,
-      engine: this.productForm.engine,
-      power: this.productForm.power,
       stock: this.productForm.stock,
       categoryId: this.productForm.categoryId,
       image: imageKey, // Ключ изображения (или null, если новое загружается)
       images: imagesKeys, // Ключи дополнительных изображений
-      video: videoKey // Ключ видео (или null, если новое загружается)
+      video: videoKey, // Ключ видео (или null, если новое загружается)
+      specifications: validSpecifications
     }));
 
     // Добавляем главное изображение, если выбрано
@@ -501,6 +509,35 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  onCategoryChange() {
+    if (this.productForm.categoryId) {
+      this.loadCategorySpecifications(this.productForm.categoryId);
+    } else {
+      this.categorySpecifications = [];
+    }
+  }
+
+  loadCategorySpecifications(categoryId: number) {
+    this.productsService.getCategorySpecifications(categoryId).subscribe((specs: string[]) => {
+      this.categorySpecifications = specs;
+    });
+  }
+
+  addSpecification() {
+    if (!this.productForm.specifications) {
+      this.productForm.specifications = [];
+    }
+    this.productForm.specifications.push({ name: '', value: '' });
+  }
+
+  removeSpecification(index: number) {
+    this.productForm.specifications.splice(index, 1);
+  }
+
+  onSpecNameChange(index: number) {
+    // Можно добавить логику автодополнения при вводе
+  }
+
   editProduct(product: any) {
     this.editingProduct = product;
     this.productForm = { 
@@ -512,8 +549,12 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       videoFile: null,
       videoPreview: null,
       removedMainImage: false,
-      removedAdditionalImages: []
+      removedAdditionalImages: [],
+      specifications: product.specifications ? [...product.specifications] : []
     };
+    if (product.categoryId) {
+      this.loadCategorySpecifications(product.categoryId);
+    }
   }
 
   deleteProduct(id: number) {

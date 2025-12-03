@@ -18,11 +18,12 @@
         <h1>{{ product.name }}</h1>
         <p class="description">{{ product.description }}</p>
         
-        <div class="specs" *ngIf="product.engine || product.power">
+        <div class="specs" *ngIf="product.specifications && product.specifications.length > 0">
           <h3>Характеристики:</h3>
           <ul>
-            <li *ngIf="product.engine">Двигатель: {{ product.engine }}</li>
-            <li *ngIf="product.power">Мощность: {{ product.power }}</li>
+            <li *ngFor="let spec of product.specifications">
+              {{ spec.name }}: {{ spec.value }}
+            </li>
             <li>Наличие: {{ product.stock > 0 ? 'В наличии' : 'Нет в наличии' }}</li>
           </ul>
         </div>

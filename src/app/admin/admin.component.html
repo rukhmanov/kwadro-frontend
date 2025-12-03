@@ -72,13 +72,36 @@
           </div>
         </div>
 
-        <input [(ngModel)]="productForm.engine" name="engine" placeholder="Двигатель">
-        <input [(ngModel)]="productForm.power" name="power" placeholder="Мощность">
         <input type="number" [(ngModel)]="productForm.stock" name="stock" placeholder="Количество" value="0">
-        <select [(ngModel)]="productForm.categoryId" name="categoryId" required>
+        <select [(ngModel)]="productForm.categoryId" name="categoryId" required (change)="onCategoryChange()">
           <option value="">Выберите категорию</option>
           <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
         </select>
+
+        <div class="specifications-section">
+          <label>Характеристики товара:</label>
+          <div *ngFor="let spec of productForm.specifications; let i = index" class="specification-item">
+            <div class="spec-input-group">
+              <input 
+                type="text" 
+                [(ngModel)]="spec.name" 
+                [name]="'specName' + i"
+                placeholder="Название характеристики"
+                [attr.list]="'specSuggestions' + i"
+                (input)="onSpecNameChange(i)">
+              <datalist [attr.id]="'specSuggestions' + i">
+                <option *ngFor="let catSpec of categorySpecifications" [value]="catSpec">
+              </datalist>
+              <input 
+                type="text" 
+                [(ngModel)]="spec.value" 
+                [name]="'specValue' + i"
+                placeholder="Значение">
+              <button type="button" (click)="removeSpecification(i)" class="remove-spec-btn">×</button>
+            </div>
+          </div>
+          <button type="button" (click)="addSpecification()" class="add-spec-btn">+ Добавить характеристику</button>
+        </div>
         <button type="submit" class="btn-primary">Сохранить</button>
         <button type="button" (click)="resetForms()" *ngIf="editingProduct">Отмена</button>
       </form>
