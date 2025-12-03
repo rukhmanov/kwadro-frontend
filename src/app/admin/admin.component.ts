@@ -35,7 +35,9 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     mainImagePreview: null,
     additionalImagesPreview: [],
     videoFile: null,
-    videoPreview: null
+    videoPreview: null,
+    removedMainImage: false,
+    removedAdditionalImages: []
   };
   newsForm: any = {
     imageFile: null,
@@ -169,6 +171,23 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     return this.chatSessions.filter(s => s.hasUnreadMessages).length;
   }
 
+  getCategoryName(categoryId: number): string {
+    const category = this.categories.find(cat => cat.id === categoryId);
+    return category ? category.name : '';
+  }
+
+  getPlaceholderImage(): string {
+    // Используем data URI для placeholder, чтобы избежать 404 ошибок
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5OTk5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && !img.src.includes('data:image')) {
+      img.src = this.getPlaceholderImage();
+    }
+  }
+
   getChatTitle(session: any): string {
     const index = this.chatSessions.findIndex(s => s.id === session.id || s.sessionId === session.sessionId);
     return index !== -1 ? `Чат #${this.chatSessions.length - index}` : 'Чат';
@@ -249,7 +268,9 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       mainImagePreview: null,
       additionalImagesPreview: [],
       videoFile: null,
-      videoPreview: null
+      videoPreview: null,
+      removedMainImage: false,
+      removedAdditionalImages: []
     };
     this.newsForm = {
       imageFile: null,
@@ -280,6 +301,27 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   clearMainImage() {
     this.productForm.mainImageFile = null;
     this.productForm.mainImagePreview = null;
+  }
+
+  removeCurrentMainImage() {
+    if (confirm('Удалить главное изображение?')) {
+      this.productForm.image = null;
+      this.productForm.removedMainImage = true;
+    }
+  }
+
+  removeCurrentAdditionalImage(index: number) {
+    if (confirm('Удалить это изображение?')) {
+      const imageToRemove = this.productForm.images[index];
+      this.productForm.images.splice(index, 1);
+      if (!this.productForm.removedAdditionalImages) {
+        this.productForm.removedAdditionalImages = [];
+      }
+      // Сохраняем ключ изображения для удаления с сервера
+      if (imageToRemove) {
+        this.productForm.removedAdditionalImages.push(imageToRemove);
+      }
+    }
   }
 
   onAdditionalImagesSelected(event: any) {
@@ -367,7 +409,10 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     let imagesKeys = this.productForm.images;
     let videoKey = this.productForm.video;
     
-    if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
+    // Если главное изображение удалено, устанавливаем null
+    if (this.productForm.removedMainImage) {
+      imageKey = null;
+    } else if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
       // Извлекаем ключ из URL: https://s3.twcstorage.ru/bucket/folder/file.ext -> folder/file.ext
       const parts = imageKey.split('/');
       const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
@@ -379,7 +424,15 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     
     if (imagesKeys && Array.isArray(imagesKeys)) {
-      imagesKeys = imagesKeys.map((img: string) => {
+      // Фильтруем удаленные изображения
+      imagesKeys = imagesKeys.filter((img: string) => {
+        if (!img) return false;
+        // Проверяем, не удалено ли это изображение
+        if (this.productForm.removedAdditionalImages && this.productForm.removedAdditionalImages.includes(img)) {
+          return false;
+        }
+        return true;
+      }).map((img: string) => {
         if (img && (img.startsWith('http://') || img.startsWith('https://'))) {
           const parts = img.split('/');
           const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
@@ -457,7 +510,9 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       mainImagePreview: null,
       additionalImagesPreview: [],
       videoFile: null,
-      videoPreview: null
+      videoPreview: null,
+      removedMainImage: false,
+      removedAdditionalImages: []
     };
   }
 

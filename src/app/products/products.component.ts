@@ -19,6 +19,8 @@ export class ProductsComponent implements OnInit {
   Math = Math; // Для использования Math в шаблоне
   loading = true;
   error: string | null = null;
+  cartItems: any[] = [];
+  cartItemsMap: Map<number, any> = new Map();
 
   constructor(
     private productsService: ProductsService,
@@ -40,6 +42,13 @@ export class ProductsComponent implements OnInit {
       }
     });
 
+    this.loadCartItems();
+
+    // Подписываемся на изменения количества товаров в корзине для автоматического обновления
+    this.cartService.cartCount$.subscribe(() => {
+      this.loadCartItems();
+    });
+
     this.route.queryParams.subscribe(params => {
       const categoryId = params['categoryId'];
       if (categoryId) {
@@ -49,6 +58,28 @@ export class ProductsComponent implements OnInit {
         this.loadProducts();
       }
     });
+  }
+
+  loadCartItems() {
+    this.cartService.getCart().subscribe(items => {
+      this.cartItems = items || [];
+      this.cartItemsMap.clear();
+      this.cartItems.forEach(item => {
+        this.cartItemsMap.set(item.product.id, item);
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    // Cleanup if needed
+  }
+
+  getCartItem(productId: number): any {
+    return this.cartItemsMap.get(productId);
+  }
+
+  isInCart(productId: number): boolean {
+    return this.cartItemsMap.has(productId);
   }
 
   loadProducts(categoryId?: number) {
@@ -77,6 +108,32 @@ export class ProductsComponent implements OnInit {
   addToCart(productId: number) {
     this.cartService.addToCart(productId, 1).subscribe(() => {
       this.cartService.loadCartCount();
+      this.loadCartItems();
     });
+  }
+
+  increaseQuantity(cartItemId: number, productId: number) {
+    const cartItem = this.getCartItem(productId);
+    if (cartItem) {
+      this.cartService.updateQuantity(cartItemId, cartItem.quantity + 1).subscribe(() => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
+      });
+    }
+  }
+
+  decreaseQuantity(cartItemId: number, productId: number) {
+    const cartItem = this.getCartItem(productId);
+    if (cartItem && cartItem.quantity > 1) {
+      this.cartService.updateQuantity(cartItemId, cartItem.quantity - 1).subscribe(() => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
+      });
+    } else if (cartItem && cartItem.quantity === 1) {
+      this.cartService.removeItem(cartItemId).subscribe(() => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
+      });
+    }
   }
 }

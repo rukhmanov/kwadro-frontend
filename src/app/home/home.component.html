@@ -2,15 +2,14 @@
   <div class="container">
     <h2>Популярные товары</h2>
     <div class="products-grid">
-      <div *ngFor="let product of featuredProducts" class="product-card">
+      <a *ngFor="let product of featuredProducts" [routerLink]="['/products', product.id]" class="product-card">
         <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
         <h3>{{ product.name }}</h3>
         <p class="price">
           <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
           <span class="current-price">{{ product.price }} ₽</span>
         </p>
-        <a [routerLink]="['/products', product.id]" class="btn-secondary">Подробнее</a>
-      </div>
+      </a>
     </div>
   </div>
 </section>

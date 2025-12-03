@@ -32,7 +32,10 @@
           </div>
           <div *ngIf="editingProduct && productForm.image && !productForm.mainImagePreview" class="current-image">
             <label>Текущее изображение:</label>
-            <img [src]="productForm.image" alt="Текущее изображение">
+            <div class="current-image-wrapper">
+              <img [src]="productForm.image" alt="Текущее изображение" (error)="onImageError($event)">
+              <button type="button" (click)="removeCurrentMainImage()" class="remove-image-btn">Удалить</button>
+            </div>
           </div>
         </div>
 
@@ -48,7 +51,10 @@
           <div *ngIf="editingProduct && productForm.images && productForm.images.length > 0 && !productForm.additionalImagesPreview" class="current-images">
             <label>Текущие изображения:</label>
             <div class="current-images-list">
-              <img *ngFor="let img of productForm.images" [src]="img" alt="Текущее изображение">
+              <div *ngFor="let img of productForm.images; let i = index" class="current-image-item">
+                <img [src]="img" alt="Текущее изображение" (error)="onImageError($event)">
+                <button type="button" (click)="removeCurrentAdditionalImage(i)" class="remove-image-btn">Удалить</button>
+              </div>
             </div>
           </div>
         </div>
@@ -79,9 +85,28 @@
 
       <h2>Список товаров</h2>
       <div class="list">
-        <div *ngFor="let product of products" class="list-item">
-          <span>{{ product.name }}</span>
-          <div>
+        <div *ngFor="let product of products" class="list-item product-item">
+          <div class="product-info">
+            <img [src]="product.image || getPlaceholderImage()" 
+                 [alt]="product.name" 
+                 class="product-image"
+                 (error)="onImageError($event)">
+            <div class="product-details">
+              <h3>{{ product.name }}</h3>
+              <div class="product-meta">
+                <span class="price">{{ product.price | number }} ₽</span>
+                <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
+                <span class="stock" [class.in-stock]="product.stock > 0" [class.out-of-stock]="product.stock === 0">
+                  {{ product.stock > 0 ? 'В наличии (' + product.stock + ')' : 'Нет в наличии' }}
+                </span>
+                <span *ngIf="getCategoryName(product.categoryId)" class="category">
+                  {{ getCategoryName(product.categoryId) }}
+                </span>
+              </div>
+              <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}{{ product.description.length > 100 ? '...' : '' }}</p>
+            </div>
+          </div>
+          <div class="product-actions">
             <button (click)="editProduct(product)">Редактировать</button>
             <button (click)="deleteProduct(product.id)" class="delete">Удалить</button>
           </div>

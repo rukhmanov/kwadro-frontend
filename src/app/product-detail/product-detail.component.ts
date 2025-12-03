@@ -13,6 +13,8 @@ import { CartService } from '../services/cart.service';
 })
 export class ProductDetailComponent implements OnInit {
   product: any = null;
+  cartItems: any[] = [];
+  cartItemsMap: Map<number, any> = new Map();
 
   constructor(
     private route: ActivatedRoute,
@@ -27,12 +29,62 @@ export class ProductDetailComponent implements OnInit {
         this.product = product;
       });
     }
+    this.loadCartItems();
+
+    // Подписываемся на изменения количества товаров в корзине для автоматического обновления
+    this.cartService.cartCount$.subscribe(() => {
+      this.loadCartItems();
+    });
+  }
+
+  loadCartItems() {
+    this.cartService.getCart().subscribe(items => {
+      this.cartItems = items || [];
+      this.cartItemsMap.clear();
+      this.cartItems.forEach(item => {
+        this.cartItemsMap.set(item.product.id, item);
+      });
+    });
+  }
+
+  getCartItem(productId: number): any {
+    return this.cartItemsMap.get(productId);
+  }
+
+  isInCart(productId: number): boolean {
+    return this.cartItemsMap.has(productId);
   }
 
   addToCart() {
     if (this.product) {
       this.cartService.addToCart(this.product.id, 1).subscribe(() => {
         this.cartService.loadCartCount();
+        this.loadCartItems();
+      });
+    }
+  }
+
+  increaseQuantity(cartItemId: number, productId: number) {
+    const cartItem = this.getCartItem(productId);
+    if (cartItem) {
+      this.cartService.updateQuantity(cartItemId, cartItem.quantity + 1).subscribe(() => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
+      });
+    }
+  }
+
+  decreaseQuantity(cartItemId: number, productId: number) {
+    const cartItem = this.getCartItem(productId);
+    if (cartItem && cartItem.quantity > 1) {
+      this.cartService.updateQuantity(cartItemId, cartItem.quantity - 1).subscribe(() => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
+      });
+    } else if (cartItem && cartItem.quantity === 1) {
+      this.cartService.removeItem(cartItemId).subscribe(() => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
       });
     }
   }

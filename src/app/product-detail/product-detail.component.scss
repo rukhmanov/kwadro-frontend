@@ -150,6 +150,59 @@
             transform: scale(1.1);
           }
         }
+
+        .quantity-controls-detail {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          background: #f8f9fa;
+          padding: 0.75rem;
+          border-radius: 12px;
+          width: 100%;
+
+          button {
+            width: 48px;
+            height: 48px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: #1a1a1a;
+            padding: 0;
+            flex-shrink: 0;
+
+            &:active:not(:disabled) {
+              background: #1a1a1a;
+              color: white;
+              border-color: #1a1a1a;
+              transform: scale(0.95);
+            }
+
+            &:disabled {
+              opacity: 0.4;
+              cursor: not-allowed;
+            }
+          }
+
+          span {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1a1a1a;
+          }
+        }
+
+        .out-of-stock {
+          width: 100%;
+        }
       }
     }
   }

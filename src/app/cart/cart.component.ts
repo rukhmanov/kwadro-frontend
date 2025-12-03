@@ -40,6 +40,7 @@ export class CartComponent implements OnInit {
     }
     this.cartService.updateQuantity(itemId, quantity).subscribe(() => {
       this.loadCart();
+      this.cartService.loadCartCount();
     });
   }
 
