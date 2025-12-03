@@ -27,5 +27,9 @@ export class CategoriesService {
   deleteCategory(id: number): Observable<any> {
     return this.api.delete(`/categories/${id}`);
   }
+
+  updateCategoryOrder(categoryOrders: { id: number; order: number }[]): Observable<any> {
+    return this.api.post('/categories/reorder', categoryOrders);
+  }
 }
 

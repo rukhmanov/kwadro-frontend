@@ -20,14 +20,14 @@
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
           (click)="closeMobileMenu()">Главная</a>
         <a routerLink="/products" routerLinkActive="active" (click)="closeMobileMenu()">Каталог</a>
-        <a routerLink="/news" routerLinkActive="active" (click)="closeMobileMenu()">Новости</a>
-        <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">О нас</a>
-        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Контакты</a>
         <a routerLink="/cart" routerLinkActive="active" class="cart-link" (click)="closeMobileMenu()">
           Корзина <span *ngIf="cartCount > 0">({{ cartCount }})</span>
         </a>
-        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Вход</a>
+        <a routerLink="/news" routerLinkActive="active" (click)="closeMobileMenu()">Новости</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Контакты</a>
         <a *ngIf="isLoggedIn" routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Админ</a>
+        <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">О нас</a>
+        <a *ngIf="!isLoggedIn" routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Вход</a>
         <a *ngIf="isLoggedIn" (click)="logout(); closeMobileMenu()" class="logout">Выход</a>
       </nav>
     </div>

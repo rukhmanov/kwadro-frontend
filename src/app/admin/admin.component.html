@@ -81,12 +81,29 @@
       </form>
 
       <h2>Список категорий</h2>
-      <div class="list">
-        <div *ngFor="let category of categories" class="list-item">
-          <span>{{ category.name }}</span>
-          <div>
-            <button (click)="editCategory(category)">Редактировать</button>
-            <button (click)="deleteCategory(category.id)" class="delete">Удалить</button>
+      <p class="drag-hint">💡 Перетащите категории для изменения порядка</p>
+      <div class="list" cdkDropList (cdkDropListDropped)="onCategoryDrop($event)">
+        <div 
+          *ngFor="let category of categories; let i = index" 
+          class="list-item draggable-item"
+          cdkDrag
+          [cdkDragData]="category">
+          <div class="drag-handle" cdkDragHandle>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="12" r="1"/>
+              <circle cx="9" cy="5" r="1"/>
+              <circle cx="9" cy="19" r="1"/>
+              <circle cx="15" cy="12" r="1"/>
+              <circle cx="15" cy="5" r="1"/>
+              <circle cx="15" cy="19" r="1"/>
+            </svg>
+          </div>
+          <div class="category-content">
+            <span>{{ category.name }}</span>
+            <div class="category-actions">
+              <button (click)="editCategory(category)">Редактировать</button>
+              <button (click)="deleteCategory(category.id)" class="delete">Удалить</button>
+            </div>
           </div>
         </div>
       </div>

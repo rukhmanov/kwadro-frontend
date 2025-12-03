@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked }
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AuthService } from '../services/auth.service';
 import { ProductsService } from '../services/products.service';
 import { CategoriesService } from '../services/categories.service';
@@ -12,7 +13,7 @@ import { io, Socket } from 'socket.io-client';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DragDropModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -319,5 +320,26 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.loadData();
       });
     }
+  }
+
+  onCategoryDrop(event: CdkDragDrop<any[]>) {
+    moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
+    
+    // Обновляем порядок категорий
+    const categoryOrders = this.categories.map((category, index) => ({
+      id: category.id,
+      order: index
+    }));
+    
+    this.categoriesService.updateCategoryOrder(categoryOrders).subscribe({
+      next: () => {
+        console.log('Порядок категорий обновлен');
+      },
+      error: (err) => {
+        console.error('Ошибка при обновлении порядка категорий:', err);
+        // Восстанавливаем исходный порядок при ошибке
+        this.loadData();
+      }
+    });
   }
 }
