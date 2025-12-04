@@ -60,12 +60,35 @@ export class AppComponent implements OnInit, OnDestroy {
         document.body.style.backgroundPosition = 'center';
         document.body.style.backgroundRepeat = 'no-repeat';
         document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundColor = '#1a1a1a'; // Fallback цвет
+        // Добавляем затемнение для лучшей читаемости текста
+        document.body.style.position = 'relative';
+        if (!document.getElementById('background-overlay')) {
+          const overlay = document.createElement('div');
+          overlay.id = 'background-overlay';
+          overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+            pointer-events: none;
+          `;
+          document.body.appendChild(overlay);
+        }
       } else {
         document.body.style.backgroundImage = '';
         document.body.style.backgroundSize = '';
         document.body.style.backgroundPosition = '';
         document.body.style.backgroundRepeat = '';
         document.body.style.backgroundAttachment = '';
+        document.body.style.backgroundColor = '#1a1a1a';
+        const overlay = document.getElementById('background-overlay');
+        if (overlay) {
+          overlay.remove();
+        }
       }
     });
   }
