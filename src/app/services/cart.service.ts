@@ -58,6 +58,13 @@ export class CartService {
   getCartCount(): Observable<number> {
     return this.cartCount$;
   }
+
+  placeOrder(phone: string): Observable<any> {
+    return this.api.post('/cart/order', {
+      sessionId: this.sessionId,
+      phone
+    });
+  }
 }
 
 

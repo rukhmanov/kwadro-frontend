@@ -1,7 +1,7 @@
 <div class="cart-page">
   <div class="container">
     <h1>Корзина</h1>
-    
+
     <div *ngIf="cartItems.length === 0" class="empty-cart">
       <p>Ваша корзина пуста</p>
       <a routerLink="/products" class="btn-primary">Перейти в каталог</a>
@@ -30,7 +30,8 @@
             </div>
           </div>
           <button (click)="removeItem(item.id)" class="remove-btn" aria-label="Удалить товар">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -44,8 +45,42 @@
         </div>
         <div class="actions">
           <button (click)="clearCart()" class="btn-secondary">Очистить корзину</button>
-          <button class="btn-primary">Оформить заказ</button>
+          <button (click)="openOrderModal()" class="btn-primary">Оформить заказ</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно оформления заказа -->
+  <div *ngIf="showOrderModal" class="order-modal-overlay" (click)="closeOrderModal()">
+    <div class="order-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Оформление заказа</h2>
+        <button class="close-btn" (click)="closeOrderModal()" aria-label="Закрыть">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="submitOrder()" #orderForm="ngForm">
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="tel" [(ngModel)]="orderPhone" name="phone" (input)="onPhoneInput($event)"
+              (keydown)="onPhoneKeyDown($event)" (focus)="onPhoneFocus($event)" (paste)="onPhonePaste($event)"
+              placeholder="+7 (___) ___-__-__" maxlength="18" required>
+          </div>
+          <div class="modal-actions">
+            <button type="button" (click)="closeOrderModal()" class="btn-secondary">Отмена</button>
+            <button type="submit" class="btn-primary" [disabled]="!isPhoneValid() || isSubmitting">
+              {{ isSubmitting ? 'Отправка...' : 'Оформить заказ' }}
+            </button>
+          </div>
+        </form>
+        <p *ngIf="orderSuccess" class="success-message">Заказ успешно оформлен! Мы свяжемся с вами в ближайшее время.
+        </p>
+        <p *ngIf="orderError" class="error-message">{{ orderError }}</p>
       </div>
     </div>
   </div>
