@@ -7,13 +7,14 @@ import { AuthService } from './services/auth.service';
 import { CartService } from './services/cart.service';
 import { ChatService } from './services/chat.service';
 import { SettingsService } from './services/settings.service';
+import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule, RouterModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, RouterModule, TermsAcceptanceComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

@@ -1,0 +1,24 @@
+<div class="terms-overlay" *ngIf="showModal && !isOnAgreementPage" [class.blocking]="isBlocking">
+  <div class="terms-banner">
+    <div class="terms-banner-content">
+      <div class="terms-banner-text">
+        <p>
+          Мы используем файлы cookie и обрабатываем персональные данные для улучшения работы сайта.
+          Продолжая использовать сайт, вы соглашаетесь с
+          <a routerLink="/terms">Пользовательским соглашением</a>
+          и
+          <a routerLink="/privacy">Политикой конфиденциальности</a>.
+        </p>
+      </div>
+      <div class="terms-banner-actions">
+        <label class="terms-checkbox-label">
+          <input type="checkbox" [(ngModel)]="accepted" (change)="onCheckboxChange()">
+          <span>Принимаю</span>
+        </label>
+        <button class="btn-accept" [disabled]="!accepted" (click)="acceptTerms()">
+          Принять
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

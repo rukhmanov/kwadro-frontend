@@ -201,13 +201,86 @@ export class ContactComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       if (typeof ymaps !== 'undefined') {
         ymaps.ready(() => {
+          // Темные стили для карты
+          const darkStyles = [
+            {
+              "featureType": "all",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#1a1a1a"
+                }
+              ]
+            },
+            {
+              "featureType": "all",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                {
+                  "color": "#ffffff"
+                }
+              ]
+            },
+            {
+              "featureType": "all",
+              "elementType": "labels.text.stroke",
+              "stylers": [
+                {
+                  "color": "#1a1a1a"
+                }
+              ]
+            },
+            {
+              "featureType": "water",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#0e1626"
+                }
+              ]
+            },
+            {
+              "featureType": "road",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#2d2d2d"
+                }
+              ]
+            },
+            {
+              "featureType": "road.highway",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#3d3d3d"
+                }
+              ]
+            },
+            {
+              "featureType": "administrative",
+              "elementType": "geometry",
+              "stylers": [
+                {
+                  "color": "#1a1a1a"
+                }
+              ]
+            }
+          ];
+
           const map = new ymaps.Map('yandex-map', {
             center: [56.2417, 43.4556], // Координаты Дзержинска (Гайдара 61 д)
-            zoom: 15
+            zoom: 15,
+            controls: ['zoomControl', 'fullscreenControl']
           });
+
+          // Применяем темные стили к карте
+          map.options.set('theme', darkStyles);
 
           const placemark = new ymaps.Placemark([56.2417, 43.4556], {
             balloonContent: 'MOTOмаркет<br>Гайдара 61 д, Дзержинск'
+          }, {
+            preset: 'islands#redIcon'
           });
 
           map.geoObjects.add(placemark);

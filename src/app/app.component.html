@@ -64,6 +64,15 @@
 
 <footer class="footer">
   <div class="container">
-    <p>&copy; 2026 <span class="moto-text">MOTO</span>маркет. Все права защищены.</p>
+    <div class="footer-content">
+      <p>&copy; 2026 <span class="moto-text">MOTO</span>маркет. Все права защищены.</p>
+      <div class="footer-links">
+        <a routerLink="/privacy">Политика конфиденциальности</a>
+        <span class="separator">|</span>
+        <a routerLink="/terms">Пользовательское соглашение</a>
+      </div>
+    </div>
   </div>
 </footer>
+
+<app-terms-acceptance></app-terms-acceptance>
