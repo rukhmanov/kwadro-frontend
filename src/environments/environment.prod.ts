@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000' // TODO: Замените на URL вашего продакшн бэкенда
+  apiUrl: 'https://rukhmanov-kwadro-backend-f13b.twc1.net'
 };
 
 
