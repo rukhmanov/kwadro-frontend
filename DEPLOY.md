@@ -82,3 +82,4 @@ export const environment = {
 - Все маршруты будут иметь вид: `https://rukhmanov.github.io/kwadro/#/products`
 - Убедитесь, что бэкенд поддерживает CORS для вашего домена GitHub Pages
 
+
