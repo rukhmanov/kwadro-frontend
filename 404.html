@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>MOTOмаркет</title>
+    <base href="/kwadro/">
+    <script>
+        // GitHub Pages 404 redirect для SPA
+        var path = window.location.pathname;
+        var hash = window.location.hash;
+        var basePath = '/kwadro';
+
+        // Убираем basePath из пути, если он есть
+        if (path.startsWith(basePath)) {
+            path = path.substring(basePath.length);
+        }
+
+        if (path !== '/' && path !== '' && !hash) {
+            window.location.replace(basePath + '/#' + path);
+        } else {
+            window.location.replace(basePath + '/');
+        }
+    </script>
+</head>
+
+<body>
+    <p>Redirecting...</p>
+</body>
+
+</html>

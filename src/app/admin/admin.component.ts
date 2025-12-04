@@ -9,6 +9,7 @@ import { CategoriesService } from '../services/categories.service';
 import { NewsService } from '../services/news.service';
 import { ApiService } from '../services/api.service';
 import { io, Socket } from 'socket.io-client';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-admin',
@@ -110,7 +111,7 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   initChatSocket() {
-    this.socket = io('http://localhost:3000');
+    this.socket = io(environment.apiUrl);
     
     this.socket.on('connect', () => {
       console.log('Admin connected to chat');

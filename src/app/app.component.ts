@@ -8,6 +8,7 @@ import { CartService } from './services/cart.service';
 import { ChatService } from './services/chat.service';
 import { SettingsService } from './services/settings.service';
 import { io, Socket } from 'socket.io-client';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -108,7 +109,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   initChat() {
-    this.socket = io('http://localhost:3000');
+    this.socket = io(environment.apiUrl);
     
     this.socket.on('connect', () => {
       console.log('Connected to chat');
