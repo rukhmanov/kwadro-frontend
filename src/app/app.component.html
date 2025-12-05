@@ -4,13 +4,23 @@
       <a routerLink="/" class="logo" (click)="closeMobileMenu()">
         <h1><span class="moto-text">MOTO</span>маркет</h1>
       </a>
-      <a href="tel:+79625167301" class="phone-link" (click)="closeMobileMenu()" aria-label="Позвонить">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path
-            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-        </svg>
-        <span class="phone-text">+7 (962) 516-73-01</span>
-      </a>
+      <div class="header-actions">
+        <a routerLink="/cart" class="cart-link-header" (click)="closeMobileMenu()" aria-label="Корзина">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
+            <circle cx="9" cy="20" r="1" />
+            <circle cx="20" cy="20" r="1" />
+          </svg>
+          <span *ngIf="cartCount > 0" class="cart-badge-header">{{ cartCount }}</span>
+        </a>
+        <a href="tel:+79625167301" class="phone-link" (click)="closeMobileMenu()" aria-label="Позвонить">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+          <span class="phone-text">+7 (962) 516-73-01</span>
+        </a>
+      </div>
       <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Меню">
         <span></span>
         <span></span>
@@ -20,7 +30,7 @@
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
           (click)="closeMobileMenu()">Главная</a>
         <a routerLink="/products" routerLinkActive="active" (click)="closeMobileMenu()">Каталог</a>
-        <a routerLink="/cart" routerLinkActive="active" class="cart-link" (click)="closeMobileMenu()">
+        <a routerLink="/cart" routerLinkActive="active" class="cart-link desktop-only" (click)="closeMobileMenu()">
           Корзина <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
         </a>
         <a routerLink="/news" routerLinkActive="active" (click)="closeMobileMenu()">Новости</a>
@@ -76,3 +86,7 @@
 </footer>
 
 <app-terms-acceptance></app-terms-acceptance>
+
+<app-edit-drawer *ngIf="editDrawerOpen" [entity]="editEntity" [entityType]="editEntityType" (close)="closeEditDrawer()"
+  (saved)="onEntitySaved($event)">
+</app-edit-drawer>

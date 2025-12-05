@@ -1,0 +1,173 @@
+<div class="drawer-overlay" (click)="closeDrawer()">
+  <div class="drawer" (click)="$event.stopPropagation()">
+    <div class="drawer-header">
+      <h2>{{ entity ? 'Редактировать' : 'Добавить' }} {{ entityType === 'product' ? 'товар' : entityType === 'news' ?
+        'новость' : 'категорию' }}</h2>
+      <button (click)="closeDrawer()" class="close-btn">×</button>
+    </div>
+    <div class="drawer-content">
+
+      <!-- Product Form -->
+      <form *ngIf="entityType === 'product'" (ngSubmit)="save()" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="product-name">Название *</label>
+          <input id="product-name" [(ngModel)]="form.name" name="name" placeholder="Название" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="product-description">Описание</label>
+          <textarea id="product-description" [(ngModel)]="form.description" name="description" placeholder="Описание"
+            class="form-textarea"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="product-price">Цена *</label>
+            <input id="product-price" type="number" [(ngModel)]="form.price" name="price" placeholder="Цена" required class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="product-old-price">Старая цена</label>
+            <input id="product-old-price" type="number" [(ngModel)]="form.oldPrice" name="oldPrice" placeholder="Старая цена"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="product-stock">Количество</label>
+            <input id="product-stock" type="number" [(ngModel)]="form.stock" name="stock" placeholder="Количество" value="0"
+              class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="product-category">Категория *</label>
+          <select id="product-category" [(ngModel)]="form.categoryId" name="categoryId" required (change)="onCategoryChange()"
+            class="form-select">
+            <option value="">Выберите категорию</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="section-label">Изображения товара (первое изображение будет главным):</label>
+          <input type="file" #imagesInput multiple (change)="onImagesSelected($event)" accept="image/*"
+            class="form-file">
+          <div *ngIf="getAllImages().length > 0" class="images-list" cdkDropList
+            (cdkDropListDropped)="onImagesDrop($event)">
+            <div *ngFor="let img of getAllImages(); let i = index; trackBy: trackByImage" class="image-item" cdkDrag
+              [cdkDragData]="i">
+              <div class="drag-handle" cdkDragHandle>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="12" r="1" />
+                  <circle cx="9" cy="5" r="1" />
+                  <circle cx="9" cy="19" r="1" />
+                  <circle cx="15" cy="12" r="1" />
+                  <circle cx="15" cy="5" r="1" />
+                  <circle cx="15" cy="19" r="1" />
+                </svg>
+              </div>
+              <img [src]="img.url" [alt]="'Изображение ' + (i + 1)" class="image-preview">
+              <div class="image-badge" *ngIf="i === 0">Главное</div>
+              <button type="button" (click)="removeImage(i)" class="remove-image-btn">Удалить</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="section-label">Видео:</label>
+          <input type="file" #videoInput (change)="onVideoSelected($event)" accept="video/*" class="form-file">
+          <div *ngIf="form.videoPreview" class="video-preview">
+            <label>Новое видео:</label>
+            <video [src]="form.videoPreview" controls style="max-width: 100%; max-height: 200px;"></video>
+            <button type="button" (click)="clearVideo()" class="btn-secondary">Удалить</button>
+          </div>
+          <div *ngIf="entity && form.video && !form.removedVideo && !form.videoPreview" class="current-video">
+            <label>Текущее видео:</label>
+            <video [src]="form.video" controls style="max-width: 100%; max-height: 200px;"></video>
+            <button type="button" (click)="removeCurrentVideo()" class="btn-secondary">Удалить</button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="section-label">Характеристики товара:</label>
+          <div *ngFor="let spec of form.specifications; let i = index" class="specification-item">
+            <div class="spec-input-group">
+              <input type="text" [(ngModel)]="spec.name" [name]="'specName' + i" placeholder="Название характеристики"
+                [attr.list]="'specSuggestions' + i" class="form-input">
+              <datalist [attr.id]="'specSuggestions' + i">
+                <option *ngFor="let catSpec of categorySpecifications" [value]="catSpec">
+              </datalist>
+              <input type="text" [(ngModel)]="spec.value" [name]="'specValue' + i" placeholder="Значение"
+                class="form-input">
+              <button type="button" (click)="removeSpecification(i)" class="remove-spec-btn">×</button>
+            </div>
+          </div>
+          <button type="button" (click)="addSpecification()" class="btn-secondary">+ Добавить характеристику</button>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">{{ loading ? 'Сохранение...' : 'Сохранить'
+            }}</button>
+          <button type="button" (click)="closeDrawer()" class="btn-secondary">Отмена</button>
+        </div>
+      </form>
+
+      <!-- News Form -->
+      <form *ngIf="entityType === 'news'" (ngSubmit)="save()" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="news-title">Заголовок *</label>
+          <input id="news-title" [(ngModel)]="form.title" name="title" placeholder="Заголовок" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="news-content">Содержание *</label>
+          <textarea id="news-content" [(ngModel)]="form.content" name="content" placeholder="Содержание" rows="10" required
+            class="form-textarea"></textarea>
+        </div>
+        <div class="form-section">
+          <label class="section-label">Изображение:</label>
+          <input type="file" #newsImageInput (change)="onNewsImageSelected($event)" accept="image/*" class="form-file">
+          <div *ngIf="form.imagePreview" class="image-preview">
+            <img [src]="form.imagePreview" alt="Предпросмотр">
+            <button type="button" (click)="clearNewsImage()" class="btn-secondary">Удалить</button>
+          </div>
+          <div *ngIf="entity && form.image && !form.imagePreview" class="current-image">
+            <label>Текущее изображение:</label>
+            <img [src]="form.image" alt="Текущее изображение">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">{{ loading ? 'Сохранение...' : 'Сохранить'
+            }}</button>
+          <button type="button" (click)="closeDrawer()" class="btn-secondary">Отмена</button>
+        </div>
+      </form>
+
+      <!-- Category Form -->
+      <form *ngIf="entityType === 'category'" (ngSubmit)="save()" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="category-name">Название *</label>
+          <input id="category-name" [(ngModel)]="form.name" name="name" placeholder="Название" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="category-description">Описание</label>
+          <textarea id="category-description" [(ngModel)]="form.description" name="description" placeholder="Описание"
+            class="form-textarea"></textarea>
+        </div>
+        <div class="form-section">
+          <label class="section-label">Изображение:</label>
+          <input type="file" #categoryImageInput (change)="onCategoryImageSelected($event)" accept="image/*"
+            class="form-file">
+          <div *ngIf="form.imagePreview" class="image-preview">
+            <img [src]="form.imagePreview" alt="Предпросмотр">
+            <button type="button" (click)="clearCategoryImage()" class="btn-secondary">Удалить</button>
+          </div>
+          <div *ngIf="entity && form.image && !form.imagePreview" class="current-image">
+            <label>Текущее изображение:</label>
+            <img [src]="form.image" alt="Текущее изображение">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="loading">{{ loading ? 'Сохранение...' : 'Сохранить'
+            }}</button>
+          <button type="button" (click)="closeDrawer()" class="btn-secondary">Отмена</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

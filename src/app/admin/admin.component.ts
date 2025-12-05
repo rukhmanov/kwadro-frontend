@@ -8,6 +8,7 @@ import { ProductsService } from '../services/products.service';
 import { CategoriesService } from '../services/categories.service';
 import { NewsService } from '../services/news.service';
 import { ApiService } from '../services/api.service';
+import { EditDrawerService } from '../services/edit-drawer.service';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
 
@@ -21,7 +22,7 @@ import { environment } from '../../environments/environment';
 export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('chatMessagesView') chatMessagesView?: ElementRef;
   
-  activeTab: 'products' | 'news' | 'categories' | 'settings' | 'chats' = 'products';
+  activeTab: 'categories' | 'settings' | 'chats' = 'categories';
   products: any[] = [];
   news: any[] = [];
   categories: any[] = [];
@@ -64,6 +65,7 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     private categoriesService: CategoriesService,
     private newsService: NewsService,
     private apiService: ApiService,
+    private editDrawerService: EditDrawerService,
     private router: Router
   ) {}
 
@@ -156,12 +158,8 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   loadData() {
-    this.productsService.getProducts().subscribe(products => {
-      this.products = products;
-    });
-    this.newsService.getNews().subscribe(news => {
-      this.news = news;
-    });
+    // Товары и новости больше не загружаются в админ-панели
+    // Они управляются через карточки на страницах каталога и новостей
     this.categoriesService.getCategories().subscribe(categories => {
       this.categories = categories;
     });
@@ -222,7 +220,7 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  setTab(tab: 'products' | 'news' | 'categories' | 'settings' | 'chats') {
+  setTab(tab: 'categories' | 'settings' | 'chats') {
     this.activeTab = tab;
     this.resetForms();
     if (tab === 'chats') {
@@ -724,6 +722,10 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (product.categoryId) {
       this.loadCategorySpecifications(product.categoryId);
     }
+  }
+
+  addNew(type: 'product' | 'news' | 'category') {
+    this.editDrawerService.open(null, type);
   }
 
   deleteProduct(id: number) {

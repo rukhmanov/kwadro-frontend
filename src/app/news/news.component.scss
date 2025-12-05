@@ -2,6 +2,48 @@
 .news-page {
   padding: 1.5rem 0;
 
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      color: #ffffff;
+    }
+
+    .btn-add-news {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      white-space: nowrap;
+
+      &:active {
+        background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+        transform: scale(0.98);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
   h1 {
     margin-bottom: 1.5rem;
     font-size: 1.75rem;
@@ -29,6 +71,60 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     }
 
+    .news-image-wrapper {
+      position: relative;
+      width: 100%;
+
+      img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .admin-actions {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 2;
+      }
+
+      .edit-icon,
+      .delete-icon {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: white;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+
+        &:active {
+          background: rgba(0, 0, 0, 0.8);
+          transform: scale(0.95);
+        }
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .delete-icon {
+        &:active {
+          background: rgba(255, 107, 107, 0.8);
+        }
+      }
+    }
+
     img {
       width: 100%;
       height: 200px;
@@ -38,6 +134,53 @@
 
     .news-content {
       padding: 1.5rem;
+      position: relative;
+
+      &.no-image {
+        padding-top: 3rem;
+      }
+
+      .admin-actions-content {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 2;
+      }
+
+      .edit-icon-content,
+      .delete-icon-content {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: white;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+
+        &:active {
+          background: rgba(0, 0, 0, 0.8);
+          transform: scale(0.95);
+        }
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .delete-icon-content {
+        &:active {
+          background: rgba(255, 107, 107, 0.8);
+        }
+      }
 
       h2 {
         margin-bottom: 0.5rem;

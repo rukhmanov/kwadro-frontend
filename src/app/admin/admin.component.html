@@ -3,8 +3,6 @@
     <h1>Админ-панель</h1>
 
     <div class="tabs">
-      <button (click)="setTab('products')" [class.active]="activeTab === 'products'">Товары</button>
-      <button (click)="setTab('news')" [class.active]="activeTab === 'news'">Новости</button>
       <button (click)="setTab('categories')" [class.active]="activeTab === 'categories'">Категории</button>
       <button (click)="setTab('settings')" [class.active]="activeTab === 'settings'">Настройки</button>
       <button (click)="setTab('chats')" [class.active]="activeTab === 'chats'">
@@ -15,176 +13,13 @@
       </button>
     </div>
 
-    <!-- Products Tab -->
-    <div *ngIf="activeTab === 'products'" class="tab-content">
-      <h2>{{ editingProduct ? 'Редактировать товар' : 'Добавить товар' }}</h2>
-      <form (ngSubmit)="saveProduct()" enctype="multipart/form-data">
-        <input [(ngModel)]="productForm.name" name="name" placeholder="Название" required>
-        <textarea [(ngModel)]="productForm.description" name="description" placeholder="Описание"></textarea>
-        <input type="number" [(ngModel)]="productForm.price" name="price" placeholder="Цена" required>
-        <input type="number" [(ngModel)]="productForm.oldPrice" name="oldPrice" placeholder="Старая цена">
-
-        <div class="image-upload-section">
-          <label>Изображения товара (первое изображение будет главным):</label>
-          <input type="file" #imagesInput multiple (change)="onImagesSelected($event)" accept="image/*">
-
-          <!-- Объединенный список всех изображений (текущие + новые) с drag and drop -->
-          <div *ngIf="getAllImages().length > 0" class="images-list" cdkDropList
-            (cdkDropListDropped)="onImagesDrop($event)">
-            <div *ngFor="let img of getAllImages(); let i = index; trackBy: trackByImage" class="image-item" cdkDrag
-              [cdkDragData]="i">
-              <div class="drag-handle" cdkDragHandle>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="9" cy="12" r="1" />
-                  <circle cx="9" cy="5" r="1" />
-                  <circle cx="9" cy="19" r="1" />
-                  <circle cx="15" cy="12" r="1" />
-                  <circle cx="15" cy="5" r="1" />
-                  <circle cx="15" cy="19" r="1" />
-                </svg>
-              </div>
-              <img [src]="img.url" [attr.data-original-src]="img.url" [alt]="'Изображение ' + (i + 1)"
-                (error)="onImageError($event)">
-              <div class="image-badge" *ngIf="i === 0">Главное</div>
-              <button type="button" (click)="removeImage(i)" class="remove-image-btn">Удалить</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="video-upload-section">
-          <label>Видео:</label>
-          <input type="file" #videoInput (change)="onVideoSelected($event)" accept="video/*">
-          <div *ngIf="productForm.videoPreview" class="video-preview">
-            <label>Новое видео:</label>
-            <video [src]="productForm.videoPreview" controls style="max-width: 300px; max-height: 200px;"></video>
-            <button type="button" (click)="clearVideo()">Удалить</button>
-          </div>
-          <div *ngIf="editingProduct && productForm.video && !productForm.removedVideo" class="current-video">
-            <label>Текущее видео:</label>
-            <div class="current-video-wrapper">
-              <video [src]="productForm.video" controls style="max-width: 300px; max-height: 200px;"></video>
-              <button type="button" (click)="removeCurrentVideo()" class="remove-video-btn">Удалить</button>
-            </div>
-          </div>
-        </div>
-
-        <input type="number" [(ngModel)]="productForm.stock" name="stock" placeholder="Количество" value="0">
-        <select [(ngModel)]="productForm.categoryId" name="categoryId" required (change)="onCategoryChange()">
-          <option value="">Выберите категорию</option>
-          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-        </select>
-
-        <div class="specifications-section">
-          <label>Характеристики товара:</label>
-          <div *ngFor="let spec of productForm.specifications; let i = index" class="specification-item">
-            <div class="spec-input-group">
-              <input type="text" [(ngModel)]="spec.name" [name]="'specName' + i" placeholder="Название характеристики"
-                [attr.list]="'specSuggestions' + i" (input)="onSpecNameChange(i)">
-              <datalist [attr.id]="'specSuggestions' + i">
-                <option *ngFor="let catSpec of categorySpecifications" [value]="catSpec">
-              </datalist>
-              <input type="text" [(ngModel)]="spec.value" [name]="'specValue' + i" placeholder="Значение">
-              <button type="button" (click)="removeSpecification(i)" class="remove-spec-btn">×</button>
-            </div>
-          </div>
-          <button type="button" (click)="addSpecification()" class="add-spec-btn">+ Добавить характеристику</button>
-        </div>
-        <button type="submit" class="btn-primary">Сохранить</button>
-        <button type="button" (click)="resetForms()" *ngIf="editingProduct">Отмена</button>
-      </form>
-
-      <h2>Список товаров</h2>
-      <div class="list">
-        <div *ngFor="let product of products" class="list-item product-item">
-          <div class="product-info">
-            <img
-              [src]="(product.images && product.images.length > 0 ? product.images[0] : null) || getPlaceholderImage()"
-              [alt]="product.name" class="product-image" (error)="onImageError($event)">
-            <div class="product-details">
-              <h3>{{ product.name }}</h3>
-              <div class="product-meta">
-                <span class="price">{{ product.price | number }} ₽</span>
-                <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
-                <span class="stock" [class.in-stock]="product.stock > 0" [class.out-of-stock]="product.stock === 0">
-                  {{ product.stock > 0 ? 'В наличии (' + product.stock + ')' : 'Нет в наличии' }}
-                </span>
-                <span *ngIf="getCategoryName(product.categoryId)" class="category">
-                  {{ getCategoryName(product.categoryId) }}
-                </span>
-              </div>
-              <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}{{
-                product.description.length > 100 ? '...' : '' }}</p>
-            </div>
-          </div>
-          <div class="product-actions">
-            <button (click)="editProduct(product)">Редактировать</button>
-            <button (click)="deleteProduct(product.id)" class="delete">Удалить</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- News Tab -->
-    <div *ngIf="activeTab === 'news'" class="tab-content">
-      <h2>{{ editingNews ? 'Редактировать новость' : 'Добавить новость' }}</h2>
-      <form (ngSubmit)="saveNews()" enctype="multipart/form-data">
-        <input [(ngModel)]="newsForm.title" name="title" placeholder="Заголовок" required>
-        <textarea [(ngModel)]="newsForm.content" name="content" placeholder="Содержание" rows="10" required></textarea>
-
-        <div class="image-upload-section">
-          <label>Изображение:</label>
-          <input type="file" #newsImageInput (change)="onNewsImageSelected($event)" accept="image/*">
-          <div *ngIf="newsForm.imagePreview" class="image-preview">
-            <img [src]="newsForm.imagePreview" alt="Предпросмотр">
-            <button type="button" (click)="clearNewsImage()">Удалить</button>
-          </div>
-          <div *ngIf="editingNews && newsForm.image && !newsForm.imagePreview" class="current-image">
-            <label>Текущее изображение:</label>
-            <img [src]="newsForm.image" alt="Текущее изображение">
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary">Сохранить</button>
-        <button type="button" (click)="resetForms()" *ngIf="editingNews">Отмена</button>
-      </form>
-
-      <h2>Список новостей</h2>
-      <div class="list">
-        <div *ngFor="let item of news" class="list-item">
-          <span>{{ item.title }}</span>
-          <div>
-            <button (click)="editNews(item)">Редактировать</button>
-            <button (click)="deleteNews(item.id)" class="delete">Удалить</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Categories Tab -->
     <div *ngIf="activeTab === 'categories'" class="tab-content">
-      <h2>{{ editingCategory ? 'Редактировать категорию' : 'Добавить категорию' }}</h2>
-      <form (ngSubmit)="saveCategory()" enctype="multipart/form-data">
-        <input [(ngModel)]="categoryForm.name" name="name" placeholder="Название" required>
-        <textarea [(ngModel)]="categoryForm.description" name="description" placeholder="Описание"></textarea>
-
-        <div class="image-upload-section">
-          <label>Изображение:</label>
-          <input type="file" #categoryImageInput (change)="onCategoryImageSelected($event)" accept="image/*">
-          <div *ngIf="categoryForm.imagePreview" class="image-preview">
-            <img [src]="categoryForm.imagePreview" alt="Предпросмотр">
-            <button type="button" (click)="clearCategoryImage()">Удалить</button>
-          </div>
-          <div *ngIf="editingCategory && categoryForm.image && !categoryForm.imagePreview" class="current-image">
-            <label>Текущее изображение:</label>
-            <img [src]="categoryForm.image" alt="Текущее изображение">
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary">Сохранить</button>
-        <button type="button" (click)="resetForms()" *ngIf="editingCategory">Отмена</button>
-      </form>
-
-      <h2>Список категорий</h2>
+      <div class="tab-header">
+        <h2>Список категорий</h2>
+        <button (click)="addNew('category')" class="btn-add">+ Добавить категорию</button>
+      </div>
+      <!-- Формы редактирования перенесены в дровер -->
       <p class="drag-hint">💡 Перетащите категории для изменения порядка</p>
       <div class="list" cdkDropList (cdkDropListDropped)="onCategoryDrop($event)">
         <div *ngFor="let category of categories; let i = index" class="list-item draggable-item" cdkDrag
@@ -202,7 +37,6 @@
           <div class="category-content">
             <span>{{ category.name }}</span>
             <div class="category-actions">
-              <button (click)="editCategory(category)">Редактировать</button>
               <button (click)="deleteCategory(category.id)" class="delete">Удалить</button>
             </div>
           </div>

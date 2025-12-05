@@ -3,18 +3,21 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
 import { CartService } from './services/cart.service';
 import { ChatService } from './services/chat.service';
 import { SettingsService } from './services/settings.service';
+import { EditDrawerService } from './services/edit-drawer.service';
 import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
+import { EditDrawerComponent } from './edit-drawer/edit-drawer.component';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule, RouterModule, TermsAcceptanceComponent],
+  imports: [RouterOutlet, CommonModule, FormsModule, RouterModule, TermsAcceptanceComponent, EditDrawerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -30,6 +33,9 @@ export class AppComponent implements OnInit, OnDestroy {
   chatSessionId: string = '';
   chatNumber: number | null = null;
   @ViewChild('chatMessagesContainer', { static: false }) chatMessagesRef?: ElementRef;
+  editDrawerOpen = false;
+  editEntity: any = null;
+  editEntityType: 'product' | 'news' | 'category' = 'product';
   private socket?: Socket;
 
   constructor(
@@ -37,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private chatService: ChatService,
     private settingsService: SettingsService,
+    private editDrawerService: EditDrawerService,
     private router: Router
   ) {}
 
@@ -52,6 +59,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.initChat();
     this.initChatSession();
     this.loadBackgroundImage();
+
+    // Подписка на открытие дровера
+    this.editDrawerService.openDrawer$.subscribe(({ entity, type }) => {
+      this.openEditDrawer(entity, type);
+    });
+
+    // Подписка на изменения роута для обновления данных
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      // Компоненты сами перезагрузят данные при навигации
+    });
   }
 
   loadBackgroundImage() {
@@ -172,6 +191,26 @@ export class AppComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);
+  }
+
+  openEditDrawer(entity: any | null, type: 'product' | 'news' | 'category') {
+    this.editEntity = entity;
+    this.editEntityType = type;
+    this.editDrawerOpen = true;
+  }
+
+  closeEditDrawer() {
+    this.editDrawerOpen = false;
+    this.editEntity = null;
+  }
+
+  onEntitySaved(entity: any) {
+    this.closeEditDrawer();
+    // Перезагружаем текущую страницу для обновления данных
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
   }
 
   ngOnDestroy() {

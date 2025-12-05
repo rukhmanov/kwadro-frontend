@@ -1,7 +1,78 @@
 <div class="products-page">
   <div class="container">
-    <h1>Каталог товаров</h1>
+    <div class="page-header">
+      <h1>Каталог товаров</h1>
+      <button *ngIf="isAdmin" (click)="addNewProduct()" class="btn-add-product">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Добавить товар
+      </button>
+    </div>
 
+    <!-- Поиск -->
+    <div class="search-section">
+      <div class="search-box">
+        <input type="text" [(ngModel)]="searchQuery" (input)="onSearchChange($any($event.target).value)"
+          placeholder="Поиск товаров..." class="search-input">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Сортировка и фильтры -->
+    <div class="controls-section">
+      <div class="controls-row">
+        <div class="sort-controls">
+          <select id="sortBy" [(ngModel)]="sortBy" (change)="onSortChange()" class="select-input compact-select">
+            <option value="createdAt">По дате</option>
+            <option value="name">По названию</option>
+            <option value="price">По цене</option>
+            <option value="stock">По наличию</option>
+          </select>
+          <select [(ngModel)]="sortOrder" (change)="onSortChange()" class="select-input compact-select">
+            <option value="DESC">↓</option>
+            <option value="ASC">↑</option>
+          </select>
+        </div>
+        <button (click)="showFilters = !showFilters" class="filter-toggle-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          Фильтры
+        </button>
+      </div>
+
+      <!-- Панель фильтров -->
+      <div class="filters-panel" [class.active]="showFilters">
+        <div class="filter-group">
+          <label>Цена:</label>
+          <div class="price-inputs">
+            <input type="number" [(ngModel)]="minPrice" placeholder="От" class="price-input">
+            <span>-</span>
+            <input type="number" [(ngModel)]="maxPrice" placeholder="До" class="price-input">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label>Наличие:</label>
+          <select [(ngModel)]="inStock" class="select-input">
+            <option [ngValue]="null">Все</option>
+            <option [ngValue]="true">В наличии</option>
+            <option [ngValue]="false">Нет в наличии</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button (click)="applyFilters()" class="apply-filters-btn">Применить</button>
+          <button (click)="clearFilters()" class="clear-filters-btn">Сбросить фильтры</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Категории -->
     <div class="tabs">
       <button (click)="filterByCategory(null)" [class.active]="selectedCategory === null" class="tab-btn">
         Все товары
@@ -12,7 +83,12 @@
       </button>
     </div>
 
-    <div *ngIf="loading" class="loading-message">
+    <!-- Информация о результатах -->
+    <div *ngIf="!loading && !error" class="results-info">
+      <p>Найдено товаров: {{ total }}</p>
+    </div>
+
+    <div *ngIf="loading && currentPage === 1" class="loading-message">
       <p>Загрузка товаров...</p>
     </div>
 
@@ -32,6 +108,21 @@
             [alt]="product.name">
           <div *ngIf="product.oldPrice" class="discount-badge">
             -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
+          </div>
+          <div *ngIf="isAdmin" class="admin-actions">
+            <button (click)="openEditDrawer(product, $event)" class="edit-icon" aria-label="Редактировать">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button (click)="deleteProduct(product.id, $event)" class="delete-icon" aria-label="Удалить">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
           </div>
         </div>
         <div class="product-content">
@@ -67,6 +158,16 @@
           </div>
         </div>
       </a>
+    </div>
+
+    <!-- Индикатор загрузки дополнительных товаров -->
+    <div *ngIf="loadingMore" class="loading-more">
+      <p>Загрузка товаров...</p>
+    </div>
+
+    <!-- Индикатор конца списка -->
+    <div *ngIf="!loadingMore && !hasMore && products.length > 0" class="end-message">
+      <p>Все товары загружены</p>
     </div>
   </div>
 </div>

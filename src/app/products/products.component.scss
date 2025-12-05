@@ -2,9 +2,349 @@
 .products-page {
   padding: 1.5rem 0;
 
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h1 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+
+    .btn-add-product {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1rem;
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      white-space: nowrap;
+
+      &:active {
+        background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+        transform: scale(0.98);
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
   h1 {
     margin-bottom: 1.5rem;
     font-size: 1.75rem;
+  }
+
+  // Поиск
+  .search-section {
+    margin-bottom: 1.5rem;
+
+    .search-box {
+      position: relative;
+      width: 100%;
+
+      .search-input {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: rgba(255, 255, 255, 0.4);
+          background: rgba(255, 255, 255, 0.15);
+        }
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.6);
+        pointer-events: none;
+      }
+    }
+  }
+
+  // Управление и фильтры
+  .controls-section {
+    margin-bottom: 1.5rem;
+
+    .controls-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+
+      .sort-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+        flex: 0 0 auto;
+
+        .compact-select {
+          padding: 0.5rem 0.75rem;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 6px;
+          color: #ffffff;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          width: auto;
+          min-width: 120px;
+          max-width: 180px;
+
+          &:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+          }
+
+          option {
+            background: #1a1a1a;
+            color: #ffffff;
+          }
+
+          // Второй селект (направление) делаем еще компактнее
+          &:nth-child(2) {
+            padding: 0.5rem 0.5rem;
+            min-width: 50px;
+            max-width: 60px;
+            text-align: center;
+            font-size: 1rem;
+          }
+        }
+
+        .select-input {
+          padding: 0.625rem 0.875rem;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+          }
+
+          option {
+            background: #1a1a1a;
+            color: #ffffff;
+          }
+        }
+      }
+
+      .filter-toggle-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+
+        &:active {
+          background: rgba(255, 255, 255, 0.2);
+          transform: scale(0.98);
+        }
+
+        svg {
+          flex-shrink: 0;
+        }
+      }
+    }
+
+    .filters-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 0 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      &.active {
+        max-height: 500px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .filter-group {
+        margin-bottom: 1.25rem;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        label {
+          display: block;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .price-inputs {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          .price-input {
+            flex: 1;
+            padding: 0.625rem 0.875rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+
+            &::placeholder {
+              color: rgba(255, 255, 255, 0.5);
+            }
+
+            &:focus {
+              outline: none;
+              border-color: rgba(255, 255, 255, 0.4);
+              background: rgba(255, 255, 255, 0.15);
+            }
+          }
+
+          span {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+          }
+        }
+
+        .select-input {
+          width: 100%;
+          padding: 0.625rem 0.875rem;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+          }
+
+          option {
+            background: #1a1a1a;
+            color: #ffffff;
+          }
+        }
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .apply-filters-btn {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        background: rgba(76, 175, 80, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        border-radius: 8px;
+        color: #4caf50;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:active {
+          background: rgba(76, 175, 80, 0.3);
+          transform: scale(0.98);
+        }
+      }
+
+      .clear-filters-btn {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 107, 107, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+        border-radius: 8px;
+        color: #ff6b6b;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:active {
+          background: rgba(255, 107, 107, 0.3);
+          transform: scale(0.98);
+        }
+      }
+    }
+  }
+
+  // Информация о результатах
+  .results-info {
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  // Индикатор загрузки дополнительных товаров
+  .loading-more,
+  .end-message {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
   }
 
   .tabs {
@@ -142,6 +482,48 @@
         font-weight: 700;
         box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
         z-index: 1;
+      }
+
+      .admin-actions {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 2;
+      }
+
+      .edit-icon,
+      .delete-icon {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        color: white;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+
+        &:active {
+          background: rgba(0, 0, 0, 0.8);
+          transform: scale(0.95);
+        }
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .delete-icon {
+        &:active {
+          background: rgba(255, 107, 107, 0.8);
+        }
       }
     }
 
