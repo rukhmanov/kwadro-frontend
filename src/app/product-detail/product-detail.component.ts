@@ -35,11 +35,12 @@ export class ProductDetailComponent implements OnInit {
       this.productsService.getProduct(+id).subscribe(product => {
         this.product = product;
         // Инициализируем отображение главного изображения или видео
-        if (product.video && !product.image) {
+        const hasImages = product.images && product.images.length > 0;
+        if (product.video && !hasImages) {
           this.selectedMediaType = 'video';
         } else {
           this.selectedMediaType = 'image';
-          this.selectedImage = null; // null означает главное изображение
+          this.selectedImage = null; // null означает главное изображение (первое в массиве)
         }
       });
     }

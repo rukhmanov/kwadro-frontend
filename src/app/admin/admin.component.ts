@@ -31,14 +31,10 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   adminMessage = '';
   
   productForm: any = {
-    mainImageFile: null,
-    additionalImagesFiles: [],
-    mainImagePreview: null,
-    additionalImagesPreview: [],
+    images: [], // Массив объектов {url: string, file: File | null, isNew: boolean, isRemoved: boolean}
     videoFile: null,
     videoPreview: null,
-    removedMainImage: false,
-    removedAdditionalImages: [],
+    removedVideo: false,
     specifications: []
   };
   categorySpecifications: string[] = [];
@@ -60,6 +56,7 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   
   private socket?: Socket;
   private shouldScrollToBottom = false;
+  private _cachedImages: any[] = [];
 
   constructor(
     private authService: AuthService,
@@ -190,7 +187,22 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     if (img && !img.src.includes('data:image')) {
-      img.src = this.getPlaceholderImage();
+      // Находим соответствующий объект изображения в массиве
+      const originalSrc = img.getAttribute('data-original-src') || img.src;
+      const imageObj = this.productForm.images?.find((i: any) => i.url === originalSrc);
+      
+      if (imageObj) {
+        // Помечаем изображение как удаленное, если оно битое
+        imageObj.isRemoved = true;
+        // Скрываем элемент
+        const imageItem = img.closest('.image-item');
+        if (imageItem) {
+          (imageItem as HTMLElement).style.display = 'none';
+        }
+      } else {
+        // Если не нашли в массиве, просто заменяем на placeholder для отображения
+        img.src = this.getPlaceholderImage();
+      }
     }
   }
 
@@ -271,14 +283,10 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   resetForms() {
     this.productForm = {
-      mainImageFile: null,
-      additionalImagesFiles: [],
-      mainImagePreview: null,
-      additionalImagesPreview: [],
+      images: [],
       videoFile: null,
       videoPreview: null,
-      removedMainImage: false,
-      removedAdditionalImages: [],
+      removedVideo: false,
       specifications: []
     };
     this.categorySpecifications = [];
@@ -296,64 +304,113 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   // Image handlers for products
-  onMainImageSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.productForm.mainImageFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.productForm.mainImagePreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  clearMainImage() {
-    this.productForm.mainImageFile = null;
-    this.productForm.mainImagePreview = null;
-  }
-
-  removeCurrentMainImage() {
-    if (confirm('Удалить главное изображение?')) {
-      this.productForm.image = null;
-      this.productForm.removedMainImage = true;
-    }
-  }
-
-  removeCurrentAdditionalImage(index: number) {
-    if (confirm('Удалить это изображение?')) {
-      const imageToRemove = this.productForm.images[index];
-      this.productForm.images.splice(index, 1);
-      if (!this.productForm.removedAdditionalImages) {
-        this.productForm.removedAdditionalImages = [];
-      }
-      // Сохраняем ключ изображения для удаления с сервера
-      if (imageToRemove) {
-        this.productForm.removedAdditionalImages.push(imageToRemove);
-      }
-    }
-  }
-
-  onAdditionalImagesSelected(event: any) {
+  onImagesSelected(event: any) {
     const files = Array.from(event.target.files) as File[];
     if (files.length > 0) {
-      this.productForm.additionalImagesFiles = [...(this.productForm.additionalImagesFiles || []), ...files];
+      // Инициализируем массив, если его нет
+      if (!this.productForm.images) {
+        this.productForm.images = [];
+      }
+      
       files.forEach((file) => {
+        // Проверяем, что это изображение
+        if (!file.type.startsWith('image/')) {
+          console.warn('Выбранный файл не является изображением:', file.name);
+          return;
+        }
+        
         const reader = new FileReader();
         reader.onload = (e: any) => {
-          if (!this.productForm.additionalImagesPreview) {
-            this.productForm.additionalImagesPreview = [];
+          const result = e.target.result;
+          if (result) {
+            // Создаем объект изображения с сохранением ссылки на файл
+            const imageObj: any = {
+              url: result,
+              file: file, // Сохраняем ссылку на файл - важно для загрузки
+              isNew: true,
+              isRemoved: false
+            };
+            this.productForm.images.push(imageObj);
+            // Обновляем кэш после добавления нового изображения
+            this.getAllImages();
           }
-          this.productForm.additionalImagesPreview.push(e.target.result);
+        };
+        reader.onerror = (error) => {
+          console.error('Ошибка при чтении файла:', error);
         };
         reader.readAsDataURL(file);
       });
     }
+    // Очищаем input для возможности повторной загрузки тех же файлов
+    event.target.value = '';
   }
 
-  removeAdditionalImage(index: number) {
-    this.productForm.additionalImagesFiles.splice(index, 1);
-    this.productForm.additionalImagesPreview.splice(index, 1);
+  getAllImages(): any[] {
+    if (!this.productForm.images) {
+      this._cachedImages = [];
+      return [];
+    }
+    const placeholderImage = this.getPlaceholderImage();
+    const filtered = this.productForm.images.filter((img: any) => {
+      // Исключаем удаленные изображения
+      if (img.isRemoved) return false;
+      // Исключаем пустые URL
+      if (!img.url || img.url.trim() === '') return false;
+      // Исключаем только placeholder SVG изображения, но НЕ исключаем data:image/jpeg, data:image/png (это preview новых файлов)
+      if (img.url === placeholderImage || img.url.includes('data:image/svg+xml')) {
+        return false;
+      }
+      // Разрешаем data:image/jpeg, data:image/png и т.д. (это preview новых загруженных файлов)
+      return true;
+    });
+    // Кэшируем результат для стабильности drag and drop (это ссылки на объекты из productForm.images)
+    this._cachedImages = filtered;
+    return filtered;
+  }
+
+  removeImage(index: number) {
+    if (confirm('Удалить это изображение?')) {
+      // Получаем видимые изображения
+      const visibleImages = this.getAllImages();
+      const imageToRemove = visibleImages[index];
+      
+      if (imageToRemove.isNew) {
+        // Если это новое изображение, удаляем из массива
+        const realIndex = this.productForm.images.indexOf(imageToRemove);
+        if (realIndex !== -1) {
+          this.productForm.images.splice(realIndex, 1);
+        }
+      } else {
+        // Если это существующее изображение, помечаем как удаленное
+        imageToRemove.isRemoved = true;
+      }
+      // Обновляем кэш после удаления
+      this.getAllImages();
+    }
+  }
+
+  onImagesDrop(event: CdkDragDrop<any[]>) {
+    if (!this.productForm.images || event.previousIndex === event.currentIndex) return;
+    
+    // Получаем видимые изображения (это ссылки на объекты из productForm.images)
+    const visibleImages = this.getAllImages();
+    
+    // Перемещаем элемент в видимом списке (перемещаем ссылки на объекты)
+    moveItemInArray(visibleImages, event.previousIndex, event.currentIndex);
+    
+    // Обновляем исходный массив: заменяем видимые изображения на новые в правильном порядке
+    // Сохраняем удаленные изображения в конце
+    const removedImages = this.productForm.images.filter((img: any) => img.isRemoved);
+    // Важно: сохраняем все свойства объектов (включая file и isNew) - это ссылки, так что свойства сохраняются
+    this.productForm.images = [...visibleImages, ...removedImages];
+    
+    // Обновляем кэш
+    this._cachedImages = visibleImages;
+  }
+
+  // TrackBy функция для оптимизации рендеринга
+  trackByImage(index: number, item: any): any {
+    return item.url || index;
   }
 
   // Image handlers for news
@@ -410,60 +467,129 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.productForm.videoPreview = null;
   }
 
+  removeCurrentVideo() {
+    if (confirm('Удалить видео?')) {
+      this.productForm.video = null;
+      this.productForm.removedVideo = true;
+    }
+  }
+
+  // Функция для извлечения ключа из URL (убирает query string и нормализует)
+  private extractKeyFromUrl(url: string): string | null {
+    if (!url) return null;
+    // Если это уже ключ (не начинается с http), возвращаем как есть
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return url;
+    }
+    
+    try {
+      // Декодируем URL и убираем query string
+      const decodedUrl = decodeURIComponent(url);
+      const urlWithoutQuery = decodedUrl.split('?')[0].split('%3F')[0]; // Убираем ? и %3F (закодированный ?)
+      
+      // Извлекаем ключ из URL
+      // Формат: https://s3.twcstorage.ru/1f48199c-parsifal-files/1f48199c-parsifal-files/products/file.ext
+      // Нужно получить: products/file.ext
+      const parts = urlWithoutQuery.split('/');
+      
+      // Ищем индекс части с bucket name (parsifal-files или twcstorage)
+      const bucketIndex = parts.findIndex((part: string) => 
+        part.includes('parsifal-files') || part.includes('twcstorage')
+      );
+      
+      if (bucketIndex >= 0) {
+        // Если нашли bucket, берем все после него
+        // Но нужно пропустить дублирующуюся часть bucket name
+        let startIndex = bucketIndex + 1;
+        // Если следующая часть тоже содержит bucket name, пропускаем её
+        if (parts[startIndex] && (parts[startIndex].includes('parsifal-files') || parts[startIndex].includes('twcstorage'))) {
+          startIndex++;
+        }
+        if (startIndex < parts.length) {
+          return parts.slice(startIndex).join('/');
+        }
+      }
+      
+      // Fallback: берем последние 2 части (обычно это folder/file.ext)
+      if (parts.length >= 2) {
+        return parts.slice(-2).join('/');
+      }
+      
+      return null;
+    } catch (e) {
+      // Если декодирование не удалось, пробуем без декодирования
+      const urlWithoutQuery = url.split('?')[0].split('%3F')[0];
+      const parts = urlWithoutQuery.split('/');
+      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
+      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
+        let startIndex = bucketIndex + 1;
+        if (parts[startIndex] && (parts[startIndex].includes('parsifal-files') || parts[startIndex].includes('twcstorage'))) {
+          startIndex++;
+        }
+        if (startIndex < parts.length) {
+          return parts.slice(startIndex).join('/');
+        }
+      }
+      if (parts.length >= 2) {
+        return parts.slice(-2).join('/');
+      }
+      return null;
+    }
+  }
+
+  // Функция для нормализации URL (для сравнения)
+  private normalizeUrl(url: string): string {
+    if (!url) return '';
+    try {
+      const decodedUrl = decodeURIComponent(url);
+      return decodedUrl.split('?')[0].split('%3F')[0];
+    } catch (e) {
+      return url.split('?')[0].split('%3F')[0];
+    }
+  }
+
   // Products
   saveProduct() {
     const formData = new FormData();
     
-    // Извлекаем ключи из URL, если они есть (при редактировании)
-    let imageKey = this.productForm.image;
-    let imagesKeys = this.productForm.images;
-    let videoKey = this.productForm.video;
+    // Получаем все изображения (не удаленные) в правильном порядке после drag and drop
+    const allImages = this.getAllImages();
     
-    // Если главное изображение удалено, устанавливаем null
-    if (this.productForm.removedMainImage) {
-      imageKey = null;
-    } else if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
-      // Извлекаем ключ из URL: https://s3.twcstorage.ru/bucket/folder/file.ext -> folder/file.ext
-      const parts = imageKey.split('/');
-      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
-      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
-        imageKey = parts.slice(bucketIndex + 1).join('/');
-      } else {
-        imageKey = parts.slice(-2).join('/');
+    // Разделяем на существующие (с ключами) и новые (с файлами)
+    // Важно: сохраняем порядок, установленный пользователем через drag and drop
+    const existingImages: string[] = [];
+    const newImageFiles: File[] = [];
+    
+    allImages.forEach((img: any) => {
+      if (!img || img.isRemoved) {
+        // Пропускаем удаленные изображения
+        return;
       }
-    }
-    
-    if (imagesKeys && Array.isArray(imagesKeys)) {
-      // Фильтруем удаленные изображения
-      imagesKeys = imagesKeys.filter((img: string) => {
-        if (!img) return false;
-        // Проверяем, не удалено ли это изображение
-        if (this.productForm.removedAdditionalImages && this.productForm.removedAdditionalImages.includes(img)) {
-          return false;
+      
+      // Проверяем, является ли изображение новым
+      // Новое изображение имеет флаг isNew=true И файл
+      // ИЛИ имеет data URI (preview нового файла) И файл
+      const hasDataUri = img.url && img.url.startsWith('data:image/') && !img.url.includes('data:image/svg+xml');
+      const isNewImage = (img.isNew === true) || (hasDataUri && img.file);
+      
+      if (isNewImage && img.file && img.file instanceof File) {
+        // Новое изображение - добавляем файл (будет загружено и добавлено в конец)
+        newImageFiles.push(img.file);
+      } else if (img.url && !isNewImage) {
+        // Существующее изображение - извлекаем ключ из URL
+        const key = this.extractKeyFromUrl(img.url);
+        if (key) {
+          existingImages.push(key); // Сохраняем в правильном порядке
         }
-        return true;
-      }).map((img: string) => {
-        if (img && (img.startsWith('http://') || img.startsWith('https://'))) {
-          const parts = img.split('/');
-          const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
-          if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
-            return parts.slice(bucketIndex + 1).join('/');
-          } else {
-            return parts.slice(-2).join('/');
-          }
-        }
-        return img;
-      });
-    }
+      }
+    });
 
-    if (videoKey && (videoKey.startsWith('http://') || videoKey.startsWith('https://'))) {
-      const parts = videoKey.split('/');
-      const bucketIndex = parts.findIndex((part: string) => part.includes('parsifal-files') || part.includes('twcstorage'));
-      if (bucketIndex >= 0 && bucketIndex < parts.length - 1) {
-        videoKey = parts.slice(bucketIndex + 1).join('/');
-      } else {
-        videoKey = parts.slice(-2).join('/');
-      }
+    // Извлекаем ключ видео
+    let videoKey = this.productForm.video;
+    if (this.productForm.removedVideo) {
+      videoKey = null;
+    } else if (videoKey) {
+      videoKey = this.extractKeyFromUrl(videoKey);
     }
     
     // Фильтруем характеристики - убираем пустые
@@ -472,6 +598,8 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
 
     // Добавляем текстовые поля
+    // Важно: существующие изображения уже в правильном порядке (после drag and drop)
+    // Новые изображения будут добавлены в конец после существующих
     formData.append('product', JSON.stringify({
       name: this.productForm.name,
       description: this.productForm.description,
@@ -479,21 +607,20 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       oldPrice: this.productForm.oldPrice,
       stock: this.productForm.stock,
       categoryId: this.productForm.categoryId,
-      image: imageKey, // Ключ изображения (или null, если новое загружается)
-      images: imagesKeys, // Ключи дополнительных изображений
-      video: videoKey, // Ключ видео (или null, если новое загружается)
+      images: existingImages, // Ключи существующих изображений (в правильном порядке)
+      video: videoKey,
       specifications: validSpecifications
     }));
 
-    // Добавляем главное изображение, если выбрано
-    if (this.productForm.mainImageFile) {
-      formData.append('images', this.productForm.mainImageFile);
-    }
-
-    // Добавляем дополнительные изображения
-    if (this.productForm.additionalImagesFiles && this.productForm.additionalImagesFiles.length > 0) {
-      this.productForm.additionalImagesFiles.forEach((file: File) => {
-        formData.append('images', file);
+    // Добавляем новые изображения как файлы (они будут добавлены в конец массива)
+    if (newImageFiles.length > 0) {
+      newImageFiles.forEach((file: File) => {
+        // Проверяем, что это действительно File объект
+        if (file instanceof File) {
+          formData.append('images', file, file.name);
+        } else {
+          console.error('Ошибка: объект не является File:', file);
+        }
       });
     }
 
@@ -546,16 +673,52 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   editProduct(product: any) {
     this.editingProduct = product;
+    
+    // Объединяем главное изображение (image) и дополнительные (images) в один массив
+    const allImages: any[] = [];
+    const addedUrls = new Set<string>(); // Для отслеживания уже добавленных URL
+    const placeholderImage = this.getPlaceholderImage();
+    
+    // Функция для проверки валидности изображения
+    const isValidImage = (imgUrl: string): boolean => {
+      if (!imgUrl || imgUrl.trim() === '') return false;
+      // Исключаем placeholder изображения
+      if (imgUrl === placeholderImage || imgUrl.includes('data:image/svg+xml')) return false;
+      return true;
+    };
+    
+    // Если есть массив images, используем его
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+      product.images.forEach((img: string) => {
+        if (isValidImage(img) && !addedUrls.has(img)) {
+          allImages.push({
+            url: img,
+            file: null,
+            isNew: false,
+            isRemoved: false
+          });
+          addedUrls.add(img);
+        }
+      });
+    } else if (product.image && isValidImage(product.image)) {
+      // Если массива images нет, но есть старое поле image, используем его (только если валидное)
+      if (!addedUrls.has(product.image)) {
+        allImages.push({
+          url: product.image,
+          file: null,
+          isNew: false,
+          isRemoved: false
+        });
+        addedUrls.add(product.image);
+      }
+    }
+    
     this.productForm = { 
       ...product,
-      mainImageFile: null,
-      additionalImagesFiles: [],
-      mainImagePreview: null,
-      additionalImagesPreview: [],
+      images: allImages,
       videoFile: null,
       videoPreview: null,
-      removedMainImage: false,
-      removedAdditionalImages: [],
+      removedVideo: false,
       specifications: product.specifications ? [...product.specifications] : []
     };
     if (product.categoryId) {

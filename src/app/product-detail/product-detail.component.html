@@ -1,39 +1,28 @@
 <div class="product-detail" *ngIf="product">
   <div class="container">
     <a routerLink="/products" class="back-link">← Назад к каталогу</a>
-    
+
     <div class="product-content">
       <h1 class="product-title">{{ product.name }}</h1>
-      
+
       <div class="product-images">
         <div class="main-image-container">
-          <img *ngIf="selectedMediaType === 'image' || (selectedMediaType === null && product.image)" 
-               [src]="selectedImage || product.image || '/assets/placeholder.jpg'" 
-               [alt]="product.name" 
-               class="main-image">
-          <video *ngIf="selectedMediaType === 'video' || (selectedMediaType === null && product.video && !product.image)" 
-                 [src]="product.video" 
-                 controls 
-                 class="product-video-player">
+          <img
+            *ngIf="selectedMediaType === 'image' || (selectedMediaType === null && product.images && product.images.length > 0)"
+            [src]="selectedImage || (product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.jpg'"
+            [alt]="product.name" class="main-image">
+          <video
+            *ngIf="selectedMediaType === 'video' || (selectedMediaType === null && product.video && (!product.images || product.images.length === 0))"
+            [src]="product.video" controls class="product-video-player">
           </video>
         </div>
         <div class="media-thumbnails" *ngIf="(product.images && product.images.length > 0) || product.video">
-          <div *ngIf="product.image" 
-               class="thumbnail-item"
-               [class.active]="selectedMediaType === 'image' && selectedImage === null"
-               (click)="selectMedia('image', null)">
-            <img [src]="product.image" [alt]="product.name">
-          </div>
-          <div *ngFor="let img of product.images; let i = index" 
-               class="thumbnail-item"
-               [class.active]="selectedMediaType === 'image' && selectedImage === img"
-               (click)="selectMedia('image', img)">
+          <div *ngFor="let img of product.images; let i = index" class="thumbnail-item"
+            [class.active]="selectedMediaType === 'image' && selectedImage === img" (click)="selectMedia('image', img)">
             <img [src]="img" [alt]="product.name">
           </div>
-          <div *ngIf="product.video" 
-               class="thumbnail-item video-thumbnail"
-               [class.active]="selectedMediaType === 'video'"
-               (click)="selectMedia('video', null)">
+          <div *ngIf="product.video" class="thumbnail-item video-thumbnail"
+            [class.active]="selectedMediaType === 'video'" (click)="selectMedia('video', null)">
             <div class="video-thumbnail-placeholder">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -42,10 +31,10 @@
           </div>
         </div>
       </div>
-      
+
       <div class="product-info">
         <p class="description">{{ product.description }}</p>
-        
+
         <div class="specs" *ngIf="product.specifications && product.specifications.length > 0">
           <h3>Характеристики:</h3>
           <ul>
@@ -55,7 +44,7 @@
             <li>Наличие: {{ product.stock > 0 ? 'В наличии' : 'Нет в наличии' }}</li>
           </ul>
         </div>
-        
+
         <div class="price-section">
           <p class="price">
             <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
@@ -64,9 +53,9 @@
           <div *ngIf="!isInCart(product.id) && product.stock > 0">
             <button (click)="addToCart()" class="btn-cart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z"/>
-                <circle cx="9" cy="20" r="1"/>
-                <circle cx="20" cy="20" r="1"/>
+                <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
+                <circle cx="9" cy="20" r="1" />
+                <circle cx="20" cy="20" r="1" />
               </svg>
               Добавить в корзину
             </button>
@@ -79,9 +68,9 @@
           <div *ngIf="product.stock === 0" class="out-of-stock">
             <button class="btn-cart" disabled>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z"/>
-                <circle cx="9" cy="20" r="1"/>
-                <circle cx="20" cy="20" r="1"/>
+                <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
+                <circle cx="9" cy="20" r="1" />
+                <circle cx="20" cy="20" r="1" />
               </svg>
               Нет в наличии
             </button>

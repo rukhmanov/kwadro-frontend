@@ -3,7 +3,9 @@
     <h2>Популярные товары</h2>
     <div class="products-grid">
       <a *ngFor="let product of featuredProducts" [routerLink]="['/products', product.id]" class="product-card">
-        <img [src]="product.image || '/assets/placeholder.jpg'" [alt]="product.name">
+        <img
+          [src]="(product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.jpg'"
+          [alt]="product.name">
         <h3>{{ product.name }}</h3>
         <p class="price">
           <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
