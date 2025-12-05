@@ -11,7 +11,8 @@
       <form *ngIf="entityType === 'product'" (ngSubmit)="save()" enctype="multipart/form-data">
         <div class="form-group">
           <label for="product-name">Название *</label>
-          <input id="product-name" [(ngModel)]="form.name" name="name" placeholder="Название" required class="form-input">
+          <input id="product-name" [(ngModel)]="form.name" name="name" placeholder="Название" required
+            class="form-input">
         </div>
         <div class="form-group">
           <label for="product-description">Описание</label>
@@ -21,23 +22,24 @@
         <div class="form-row">
           <div class="form-group">
             <label for="product-price">Цена *</label>
-            <input id="product-price" type="number" [(ngModel)]="form.price" name="price" placeholder="Цена" required class="form-input">
+            <input id="product-price" type="number" [(ngModel)]="form.price" name="price" placeholder="Цена" required
+              class="form-input">
           </div>
           <div class="form-group">
             <label for="product-old-price">Старая цена</label>
-            <input id="product-old-price" type="number" [(ngModel)]="form.oldPrice" name="oldPrice" placeholder="Старая цена"
-              class="form-input">
+            <input id="product-old-price" type="number" [(ngModel)]="form.oldPrice" name="oldPrice"
+              placeholder="Старая цена" class="form-input">
           </div>
           <div class="form-group">
             <label for="product-stock">Количество</label>
-            <input id="product-stock" type="number" [(ngModel)]="form.stock" name="stock" placeholder="Количество" value="0"
-              class="form-input">
+            <input id="product-stock" type="number" [(ngModel)]="form.stock" name="stock" placeholder="Количество"
+              value="0" class="form-input">
           </div>
         </div>
         <div class="form-group">
           <label for="product-category">Категория *</label>
-          <select id="product-category" [(ngModel)]="form.categoryId" name="categoryId" required (change)="onCategoryChange()"
-            class="form-select">
+          <select id="product-category" [(ngModel)]="form.categoryId" name="categoryId" required
+            (change)="onCategoryChange()" class="form-select">
             <option value="">Выберите категорию</option>
             <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
           </select>
@@ -111,12 +113,13 @@
       <form *ngIf="entityType === 'news'" (ngSubmit)="save()" enctype="multipart/form-data">
         <div class="form-group">
           <label for="news-title">Заголовок *</label>
-          <input id="news-title" [(ngModel)]="form.title" name="title" placeholder="Заголовок" required class="form-input">
+          <input id="news-title" [(ngModel)]="form.title" name="title" placeholder="Заголовок" required
+            class="form-input">
         </div>
         <div class="form-group">
           <label for="news-content">Содержание *</label>
-          <textarea id="news-content" [(ngModel)]="form.content" name="content" placeholder="Содержание" rows="10" required
-            class="form-textarea"></textarea>
+          <textarea id="news-content" [(ngModel)]="form.content" name="content" placeholder="Содержание" rows="10"
+            required class="form-textarea"></textarea>
         </div>
         <div class="form-section">
           <label class="section-label">Изображение:</label>
@@ -141,7 +144,8 @@
       <form *ngIf="entityType === 'category'" (ngSubmit)="save()" enctype="multipart/form-data">
         <div class="form-group">
           <label for="category-name">Название *</label>
-          <input id="category-name" [(ngModel)]="form.name" name="name" placeholder="Название" required class="form-input">
+          <input id="category-name" [(ngModel)]="form.name" name="name" placeholder="Название" required
+            class="form-input">
         </div>
         <div class="form-group">
           <label for="category-description">Описание</label>
