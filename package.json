@@ -5,10 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:gh-pages": "ng build --configuration gh-pages",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "deploy": "npx angular-cli-ghpages --dir=dist/frontend/browser --name=\"Aleksei Rukhmanov\" --email=your-email@example.com"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
@@ -31,7 +29,6 @@
     "@angular/cli": "^17.2.0",
     "@angular/compiler-cli": "^17.2.0",
     "@types/jasmine": "~5.1.0",
-    "angular-cli-ghpages": "^1.0.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
