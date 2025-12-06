@@ -63,14 +63,50 @@ export class HomeComponent implements OnInit {
     return this.cartItemsMap.has(productId);
   }
 
+  canIncreaseQuantity(productId: number): boolean {
+    const product = this.featuredProducts.find(p => p.id === productId);
+    const cartItem = this.getCartItem(productId);
+    if (!product || !cartItem) return false;
+    return cartItem.quantity < product.stock;
+  }
+
+  isOutOfStock(productId: number): boolean {
+    const product = this.featuredProducts.find(p => p.id === productId);
+    if (!product) return true;
+    return product.stock <= 0;
+  }
+
   addToCart(productId: number, event?: Event) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
-    this.cartService.addToCart(productId, 1).subscribe(() => {
-      this.cartService.loadCartCount();
-      this.loadCartItems();
+    
+    const product = this.featuredProducts.find(p => p.id === productId);
+    if (!product) return;
+    
+    if (product.stock <= 0) {
+      alert('Товар закончился');
+      return;
+    }
+
+    const cartItem = this.getCartItem(productId);
+    const currentQuantity = cartItem ? cartItem.quantity : 0;
+    
+    if (currentQuantity >= product.stock) {
+      alert(`Недостаточно товара на складе. Доступно: ${product.stock} шт.`);
+      return;
+    }
+
+    this.cartService.addToCart(productId, 1).subscribe({
+      next: () => {
+        this.cartService.loadCartCount();
+        this.loadCartItems();
+      },
+      error: (err) => {
+        const errorMessage = err.error?.message || 'Не удалось добавить товар в корзину';
+        alert(errorMessage);
+      }
     });
   }
 
@@ -79,13 +115,28 @@ export class HomeComponent implements OnInit {
       event.preventDefault();
       event.stopPropagation();
     }
+    
+    const product = this.featuredProducts.find(p => p.id === productId);
     const cartItem = this.getCartItem(productId);
-    if (cartItem) {
-      this.cartService.updateQuantity(cartItemId, cartItem.quantity + 1).subscribe(() => {
+    
+    if (!product || !cartItem) return;
+
+    if (cartItem.quantity >= product.stock) {
+      alert(`Недостаточно товара на складе. Доступно: ${product.stock} шт.`);
+      return;
+    }
+
+    this.cartService.updateQuantity(cartItemId, cartItem.quantity + 1).subscribe({
+      next: () => {
         this.cartService.loadCartCount();
         this.loadCartItems();
-      });
-    }
+      },
+      error: (err) => {
+        const errorMessage = err.error?.message || 'Не удалось обновить количество';
+        alert(errorMessage);
+        this.loadCartItems();
+      }
+    });
   }
 
   decreaseQuantity(cartItemId: number, productId: number, event?: Event) {

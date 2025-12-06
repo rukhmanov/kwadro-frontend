@@ -141,7 +141,7 @@
           </div>
           <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
             <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
-              <button (click)="addToCart(product.id)" class="btn-cart">
+              <button (click)="addToCart(product.id)" class="btn-cart" [disabled]="isOutOfStock(product.id)">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
                   <circle cx="9" cy="20" r="1" />
@@ -153,7 +153,8 @@
             <div *ngIf="isInCart(product.id)" class="quantity-controls-card">
               <button (click)="decreaseQuantity(getCartItem(product.id).id, product.id)">−</button>
               <span>{{ getCartItem(product.id).quantity }}</span>
-              <button (click)="increaseQuantity(getCartItem(product.id).id, product.id)">+</button>
+              <button (click)="increaseQuantity(getCartItem(product.id).id, product.id)"
+                [disabled]="!canIncreaseQuantity(product.id)">+</button>
             </div>
           </div>
         </div>

@@ -70,23 +70,68 @@ export class ProductDetailComponent implements OnInit {
     return this.cartItemsMap.has(productId);
   }
 
+  canIncreaseQuantity(): boolean {
+    if (!this.product) return false;
+    const cartItem = this.getCartItem(this.product.id);
+    if (!cartItem) return false;
+    return cartItem.quantity < this.product.stock;
+  }
+
+  isOutOfStock(): boolean {
+    if (!this.product) return true;
+    return this.product.stock <= 0;
+  }
+
   addToCart() {
-    if (this.product) {
-      this.cartService.addToCart(this.product.id, 1).subscribe(() => {
+    if (!this.product) return;
+    
+    if (this.product.stock <= 0) {
+      alert('Товар закончился');
+      return;
+    }
+
+    const cartItem = this.getCartItem(this.product.id);
+    const currentQuantity = cartItem ? cartItem.quantity : 0;
+    
+    if (currentQuantity >= this.product.stock) {
+      alert(`Недостаточно товара на складе. Доступно: ${this.product.stock} шт.`);
+      return;
+    }
+
+    this.cartService.addToCart(this.product.id, 1).subscribe({
+      next: () => {
         this.cartService.loadCartCount();
         this.loadCartItems();
-      });
-    }
+      },
+      error: (err) => {
+        const errorMessage = err.error?.message || 'Не удалось добавить товар в корзину';
+        alert(errorMessage);
+      }
+    });
   }
 
   increaseQuantity(cartItemId: number, productId: number) {
+    if (!this.product) return;
+    
     const cartItem = this.getCartItem(productId);
-    if (cartItem) {
-      this.cartService.updateQuantity(cartItemId, cartItem.quantity + 1).subscribe(() => {
+    if (!cartItem) return;
+
+    if (cartItem.quantity >= this.product.stock) {
+      alert(`Недостаточно товара на складе. Доступно: ${this.product.stock} шт.`);
+      return;
+    }
+
+    this.cartService.updateQuantity(cartItemId, cartItem.quantity + 1).subscribe({
+      next: () => {
         this.cartService.loadCartCount();
         this.loadCartItems();
-      });
-    }
+      },
+      error: (err) => {
+        const errorMessage = err.error?.message || 'Не удалось обновить количество';
+        alert(errorMessage);
+        this.loadCartItems();
+      }
+    });
   }
 
   decreaseQuantity(cartItemId: number, productId: number) {

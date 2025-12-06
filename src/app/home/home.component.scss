@@ -139,6 +139,13 @@
       &:active svg {
         transform: scale(1.1);
       }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+      }
     }
 
     .quantity-controls-card {

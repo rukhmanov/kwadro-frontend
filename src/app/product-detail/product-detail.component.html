@@ -63,7 +63,8 @@
           <div *ngIf="isInCart(product.id)" class="quantity-controls-detail">
             <button (click)="decreaseQuantity(getCartItem(product.id).id, product.id)">−</button>
             <span>{{ getCartItem(product.id).quantity }}</span>
-            <button (click)="increaseQuantity(getCartItem(product.id).id, product.id)">+</button>
+            <button (click)="increaseQuantity(getCartItem(product.id).id, product.id)"
+              [disabled]="!canIncreaseQuantity()">+</button>
           </div>
           <div *ngIf="product.stock === 0" class="out-of-stock">
             <button class="btn-cart" disabled>

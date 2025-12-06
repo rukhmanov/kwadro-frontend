@@ -44,9 +44,26 @@ export class CartComponent implements OnInit {
       this.removeItem(itemId);
       return;
     }
-    this.cartService.updateQuantity(itemId, quantity).subscribe(() => {
-      this.loadCart();
-      this.cartService.loadCartCount();
+    
+    const cartItem = this.cartItems.find(item => item.id === itemId);
+    if (!cartItem || !cartItem.product) return;
+
+    if (quantity > cartItem.product.stock) {
+      alert(`Недостаточно товара на складе. Доступно: ${cartItem.product.stock} шт.`);
+      this.loadCart(); // Перезагружаем корзину для синхронизации
+      return;
+    }
+
+    this.cartService.updateQuantity(itemId, quantity).subscribe({
+      next: () => {
+        this.loadCart();
+        this.cartService.loadCartCount();
+      },
+      error: (err) => {
+        const errorMessage = err.error?.message || 'Не удалось обновить количество';
+        alert(errorMessage);
+        this.loadCart(); // Перезагружаем корзину для синхронизации
+      }
     });
   }
 

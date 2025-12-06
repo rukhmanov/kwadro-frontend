@@ -231,6 +231,13 @@
           }
 
           &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+          }
+
+          &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             background: #999;
@@ -281,6 +288,11 @@
               color: #ffffff;
               border-color: rgba(255, 255, 255, 0.3);
               transform: scale(0.95);
+            }
+
+            &:disabled {
+              opacity: 0.4;
+              cursor: not-allowed;
             }
 
             &:disabled {
