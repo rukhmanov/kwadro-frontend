@@ -9,8 +9,10 @@
         <div class="main-image-container">
           <img
             *ngIf="selectedMediaType === 'image' || (selectedMediaType === null && product.images && product.images.length > 0)"
-            [src]="selectedImage || (product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.jpg'"
-            [alt]="product.name" class="main-image">
+            [src]="selectedImage || (product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.svg'"
+            [alt]="product.name" 
+            class="main-image"
+            (error)="$any($event.target).src='/assets/placeholder.svg'">
           <video
             *ngIf="selectedMediaType === 'video' || (selectedMediaType === null && product.video && (!product.images || product.images.length === 0))"
             [src]="product.video" controls class="product-video-player">
@@ -19,7 +21,7 @@
         <div class="media-thumbnails" *ngIf="(product.images && product.images.length > 0) || product.video">
           <div *ngFor="let img of product.images; let i = index" class="thumbnail-item"
             [class.active]="selectedMediaType === 'image' && selectedImage === img" (click)="selectMedia('image', img)">
-            <img [src]="img" [alt]="product.name">
+            <img [src]="img" [alt]="product.name" (error)="$any($event.target).src='/assets/placeholder.svg'">
           </div>
           <div *ngIf="product.video" class="thumbnail-item video-thumbnail"
             [class.active]="selectedMediaType === 'video'" (click)="selectMedia('video', null)">

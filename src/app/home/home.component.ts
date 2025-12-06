@@ -27,14 +27,16 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.productsService.getProductsPaginated({
       isFeatured: true,
-      limit: 6,
-      page: 1
+      limit: 10,
+      page: 1,
+      sortBy: 'createdAt',
+      sortOrder: 'DESC'
     }).subscribe(response => {
       this.featuredProducts = response.products || [];
     });
 
     this.newsService.getNews().subscribe(news => {
-      this.latestNews = news.slice(0, 3);
+      this.latestNews = news.slice(0, 10);
     });
 
     this.loadCartItems();

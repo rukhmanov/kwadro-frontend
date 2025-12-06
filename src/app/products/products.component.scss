@@ -405,32 +405,13 @@
   }
 
   .products-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1.25rem;
     padding: 0.5rem 0 1rem 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 1rem;
-
-    &::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.5);
-      }
-    }
+    overflow-x: visible;
+    overflow-y: visible;
+    scroll-snap-type: none;
   }
 
   .product-card {
@@ -446,10 +427,9 @@
     color: inherit;
     cursor: pointer;
     flex-direction: column;
-    flex: 0 0 85%;
-    max-width: 85%;
-    min-width: 280px;
-    scroll-snap-align: start;
+    width: 100%;
+    max-width: 100%;
+    min-width: auto;
 
     &:active {
       transform: translateY(-4px);
@@ -462,12 +442,21 @@
       height: 240px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.4s ease;
+        
+        &[src*="placeholder"] {
+          object-fit: contain;
+          padding: 20px;
+          opacity: 0.7;
+        }
       }
 
       .discount-badge {

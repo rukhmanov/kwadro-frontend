@@ -104,8 +104,9 @@
       <a *ngFor="let product of products" [routerLink]="['/products', product.id]" class="product-card">
         <div class="product-image-wrapper">
           <img
-            [src]="(product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.jpg'"
-            [alt]="product.name">
+            [src]="(product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.svg'"
+            [alt]="product.name"
+            (error)="$any($event.target).src='/assets/placeholder.svg'">
           <div *ngIf="product.oldPrice" class="discount-badge">
             -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
           </div>
