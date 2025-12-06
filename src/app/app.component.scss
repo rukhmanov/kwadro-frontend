@@ -64,18 +64,14 @@ body {
     text-decoration: none;
     color: white;
     z-index: 1001;
+    display: flex;
+    align-items: center;
 
-    h1 {
-      font-size: 1.25rem;
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .moto-text {
-      color: #ff0000;
-      font-weight: 700;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 
-                   0 0 10px rgba(255, 0, 0, 0.5);
+    .logo-img {
+      height: 60px;
+      width: auto;
+      max-width: 300px;
+      object-fit: contain;
     }
   }
 
@@ -403,11 +399,17 @@ body {
   }
 
   .moto-text {
-    color: #ff0000;
+    color: #e74d10;
     font-weight: 700;
+    font-size: 0.9em;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
-                 0 0 15px rgba(255, 0, 0, 0.7),
-                 0 0 25px rgba(255, 0, 0, 0.4);
+                 0 0 15px rgba(231, 77, 16, 0.7),
+                 0 0 25px rgba(231, 77, 16, 0.4);
+  }
+
+  .market-text {
+    color: #c09d63;
+    font-weight: 700;
   }
 }
 
@@ -744,8 +746,8 @@ body {
   .header {
     padding: 1rem 0;
 
-    .logo h1 {
-      font-size: 1.5rem;
+    .logo .logo-img {
+      height: 80px;
     }
 
     .mobile-menu-toggle {

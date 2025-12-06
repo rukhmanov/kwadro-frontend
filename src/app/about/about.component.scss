@@ -38,10 +38,16 @@
         color: white;
 
         .moto-text {
-          color: #ff0000;
+          color: #e74d10;
           font-weight: 700;
+          font-size: 0.9em;
           text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
-                       0 0 15px rgba(255, 0, 0, 0.7);
+                       0 0 15px rgba(231, 77, 16, 0.7);
+        }
+
+        .market-text {
+          color: #c09d63;
+          font-weight: 700;
         }
       }
 
