@@ -56,34 +56,18 @@
         <form (ngSubmit)="changePassword()" class="password-change-form">
           <div class="form-group">
             <label for="oldPassword">Текущий пароль:</label>
-            <input 
-              type="password" 
-              id="oldPassword" 
-              [(ngModel)]="passwordForm.oldPassword" 
-              name="oldPassword"
-              required
+            <input type="password" id="oldPassword" [(ngModel)]="passwordForm.oldPassword" name="oldPassword" required
               class="form-input">
           </div>
           <div class="form-group">
             <label for="newPassword">Новый пароль:</label>
-            <input 
-              type="password" 
-              id="newPassword" 
-              [(ngModel)]="passwordForm.newPassword" 
-              name="newPassword"
-              required
-              minlength="3"
-              class="form-input">
+            <input type="password" id="newPassword" [(ngModel)]="passwordForm.newPassword" name="newPassword" required
+              minlength="3" class="form-input">
           </div>
           <div class="form-group">
             <label for="confirmPassword">Подтвердите новый пароль:</label>
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              [(ngModel)]="passwordForm.confirmPassword" 
-              name="confirmPassword"
-              required
-              class="form-input">
+            <input type="password" id="confirmPassword" [(ngModel)]="passwordForm.confirmPassword"
+              name="confirmPassword" required class="form-input">
           </div>
           <div *ngIf="passwordError" class="error-message">
             {{ passwordError }}
@@ -91,9 +75,7 @@
           <div *ngIf="passwordSuccess" class="success-message">
             {{ passwordSuccess }}
           </div>
-          <button 
-            type="submit" 
-            class="btn-primary" 
+          <button type="submit" class="btn-primary"
             [disabled]="!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword || passwordForm.newPassword !== passwordForm.confirmPassword">
             Изменить пароль
           </button>

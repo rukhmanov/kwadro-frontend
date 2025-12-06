@@ -5,8 +5,7 @@
       <a *ngFor="let product of featuredProducts" [routerLink]="['/products', product.id]" class="product-card">
         <img
           [src]="(product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.svg'"
-          [alt]="product.name"
-          (error)="$any($event.target).src='/assets/placeholder.svg'">
+          [alt]="product.name" (error)="$any($event.target).src='/assets/placeholder.svg'">
         <div class="product-content">
           <h3>{{ product.name }}</h3>
           <p class="price">
