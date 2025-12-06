@@ -50,6 +50,57 @@
       <h2>Настройки сайта</h2>
 
       <div class="settings-section">
+        <h3>Смена пароля</h3>
+        <p class="settings-description">Измените пароль администратора</p>
+
+        <form (ngSubmit)="changePassword()" class="password-change-form">
+          <div class="form-group">
+            <label for="oldPassword">Текущий пароль:</label>
+            <input 
+              type="password" 
+              id="oldPassword" 
+              [(ngModel)]="passwordForm.oldPassword" 
+              name="oldPassword"
+              required
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="newPassword">Новый пароль:</label>
+            <input 
+              type="password" 
+              id="newPassword" 
+              [(ngModel)]="passwordForm.newPassword" 
+              name="newPassword"
+              required
+              minlength="3"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="confirmPassword">Подтвердите новый пароль:</label>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              [(ngModel)]="passwordForm.confirmPassword" 
+              name="confirmPassword"
+              required
+              class="form-input">
+          </div>
+          <div *ngIf="passwordError" class="error-message">
+            {{ passwordError }}
+          </div>
+          <div *ngIf="passwordSuccess" class="success-message">
+            {{ passwordSuccess }}
+          </div>
+          <button 
+            type="submit" 
+            class="btn-primary" 
+            [disabled]="!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword || passwordForm.newPassword !== passwordForm.confirmPassword">
+            Изменить пароль
+          </button>
+        </form>
+      </div>
+
+      <div class="settings-section">
         <h3>Фоновое изображение</h3>
         <p class="settings-description">Загрузите изображение, которое будет использоваться как фон на всех страницах
           сайта</p>

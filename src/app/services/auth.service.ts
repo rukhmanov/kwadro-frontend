@@ -42,6 +42,10 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.isAuthenticatedSubject.value;
   }
+
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.api.post('/auth/change-password', { oldPassword, newPassword });
+  }
 }
 
 

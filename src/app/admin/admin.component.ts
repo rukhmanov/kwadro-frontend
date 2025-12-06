@@ -52,6 +52,14 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   backgroundImagePreview: string | null = null;
   currentBackgroundImage: string | null = null;
   
+  passwordForm = {
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+  passwordError: string = '';
+  passwordSuccess: string = '';
+  
   editingProduct: any = null;
   editingNews: any = null;
   editingCategory: any = null;
@@ -306,6 +314,13 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       imageFile: null,
       imagePreview: null
     };
+    this.passwordForm = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
+    this.passwordError = '';
+    this.passwordSuccess = '';
     this.editingProduct = null;
     this.editingNews = null;
     this.editingCategory = null;
@@ -914,6 +929,44 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
       alert('Фоновое изображение сохранено');
       // Обновляем фон на всех страницах
       window.location.reload();
+    });
+  }
+
+  changePassword() {
+    this.passwordError = '';
+    this.passwordSuccess = '';
+
+    // Валидация
+    if (!this.passwordForm.oldPassword || !this.passwordForm.newPassword || !this.passwordForm.confirmPassword) {
+      this.passwordError = 'Заполните все поля';
+      return;
+    }
+
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+      this.passwordError = 'Новые пароли не совпадают';
+      return;
+    }
+
+    if (this.passwordForm.newPassword.length < 3) {
+      this.passwordError = 'Новый пароль должен содержать минимум 3 символа';
+      return;
+    }
+
+    this.authService.changePassword(this.passwordForm.oldPassword, this.passwordForm.newPassword).subscribe({
+      next: () => {
+        this.passwordSuccess = 'Пароль успешно изменен';
+        this.passwordForm = {
+          oldPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        };
+        setTimeout(() => {
+          this.passwordSuccess = '';
+        }, 3000);
+      },
+      error: (err) => {
+        this.passwordError = err.error?.message || 'Ошибка при изменении пароля';
+      }
     });
   }
 
