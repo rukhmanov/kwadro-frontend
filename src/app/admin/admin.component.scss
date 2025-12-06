@@ -418,6 +418,14 @@
             opacity: 0.8;
           }
 
+          &.edit {
+            background: #4caf50;
+            
+            &:active {
+              background: #45a049;
+            }
+          }
+
           &.delete {
             background: #ff4444;
           }

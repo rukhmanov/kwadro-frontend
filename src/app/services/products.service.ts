@@ -31,6 +31,7 @@ export class ProductsService {
     minPrice?: number;
     maxPrice?: number;
     inStock?: boolean;
+    isFeatured?: boolean;
     page?: number;
     limit?: number;
   }): Observable<{ products: any[]; total: number; page: number; limit: number; totalPages: number }> {
@@ -57,6 +58,9 @@ export class ProductsService {
     }
     if (params?.inStock !== undefined) {
       queryParams.push(`inStock=${params.inStock}`);
+    }
+    if (params?.isFeatured !== undefined) {
+      queryParams.push(`isFeatured=${params.isFeatured}`);
     }
     if (params?.page !== undefined) {
       queryParams.push(`page=${params.page}`);

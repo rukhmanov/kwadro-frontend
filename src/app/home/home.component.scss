@@ -26,7 +26,8 @@
   transition: transform 0.3s, box-shadow 0.3s;
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
   cursor: pointer;
 
   &:active {
@@ -38,6 +39,13 @@
     width: 100%;
     height: 200px;
     object-fit: cover;
+  }
+
+  .product-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0;
   }
 
   h3 {
@@ -72,6 +80,119 @@
     }
   }
 
+  .actions {
+    padding: 0 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
+
+    .cart-button-wrapper {
+      width: 100%;
+    }
+
+    .btn-cart {
+      width: 100%;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3),
+                  0 2px 8px rgba(255, 0, 0, 0.2);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      &:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 10px rgba(255, 0, 0, 0.3),
+                    0 1px 4px rgba(255, 0, 0, 0.2);
+
+        &::before {
+          left: 100%;
+        }
+      }
+
+      svg {
+        transition: transform 0.3s ease;
+      }
+
+      &:active svg {
+        transform: scale(1.1);
+      }
+    }
+
+    .quantity-controls-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      padding: 0.5rem;
+      border-radius: 10px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      button {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.15);
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        color: #ffffff;
+        padding: 0;
+        flex-shrink: 0;
+
+        &:active:not(:disabled) {
+          background: rgba(255, 255, 255, 0.25);
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.3);
+          transform: scale(0.95);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+      }
+
+      span {
+        min-width: 40px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.125rem;
+        color: #ffffff;
+      }
+    }
+  }
+
 }
 
 // Tablet
@@ -90,7 +211,27 @@
     gap: 2rem;
   }
 
-  .product-card, .news-card {
+  .product-card {
+    .actions {
+      flex-direction: row;
+
+      .cart-button-wrapper {
+        flex: 1;
+      }
+
+      .quantity-controls-card {
+        flex: 1;
+        max-width: 150px;
+      }
+    }
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+  }
+
+  .news-card {
     &:hover {
       transform: translateY(-5px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.15);

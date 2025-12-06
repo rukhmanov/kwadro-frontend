@@ -49,7 +49,8 @@ export class EditDrawerComponent implements OnInit {
           videoFile: null,
           videoPreview: null,
           removedVideo: false,
-          specifications: this.entity.specifications ? [...this.entity.specifications] : []
+          specifications: this.entity.specifications ? [...this.entity.specifications] : [],
+          isFeatured: this.entity.isFeatured || false
         };
       } else if (this.entityType === 'news') {
         this.form = {
@@ -59,9 +60,7 @@ export class EditDrawerComponent implements OnInit {
         };
       } else if (this.entityType === 'category') {
         this.form = {
-          ...this.entity,
-          imageFile: null,
-          imagePreview: null
+          ...this.entity
         };
       }
     } else {
@@ -78,7 +77,8 @@ export class EditDrawerComponent implements OnInit {
           videoFile: null,
           videoPreview: null,
           removedVideo: false,
-          specifications: []
+          specifications: [],
+          isFeatured: false
         };
       } else if (this.entityType === 'news') {
         this.form = {
@@ -90,9 +90,7 @@ export class EditDrawerComponent implements OnInit {
       } else if (this.entityType === 'category') {
         this.form = {
           name: '',
-          description: '',
-          imageFile: null,
-          imagePreview: null
+          description: ''
         };
       }
     }
@@ -289,23 +287,6 @@ export class EditDrawerComponent implements OnInit {
     this.form.imagePreview = null;
   }
 
-  // Category image handlers
-  onCategoryImageSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.form.imageFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.form.imagePreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  clearCategoryImage() {
-    this.form.imageFile = null;
-    this.form.imagePreview = null;
-  }
 
   extractKeyFromUrl(url: string): string | null {
     if (!url) return null;
@@ -415,7 +396,8 @@ export class EditDrawerComponent implements OnInit {
       categoryId: this.form.categoryId,
       images: existingImages,
       video: videoKey,
-      specifications: validSpecifications
+      specifications: validSpecifications,
+      isFeatured: this.form.isFeatured || false
     }));
 
     if (newImageFiles.length > 0) {
@@ -509,20 +491,11 @@ export class EditDrawerComponent implements OnInit {
   saveCategory() {
     const formData = new FormData();
     
-    let imageKey = this.form.image;
-    if (imageKey && (imageKey.startsWith('http://') || imageKey.startsWith('https://'))) {
-      imageKey = this.extractKeyFromUrl(imageKey);
-    }
-    
     formData.append('category', JSON.stringify({
       name: this.form.name,
       description: this.form.description,
-      image: imageKey
+      image: null
     }));
-
-    if (this.form.imageFile) {
-      formData.append('image', this.form.imageFile);
-    }
 
     if (this.entity) {
       this.categoriesService.updateCategory(this.entity.id, formData).subscribe({

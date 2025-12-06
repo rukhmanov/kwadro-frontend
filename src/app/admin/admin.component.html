@@ -37,6 +37,7 @@
           <div class="category-content">
             <span>{{ category.name }}</span>
             <div class="category-actions">
+              <button (click)="editCategory(category)" class="edit">Редактировать</button>
               <button (click)="deleteCategory(category.id)" class="delete">Удалить</button>
             </div>
           </div>

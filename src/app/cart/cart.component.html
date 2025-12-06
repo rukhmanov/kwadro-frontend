@@ -12,7 +12,9 @@
         <div *ngFor="let item of cartItems" class="cart-item">
           <div class="item-header">
             <div class="item-image-wrapper">
-              <img [src]="item.product.image || '/assets/placeholder.jpg'" [alt]="item.product.name">
+              <img
+                [src]="(item.product.images && item.product.images.length > 0 ? item.product.images[0] : item.product.image) || '/assets/placeholder.jpg'"
+                [alt]="item.product.name">
             </div>
             <div class="item-info">
               <h3>{{ item.product.name }}</h3>

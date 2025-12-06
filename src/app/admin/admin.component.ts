@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AuthService } from '../services/auth.service';
 import { ProductsService } from '../services/products.service';
@@ -78,6 +79,15 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.initChatSocket();
     // Закрытие чата по Escape
     document.addEventListener('keydown', this.handleEscapeKey);
+    
+    // Подписка на изменения роута для обновления данных после сохранения через drawer
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      if (this.router.url === '/admin') {
+        this.loadData();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -836,12 +846,7 @@ export class AdminComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   editCategory(category: any) {
-    this.editingCategory = category;
-    this.categoryForm = { 
-      ...category,
-      imageFile: null,
-      imagePreview: null
-    };
+    this.editDrawerService.open(category, 'category');
   }
 
   deleteCategory(id: number) {
