@@ -111,8 +111,8 @@
         button {
           width: 36px;
           height: 36px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 0, 0, 0.3);
+          background: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(204, 0, 0, 0.2) 100%);
           cursor: pointer;
           border-radius: 6px;
           font-size: 1.25rem;
@@ -124,9 +124,10 @@
           color: #ffffff;
 
           &:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.25);
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.4) 0%, rgba(204, 0, 0, 0.4) 100%);
             color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
           }
 
           &:disabled {
@@ -136,11 +137,7 @@
 
           &:active:not(:disabled) {
             transform: scale(0.95);
-          }
-
-          &:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.3) 0%, rgba(204, 0, 0, 0.3) 100%);
           }
         }
 
@@ -164,7 +161,7 @@
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: #ff4444;
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
         color: white;
         border: none;
         width: 32px;
@@ -177,7 +174,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(255, 68, 68, 0.3);
+        box-shadow: 0 2px 4px rgba(255, 0, 0, 0.3);
         padding: 0;
         margin: 0;
 
@@ -189,9 +186,9 @@
         }
 
         &:hover {
-          background: #cc0000;
+          background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
           transform: scale(1.1);
-          box-shadow: 0 4px 8px rgba(255, 68, 68, 0.4);
+          box-shadow: 0 4px 8px rgba(255, 0, 0, 0.4);
         }
 
         &:active {
@@ -224,9 +221,59 @@
       flex-direction: column;
       gap: 0.75rem;
 
-      button {
-        width: 100%;
+      .btn-primary {
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
         padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          background: rgba(255, 255, 255, 0.2);
+          box-shadow: none;
+        }
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(5px);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 1rem;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.25);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
       }
     }
   }
@@ -444,9 +491,59 @@
     gap: 0.75rem;
     margin-top: 1.5rem;
 
-    button {
+    .btn-primary {
       flex: 1;
       padding: 0.875rem 1.5rem;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: none;
+      }
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 0.875rem 1.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(5px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
     }
   }
 
