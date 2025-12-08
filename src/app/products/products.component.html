@@ -50,11 +50,18 @@
       <!-- Панель фильтров -->
       <div class="filters-panel" [class.active]="showFilters">
         <div class="filter-group">
-          <label>Цена:</label>
-          <div class="price-inputs">
-            <input type="number" [(ngModel)]="minPrice" placeholder="От" class="price-input">
-            <span>-</span>
-            <input type="number" [(ngModel)]="maxPrice" placeholder="До" class="price-input">
+          <label>Цена: {{ priceRangeMin }}₽ - {{ priceRangeMax }}₽</label>
+          <div class="price-range-container">
+            <div class="price-range-wrapper">
+              <input type="range" [(ngModel)]="priceRangeMin" [min]="0" [max]="priceRangeMax"
+                (input)="onMinPriceChange()" class="price-range-input price-range-min">
+              <input type="range" [(ngModel)]="priceRangeMax" [min]="priceRangeMin" [max]="100000"
+                (input)="onMaxPriceChange()" class="price-range-input price-range-max">
+            </div>
+            <div class="price-range-values">
+              <span>{{ priceRangeMin }}₽</span>
+              <span>{{ priceRangeMax }}₽</span>
+            </div>
           </div>
         </div>
         <div class="filter-group">
@@ -105,8 +112,7 @@
         <div class="product-image-wrapper">
           <img
             [src]="(product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.svg'"
-            [alt]="product.name"
-            (error)="$any($event.target).src='/assets/placeholder.svg'">
+            [alt]="product.name" (error)="$any($event.target).src='/assets/placeholder.svg'">
           <div *ngIf="product.oldPrice" class="discount-badge">
             -{{ Math.round((1 - product.price / product.oldPrice) * 100) }}%
           </div>

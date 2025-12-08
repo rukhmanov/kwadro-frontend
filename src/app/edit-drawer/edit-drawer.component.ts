@@ -22,6 +22,7 @@ export class EditDrawerComponent implements OnInit {
   form: any = {};
   categories: any[] = [];
   categorySpecifications: string[] = [];
+  selectedCategoryIds: number[] = [];
   loading = false;
 
   constructor(
@@ -31,18 +32,24 @@ export class EditDrawerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.initializeForm();
     if (this.entityType === 'product') {
       this.loadCategories();
-      if (this.entity?.categoryId) {
-        this.loadCategorySpecifications(this.entity.categoryId);
-      }
     }
+    this.initializeForm();
   }
 
   initializeForm() {
     if (this.entity) {
       if (this.entityType === 'product') {
+        // Извлекаем ID категорий из массива categories или из categoryId для обратной совместимости
+        if (this.entity.categories && Array.isArray(this.entity.categories)) {
+          this.selectedCategoryIds = this.entity.categories.map((cat: any) => cat.id || cat);
+        } else if (this.entity.categoryId) {
+          this.selectedCategoryIds = [this.entity.categoryId];
+        } else {
+          this.selectedCategoryIds = [];
+        }
+        
         this.form = {
           ...this.entity,
           images: this.prepareProductImages(this.entity),
@@ -52,6 +59,11 @@ export class EditDrawerComponent implements OnInit {
           specifications: this.entity.specifications ? [...this.entity.specifications] : [],
           isFeatured: this.entity.isFeatured || false
         };
+        
+        // Загружаем спецификации для первой категории (если есть)
+        if (this.selectedCategoryIds.length > 0) {
+          this.loadCategorySpecifications(this.selectedCategoryIds[0]);
+        }
       } else if (this.entityType === 'news') {
         this.form = {
           ...this.entity,
@@ -66,13 +78,13 @@ export class EditDrawerComponent implements OnInit {
     } else {
       // Новый объект
       if (this.entityType === 'product') {
+        this.selectedCategoryIds = [];
         this.form = {
           name: '',
           description: '',
           price: 0,
           oldPrice: null,
           stock: 0,
-          categoryId: null,
           images: [],
           videoFile: null,
           videoPreview: null,
@@ -150,12 +162,28 @@ export class EditDrawerComponent implements OnInit {
     });
   }
 
-  onCategoryChange() {
-    if (this.form.categoryId) {
-      this.loadCategorySpecifications(this.form.categoryId);
+  toggleCategory(categoryId: number) {
+    const index = this.selectedCategoryIds.indexOf(categoryId);
+    if (index > -1) {
+      this.selectedCategoryIds.splice(index, 1);
+    } else {
+      this.selectedCategoryIds.push(categoryId);
+    }
+    
+    // Загружаем спецификации для первой выбранной категории
+    if (this.selectedCategoryIds.length > 0) {
+      this.loadCategorySpecifications(this.selectedCategoryIds[0]);
     } else {
       this.categorySpecifications = [];
     }
+  }
+
+  isCategorySelected(categoryId: number): boolean {
+    return this.selectedCategoryIds.includes(categoryId);
+  }
+
+  getSelectedCategories(): number[] {
+    return this.selectedCategoryIds;
   }
 
   // Product image handlers
@@ -393,7 +421,7 @@ export class EditDrawerComponent implements OnInit {
       price: this.form.price,
       oldPrice: this.form.oldPrice,
       stock: this.form.stock,
-      categoryId: this.form.categoryId,
+      categoryIds: this.selectedCategoryIds,
       images: existingImages,
       video: videoKey,
       specifications: validSpecifications,

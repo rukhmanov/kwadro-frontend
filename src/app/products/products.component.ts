@@ -34,6 +34,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
   sortOrder: 'ASC' | 'DESC' = 'DESC';
   minPrice: number | null = null;
   maxPrice: number | null = null;
+  priceRangeMin: number = 0;
+  priceRangeMax: number = 100000;
   inStock: boolean | null = null;
   showFilters: boolean = false;
 
@@ -193,6 +195,20 @@ export class ProductsComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (this.currentPage === 1) {
           this.products = response.products || [];
+          // Инициализируем диапазон цен на основе загруженных товаров
+          if (this.products.length > 0 && (this.priceRangeMin === 0 && this.priceRangeMax === 100000)) {
+            const prices = this.products.map(p => p.price).filter(p => p != null);
+            if (prices.length > 0) {
+              const min = Math.min(...prices);
+              const max = Math.max(...prices);
+              this.priceRangeMin = Math.max(0, Math.floor(min * 0.9));
+              this.priceRangeMax = Math.ceil(max * 1.1);
+              // Если фильтры не установлены, синхронизируем их со слайдером
+              if (this.minPrice === null && this.maxPrice === null) {
+                this.onPriceRangeChange();
+              }
+            }
+          }
         } else {
           this.products = [...this.products, ...(response.products || [])];
         }
@@ -242,10 +258,31 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.searchQuery = '';
     this.minPrice = null;
     this.maxPrice = null;
+    this.priceRangeMin = 0;
+    this.priceRangeMax = 100000;
     this.inStock = null;
     this.sortBy = 'createdAt';
     this.sortOrder = 'DESC';
     this.resetAndLoad();
+  }
+
+  onPriceRangeChange() {
+    this.minPrice = this.priceRangeMin > 0 ? this.priceRangeMin : null;
+    this.maxPrice = this.priceRangeMax < 100000 ? this.priceRangeMax : null;
+  }
+
+  onMinPriceChange() {
+    if (this.priceRangeMin > this.priceRangeMax) {
+      this.priceRangeMin = this.priceRangeMax;
+    }
+    this.onPriceRangeChange();
+  }
+
+  onMaxPriceChange() {
+    if (this.priceRangeMax < this.priceRangeMin) {
+      this.priceRangeMax = this.priceRangeMin;
+    }
+    this.onPriceRangeChange();
   }
 
   filterByCategory(categoryId: number | null) {
