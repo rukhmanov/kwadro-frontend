@@ -632,8 +632,8 @@ body {
     justify-content: center;
     align-items: center;
     gap: 1rem 1.5rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
     .footer-contact-item {
@@ -700,6 +700,30 @@ body {
             }
           }
         }
+      }
+    }
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.3s;
+      white-space: nowrap;
+
+      &:hover,
+      &.active {
+        color: #ff0000;
       }
     }
   }
@@ -1130,10 +1154,20 @@ body {
 
     .footer-contacts {
       gap: 2rem 2.5rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
 
       .footer-contact-item {
+        font-size: 0.85rem;
+      }
+    }
+
+    .footer-nav {
+      gap: 1.5rem 2rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+
+      a {
         font-size: 0.85rem;
       }
     }
