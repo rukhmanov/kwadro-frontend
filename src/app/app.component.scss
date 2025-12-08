@@ -442,12 +442,18 @@ body {
     &:active span:nth-child(3) {
       transform: rotate(-45deg) translate(8px, -8px);
     }
+
   }
 
-  .header.phone-drawer-open .mobile-menu-toggle {
+  .header.phone-drawer-open .mobile-menu-toggle,
+  .mobile-menu-toggle.hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    
+    @media (max-width: 768px) {
+      display: none !important;
+    }
   }
 
   .nav {

@@ -80,7 +80,7 @@
           </div>
         </div>
       </div>
-      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Меню">
+      <button class="mobile-menu-toggle" [class.hidden]="showPhoneDropdown && isMobile" (click)="toggleMobileMenu()" aria-label="Меню">
         <span></span>
         <span></span>
         <span></span>
