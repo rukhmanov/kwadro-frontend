@@ -52,15 +52,17 @@
         <div class="filter-group">
           <label>Цена: {{ priceRangeMin }}₽ - {{ priceRangeMax }}₽</label>
           <div class="price-range-container">
-            <div class="price-range-wrapper">
-              <input type="range" [(ngModel)]="priceRangeMin" [min]="0" [max]="priceRangeMax"
-                (input)="onMinPriceChange()" class="price-range-input price-range-min">
-              <input type="range" [(ngModel)]="priceRangeMax" [min]="priceRangeMin" [max]="100000"
-                (input)="onMaxPriceChange()" class="price-range-input price-range-max">
-            </div>
-            <div class="price-range-values">
-              <span>{{ priceRangeMin }}₽</span>
-              <span>{{ priceRangeMax }}₽</span>
+            <div class="dual-range-slider">
+              <div class="slider-track" #sliderTrack>
+                <div class="slider-progress" [style.left.%]="getMinPercent()" [style.width.%]="getRangePercent()">
+                </div>
+                <div class="slider-handle slider-handle-min" [style.left.%]="getMinPercent()"
+                  (mousedown)="startDrag($event, 'min')" (touchstart)="startDrag($event, 'min')">
+                </div>
+                <div class="slider-handle slider-handle-max" [style.left.%]="getMaxPercent()"
+                  (mousedown)="startDrag($event, 'max')" (touchstart)="startDrag($event, 'max')">
+                </div>
+              </div>
             </div>
           </div>
         </div>

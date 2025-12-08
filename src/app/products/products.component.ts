@@ -36,8 +36,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
   maxPrice: number | null = null;
   priceRangeMin: number = 0;
   priceRangeMax: number = 100000;
+  priceRangeMinLimit: number = 0;
+  priceRangeMaxLimit: number = 100000;
   inStock: boolean | null = null;
   showFilters: boolean = false;
+  
+  // Для drag & drop
+  private isDragging: boolean = false;
+  private dragType: 'min' | 'max' | null = null;
 
   // Пагинация
   currentPage: number = 1;
@@ -196,16 +202,22 @@ export class ProductsComponent implements OnInit, OnDestroy {
         if (this.currentPage === 1) {
           this.products = response.products || [];
           // Инициализируем диапазон цен на основе загруженных товаров
-          if (this.products.length > 0 && (this.priceRangeMin === 0 && this.priceRangeMax === 100000)) {
+          if (this.products.length > 0 && (this.priceRangeMinLimit === 0 && this.priceRangeMaxLimit === 100000)) {
             const prices = this.products.map(p => p.price).filter(p => p != null);
             if (prices.length > 0) {
               const min = Math.min(...prices);
               const max = Math.max(...prices);
-              this.priceRangeMin = Math.max(0, Math.floor(min * 0.9));
-              this.priceRangeMax = Math.ceil(max * 1.1);
-              // Если фильтры не установлены, синхронизируем их со слайдером
+              // Минимум всегда 0, максимум округляем вверх
+              this.priceRangeMinLimit = 0;
+              this.priceRangeMaxLimit = Math.ceil(max * 1.1);
+              // Устанавливаем начальные значения
               if (this.minPrice === null && this.maxPrice === null) {
+                this.priceRangeMin = 0;
+                this.priceRangeMax = this.priceRangeMaxLimit;
                 this.onPriceRangeChange();
+              } else {
+                this.priceRangeMin = this.minPrice || 0;
+                this.priceRangeMax = this.maxPrice || this.priceRangeMaxLimit;
               }
             }
           }
@@ -259,7 +271,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.minPrice = null;
     this.maxPrice = null;
     this.priceRangeMin = 0;
-    this.priceRangeMax = 100000;
+    this.priceRangeMax = this.priceRangeMaxLimit || 100000;
     this.inStock = null;
     this.sortBy = 'createdAt';
     this.sortOrder = 'DESC';
@@ -268,21 +280,69 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   onPriceRangeChange() {
     this.minPrice = this.priceRangeMin > 0 ? this.priceRangeMin : null;
-    this.maxPrice = this.priceRangeMax < 100000 ? this.priceRangeMax : null;
+    this.maxPrice = this.priceRangeMax < this.priceRangeMaxLimit ? this.priceRangeMax : null;
   }
 
-  onMinPriceChange() {
-    if (this.priceRangeMin > this.priceRangeMax) {
-      this.priceRangeMin = this.priceRangeMax;
-    }
-    this.onPriceRangeChange();
+  getMinPercent(): number {
+    const range = this.priceRangeMaxLimit - 0;
+    if (range === 0) return 0;
+    return ((this.priceRangeMin - 0) / range) * 100;
   }
 
-  onMaxPriceChange() {
-    if (this.priceRangeMax < this.priceRangeMin) {
-      this.priceRangeMax = this.priceRangeMin;
-    }
-    this.onPriceRangeChange();
+  getMaxPercent(): number {
+    const range = this.priceRangeMaxLimit - 0;
+    if (range === 0) return 0;
+    return ((this.priceRangeMax - 0) / range) * 100;
+  }
+
+  getRangePercent(): number {
+    return this.getMaxPercent() - this.getMinPercent();
+  }
+
+  startDrag(event: MouseEvent | TouchEvent, type: 'min' | 'max') {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+    this.dragType = type;
+    
+    const moveHandler = (e: MouseEvent | TouchEvent) => {
+      if (!this.isDragging) return;
+      
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const sliderTrack = document.querySelector('.slider-track') as HTMLElement;
+      if (!sliderTrack) return;
+      
+      const rect = sliderTrack.getBoundingClientRect();
+      const percent = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+      const range = this.priceRangeMaxLimit - 0;
+      const value = Math.round(0 + (percent / 100) * range);
+      
+      if (this.dragType === 'min') {
+        if (value >= 0 && value <= this.priceRangeMax) {
+          this.priceRangeMin = value;
+          this.onPriceRangeChange();
+        }
+      } else if (this.dragType === 'max') {
+        if (value <= this.priceRangeMaxLimit && value >= this.priceRangeMin) {
+          this.priceRangeMax = value;
+          this.onPriceRangeChange();
+        }
+      }
+    };
+    
+    const stopHandler = () => {
+      this.isDragging = false;
+      this.dragType = null;
+      document.removeEventListener('mousemove', moveHandler as any);
+      document.removeEventListener('mouseup', stopHandler);
+      document.removeEventListener('touchmove', moveHandler as any);
+      document.removeEventListener('touchend', stopHandler);
+    };
+    
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('mouseup', stopHandler);
+    document.addEventListener('touchmove', moveHandler);
+    document.addEventListener('touchend', stopHandler);
   }
 
   filterByCategory(categoryId: number | null) {
