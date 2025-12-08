@@ -9,6 +9,7 @@ import { CartService } from './services/cart.service';
 import { ChatService } from './services/chat.service';
 import { SettingsService } from './services/settings.service';
 import { EditDrawerService } from './services/edit-drawer.service';
+import { ContactService } from './services/contact.service';
 import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
 import { EditDrawerComponent } from './edit-drawer/edit-drawer.component';
 import { io, Socket } from 'socket.io-client';
@@ -36,6 +37,12 @@ export class AppComponent implements OnInit, OnDestroy {
   editDrawerOpen = false;
   editEntity: any = null;
   editEntityType: 'product' | 'news' | 'category' = 'product';
+  showPhoneDropdown = false;
+  showCallbackModal = false;
+  callbackPhone = '';
+  isSubmittingCallback = false;
+  callbackSuccess = false;
+  callbackError = '';
   private socket?: Socket;
 
   constructor(
@@ -44,6 +51,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private chatService: ChatService,
     private settingsService: SettingsService,
     private editDrawerService: EditDrawerService,
+    private contactService: ContactService,
     private router: Router
   ) {}
 
@@ -211,6 +219,205 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate([currentUrl]);
     });
+  }
+
+  requestCallback() {
+    this.showCallbackModal = true;
+    this.showPhoneDropdown = false;
+    this.callbackPhone = '';
+    this.callbackSuccess = false;
+    this.callbackError = '';
+  }
+
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
+  togglePhoneDropdown(event: Event) {
+    if (this.isMobile) {
+      event.preventDefault();
+      this.showPhoneDropdown = !this.showPhoneDropdown;
+    }
+  }
+
+  closePhoneDropdown(event: Event) {
+    event.stopPropagation();
+    this.showPhoneDropdown = false;
+  }
+
+  closeCallbackModal() {
+    this.showCallbackModal = false;
+    this.callbackPhone = '';
+    this.callbackSuccess = false;
+    this.callbackError = '';
+  }
+
+  isPhoneValid(): boolean {
+    const phoneDigits = this.callbackPhone.replace(/\D/g, '').replace(/^7/, '');
+    return phoneDigits.length >= 10;
+  }
+
+  submitCallback() {
+    if (!this.isPhoneValid()) {
+      this.callbackError = 'Пожалуйста, введите корректный номер телефона';
+      return;
+    }
+
+    this.isSubmittingCallback = true;
+    this.callbackError = '';
+    this.callbackSuccess = false;
+
+    this.contactService.requestCallback(this.callbackPhone).subscribe({
+      next: () => {
+        this.isSubmittingCallback = false;
+        this.callbackSuccess = true;
+        
+        // Закрываем модальное окно через 2 секунды
+        setTimeout(() => {
+          this.closeCallbackModal();
+        }, 2000);
+      },
+      error: (error) => {
+        this.isSubmittingCallback = false;
+        this.callbackError = error.error?.message || 'Произошла ошибка. Попробуйте еще раз.';
+      }
+    });
+  }
+
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const cursorPosition = input.selectionStart || 0;
+    let value = input.value;
+    
+    const digitsBeforeCursor = (value.substring(0, cursorPosition).match(/\d/g) || []).length;
+    let digits = value.replace(/\D/g, '');
+    
+    if (digits.startsWith('7')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('8')) {
+      digits = digits.substring(1);
+    }
+    
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    let formatted = '+7';
+    if (digits.length > 0) {
+      formatted += ' (' + digits.substring(0, 3);
+      if (digits.length > 3) {
+        formatted += ') ' + digits.substring(3, 6);
+        if (digits.length > 6) {
+          formatted += '-' + digits.substring(6, 8);
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+          }
+        }
+      } else if (digits.length === 3) {
+        formatted += ')';
+      }
+    }
+    
+    this.callbackPhone = formatted;
+    
+    setTimeout(() => {
+      let newCursorPos = this.calculateCursorPosition(formatted, digitsBeforeCursor);
+      input.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  }
+
+  private calculateCursorPosition(formatted: string, digitsBefore: number): number {
+    let digitCount = 0;
+    for (let i = 0; i < formatted.length; i++) {
+      if (/\d/.test(formatted[i])) {
+        digitCount++;
+        if (digitCount === digitsBefore) {
+          return Math.min(i + 1, formatted.length);
+        }
+      }
+    }
+    return formatted.length;
+  }
+
+  onPhoneKeyDown(event: KeyboardEvent): void {
+    const input = event.target as HTMLInputElement;
+    const selectionStart = input.selectionStart || 0;
+    const selectionEnd = input.selectionEnd || 0;
+    
+    const allowedKeys = [8, 9, 13, 27, 37, 38, 39, 40, 46, 35, 36];
+    if (allowedKeys.indexOf(event.keyCode) !== -1) {
+      if (event.keyCode === 8 && selectionStart <= 3 && selectionEnd <= 3) {
+        event.preventDefault();
+        return;
+      }
+      if (event.keyCode === 46 && selectionStart < 3 && selectionEnd <= 3) {
+        event.preventDefault();
+        return;
+      }
+      return;
+    }
+    
+    if (event.ctrlKey || event.metaKey) {
+      return;
+    }
+    
+    if (selectionStart < 3 && !event.ctrlKey && !event.metaKey) {
+      if (event.keyCode !== 8 && event.keyCode !== 46) {
+        setTimeout(() => {
+          input.setSelectionRange(3, 3);
+        }, 0);
+      }
+    }
+  }
+
+  onPhoneFocus(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.value || input.value.trim() === '') {
+      this.callbackPhone = '+7';
+      setTimeout(() => {
+        input.setSelectionRange(3, 3);
+      }, 0);
+    }
+  }
+
+  onPhonePaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const input = event.target as HTMLInputElement;
+    const pastedText = event.clipboardData?.getData('text') || '';
+    
+    let digits = pastedText.replace(/\D/g, '');
+    
+    if (digits.startsWith('7')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('8')) {
+      digits = digits.substring(1);
+    }
+    
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    let formatted = '+7';
+    if (digits.length > 0) {
+      formatted += ' (' + digits.substring(0, 3);
+      if (digits.length > 3) {
+        formatted += ') ' + digits.substring(3, 6);
+        if (digits.length > 6) {
+          formatted += '-' + digits.substring(6, 8);
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+          }
+        }
+      } else if (digits.length === 3) {
+        formatted += ')';
+      }
+    }
+    
+    this.callbackPhone = formatted;
+    
+    setTimeout(() => {
+      input.setSelectionRange(formatted.length, formatted.length);
+    }, 0);
   }
 
   ngOnDestroy() {

@@ -11,7 +11,14 @@ export class ContactService {
   sendMessage(contactData: any): Observable<any> {
     return this.api.post('/contact', contactData);
   }
+
+  requestCallback(phone: string): Observable<any> {
+    return this.api.post('/contact/callback', { phone });
+  }
 }
+
+
+
 
 
 
