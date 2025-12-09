@@ -1304,6 +1304,8 @@ body {
 
         .chat-icon .phone-icon {
           animation: none;
+          opacity: 0;
+          visibility: hidden;
         }
 
         .chat-icon .hover-icons {
