@@ -1,3 +1,23 @@
+<!-- Слайдер -->
+<section class="hero-slider">
+  <div class="slider-container">
+    <div class="slider-wrapper" [style.transform]="'translateX(-' + (currentSlide * 100) + '%)'">
+      <div class="slide" *ngFor="let slide of slides; let i = index" [class.active]="i === currentSlide">
+        <img [src]="slide.image" [alt]="slide.title">
+        <div class="slide-content">
+          <h2>{{ slide.title }}</h2>
+          <p>{{ slide.description }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="slider-indicators">
+      <button *ngFor="let slide of slides; let i = index" [class.active]="i === currentSlide" (click)="goToSlide(i)"
+        [attr.aria-label]="'Перейти к слайду ' + (i + 1)">
+      </button>
+    </div>
+  </div>
+</section>
+
 <!-- Навигация по категориям (только для прокрутки к секциям категорий) -->
 <section class="category-nav-section">
   <div class="container">

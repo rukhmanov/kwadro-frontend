@@ -39,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
   editEntity: any = null;
   editEntityType: 'product' | 'news' | 'category' = 'product';
   showPhoneDropdown = false;
+  showChatDropdown = false;
   showCallbackModal = false;
   callbackPhone = '';
   isSubmittingCallback = false;
@@ -51,6 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isSubmittingInstallment = false;
   installmentSuccess = false;
   installmentError = '';
+  showChatActionModal = false;
   private socket?: Socket;
 
   constructor(
@@ -188,6 +190,33 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleChat() {
     this.chatOpen = !this.chatOpen;
+  }
+
+  toggleChatDropdown() {
+    if (!this.chatOpen) {
+      this.showChatDropdown = !this.showChatDropdown;
+    } else {
+      this.chatOpen = !this.chatOpen;
+    }
+  }
+
+  closeChatDropdown() {
+    this.showChatDropdown = false;
+  }
+
+  openChat() {
+    this.chatOpen = true;
+    this.showChatActionModal = false;
+  }
+
+  openChatFromDropdown() {
+    this.chatOpen = true;
+    this.showPhoneDropdown = false;
+    this.showChatDropdown = false;
+  }
+
+  closeChatActionModal() {
+    this.showChatActionModal = false;
   }
 
   toggleMobileMenu() {

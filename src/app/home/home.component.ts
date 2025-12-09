@@ -49,6 +49,27 @@ export class HomeComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
   
+  // Слайдер
+  slides = [
+    {
+      image: '/assets/slides/1.jpeg',
+      title: 'Мототехника',
+      description: 'Широкий ассортимент мототехники для любых задач'
+    },
+    {
+      image: '/assets/slides/2.jpg',
+      title: 'Защитная экипировка',
+      description: 'Безопасность превыше всего - качественная защита'
+    },
+    {
+      image: '/assets/slides/3.jpg',
+      title: 'Сервисное обслуживание',
+      description: 'Профессиональный сервис и ремонт вашей техники'
+    }
+  ];
+  currentSlide = 0;
+  private slideInterval: any;
+  
   Math = Math;
 
   constructor(
@@ -86,11 +107,43 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // Загружаем категории и товары по категориям
     this.loadCategoriesAndProducts();
+
+    // Запускаем автоматическую прокрутку слайдера
+    this.startSlider();
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    this.stopSlider();
+  }
+
+  // Методы слайдера
+  startSlider() {
+    this.slideInterval = setInterval(() => {
+      this.nextSlide();
+    }, 5000); // Переключение каждые 5 секунд
+  }
+
+  stopSlider() {
+    if (this.slideInterval) {
+      clearInterval(this.slideInterval);
+    }
+  }
+
+  nextSlide() {
+    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+  }
+
+  previousSlide() {
+    this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+  }
+
+  goToSlide(index: number) {
+    this.currentSlide = index;
+    // Перезапускаем таймер при ручном переключении
+    this.stopSlider();
+    this.startSlider();
   }
 
   loadCategoriesAndProducts() {
