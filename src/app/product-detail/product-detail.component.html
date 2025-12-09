@@ -3,16 +3,12 @@
     <a routerLink="/products" class="back-link">← Назад к каталогу</a>
 
     <div class="product-content">
-      <h1 class="product-title">{{ product.name }}</h1>
-
       <div class="product-images">
         <div class="main-image-container">
           <img
             *ngIf="selectedMediaType === 'image' || (selectedMediaType === null && product.images && product.images.length > 0)"
             [src]="selectedImage || (product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.svg'"
-            [alt]="product.name" 
-            class="main-image"
-            (error)="$any($event.target).src='/assets/placeholder.svg'">
+            [alt]="product.name" class="main-image" (error)="$any($event.target).src='/assets/placeholder.svg'">
           <video
             *ngIf="selectedMediaType === 'video' || (selectedMediaType === null && product.video && (!product.images || product.images.length === 0))"
             [src]="product.video" controls class="product-video-player">
@@ -35,6 +31,7 @@
       </div>
 
       <div class="product-info">
+        <h1 class="product-title">{{ product.name }}</h1>
         <p class="description">{{ product.description }}</p>
 
         <div class="specs" *ngIf="product.specifications && product.specifications.length > 0">
