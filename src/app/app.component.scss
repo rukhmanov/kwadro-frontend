@@ -1003,10 +1003,6 @@ body {
           display: flex !important;
         }
 
-        .chat-icon .hover-chat-icon {
-          display: none !important;
-        }
-
         .chat-icon::after {
           opacity: 0 !important;
           animation: none !important;
@@ -1097,27 +1093,17 @@ body {
             width: 100%;
             height: 100%;
             z-index: 2;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-          }
-
-          .hover-chat-icon {
-            display: none;
-          }
-
-          .hover-chat-icon {
-            font-size: 1.25rem;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 0.75rem;
           }
 
           .hover-phone-icon {
-            width: 18px;
-            height: 18px;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
             color: white;
             display: flex;
             align-items: center;
@@ -1125,10 +1111,18 @@ body {
             text-decoration: none;
             cursor: pointer;
             transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
 
             &:hover {
               color: #e74d10;
               transform: scale(1.1);
+              background: rgba(255, 255, 255, 0.15);
+              border-color: rgba(255, 255, 255, 0.3);
             }
 
             &:active {
@@ -1136,8 +1130,50 @@ body {
             }
 
             svg {
-              width: 100%;
-              height: 100%;
+              width: 20px;
+              height: 20px;
+              flex-shrink: 0;
+              display: block;
+            }
+          }
+
+          .hover-chat-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            font-size: 1.25rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+            transform: translateX(0) scale(0.9);
+            pointer-events: auto;
+            position: relative;
+            flex-shrink: 0;
+
+            .hover-phone-icon:hover ~ & {
+              opacity: 1;
+              transform: translateX(0) scale(1);
+            }
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.15);
+              border-color: rgba(255, 255, 255, 0.3);
+              transform: scale(1.1);
+              opacity: 1;
+            }
+
+            &:active {
+              transform: scale(0.95);
             }
           }
         }
