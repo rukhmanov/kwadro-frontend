@@ -851,6 +851,356 @@ body {
   }
 }
 
+// Анимация мотоциклиста (один раз при загрузке страницы)
+.motorcycle-animation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 400px;
+  z-index: 999;
+  pointer-events: none;
+  overflow: visible;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(to top,
+      #000000 0%,
+      #050505 15%,
+      #0a0a0a 30%,
+      #050505 50%,
+      #0a0a0a 70%,
+      #050505 85%,
+      #000000 100%);
+    background-size: 100% 100%;
+    opacity: 0;
+    animation: ground-appear 8s ease-in-out forwards;
+    animation-delay: 1s;
+    z-index: 0;
+    box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.7);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to top,
+      rgba(5, 5, 5, 0.95) 0%,
+      rgba(10, 10, 10, 0.8) 50%,
+      transparent 100%);
+    opacity: 0;
+    animation: ground-lines 8s ease-in-out forwards;
+    animation-delay: 1s;
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
+.motorcycle-wrapper {
+  position: absolute;
+  bottom: -50px;
+  left: -360px;
+  width: 360px;
+  height: 360px;
+  animation: motorcycle-ride 8s ease-in-out forwards;
+  animation-delay: 1s;
+  z-index: 2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    transform: translateX(-30%);
+    width: 200px;
+    height: 80px;
+    background: radial-gradient(ellipse at center,
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.4) 20%,
+      rgba(0, 0, 0, 0.3) 40%,
+      rgba(0, 0, 0, 0.2) 60%,
+      transparent 100%);
+    border-radius: 50%;
+    opacity: 0.7;
+    filter: blur(15px);
+    z-index: -1;
+    animation: shadow-fade 8s ease-in-out forwards;
+    animation-delay: 1s;
+  }
+}
+
+.motorcycle {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+  transform-origin: 20% 95%;
+}
+
+// Эффекты пыли
+.dust-cloud {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 40px;
+  background: radial-gradient(ellipse at center, 
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(10, 10, 10, 0.4) 30%,
+    rgba(20, 20, 20, 0.3) 60%,
+    transparent 100%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: dust-fade 8s ease-in-out forwards;
+  filter: blur(8px);
+  z-index: 1;
+}
+
+.dust-cloud-1 {
+  animation-delay: 1.5s;
+  width: 50px;
+  height: 35px;
+}
+
+.dust-cloud-2 {
+  animation-delay: 2.5s;
+  width: 70px;
+  height: 45px;
+}
+
+.dust-cloud-3 {
+  animation-delay: 4s;
+  width: 65px;
+  height: 40px;
+}
+
+.dust-cloud-4 {
+  animation-delay: 6s;
+  width: 80px;
+  height: 50px;
+}
+
+// Ключевые кадры анимации
+@keyframes motorcycle-ride {
+  0% {
+    left: -360px;
+    bottom: -50px;
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+    transform: scale(0.8) rotate(0deg);
+  }
+  10% {
+    bottom: -30px;
+    transform: scale(0.8) rotate(12deg);
+  }
+  20% {
+    bottom: -20px;
+    transform: scale(0.8) rotate(18deg);
+  }
+  30% {
+    bottom: -15px;
+    transform: scale(0.8) rotate(20deg);
+  }
+  40% {
+    bottom: -20px;
+    transform: scale(0.8) rotate(15deg);
+  }
+  50% {
+    bottom: -30px;
+    transform: scale(0.8) rotate(8deg);
+  }
+  60% {
+    bottom: -40px;
+    transform: scale(0.8) rotate(3deg);
+  }
+  70% {
+    left: calc(100% + 50px);
+    bottom: -50px;
+    transform: scale(0.8) rotate(0deg);
+    opacity: 1;
+  }
+  85% {
+    left: calc(100% + 50px);
+    bottom: -80px;
+    transform: scale(0.6) rotate(-5deg);
+    opacity: 0.9;
+  }
+  100% {
+    left: calc(100% + 50px);
+    bottom: -100px;
+    transform: scale(0.4) rotate(-10deg);
+    opacity: 0;
+  }
+}
+
+@keyframes dust-fade {
+  0%, 100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  10% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1);
+  }
+  20% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1.2);
+  }
+  30% {
+    opacity: 0.4;
+    transform: translateX(-50%) scale(1.4);
+  }
+  50% {
+    opacity: 0.2;
+    transform: translateX(-50%) scale(1.6);
+  }
+  70% {
+    opacity: 0;
+    transform: translateX(-50%) scale(2);
+  }
+}
+
+@keyframes ground-appear {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ground-lines {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  5% {
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+  85% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes shadow-fade {
+  0% {
+    opacity: 0;
+    transform: translateX(-30%) scale(0.8);
+  }
+  5% {
+    opacity: 0.7;
+    transform: translateX(-30%) scale(1);
+  }
+  70% {
+    opacity: 0.7;
+    transform: translateX(-30%) scale(1);
+  }
+  85% {
+    opacity: 0.5;
+    transform: translateX(-30%) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-30%) scale(0.8);
+  }
+}
+
+// Адаптивные стили для анимации
+@media (min-width: 768px) {
+  .motorcycle-wrapper {
+    width: 360px;
+    height: 360px;
+    bottom: -50px;
+  }
+
+  .dust-cloud {
+    width: 80px;
+    height: 50px;
+  }
+
+  .dust-cloud-1 {
+    width: 70px;
+    height: 45px;
+  }
+
+  .dust-cloud-2 {
+    width: 90px;
+    height: 55px;
+  }
+
+  .dust-cloud-3 {
+    width: 85px;
+    height: 50px;
+  }
+
+  .dust-cloud-4 {
+    width: 100px;
+    height: 60px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .motorcycle-wrapper {
+    width: 360px;
+    height: 360px;
+    bottom: -50px;
+  }
+
+  .dust-cloud {
+    width: 100px;
+    height: 60px;
+  }
+
+  .dust-cloud-1 {
+    width: 90px;
+    height: 55px;
+  }
+
+  .dust-cloud-2 {
+    width: 110px;
+    height: 65px;
+  }
+
+  .dust-cloud-3 {
+    width: 105px;
+    height: 60px;
+  }
+
+  .dust-cloud-4 {
+    width: 120px;
+    height: 70px;
+  }
+}
+
 // Chat Widget - Mobile First
 .chat-widget {
   position: fixed;
@@ -936,40 +1286,6 @@ body {
       position: relative;
       overflow: visible;
 
-      // Дополнительные частицы искр
-      .spark-particle {
-        position: absolute;
-        left: -8px;
-        top: 50%;
-        width: 3px;
-        height: 3px;
-        background: rgba(255, 200, 0, 0.9);
-        border-radius: 50%;
-        animation: spark-particles 0.6s ease-out infinite;
-        box-shadow: 0 0 6px rgba(255, 200, 0, 0.8);
-
-        &:nth-child(1) {
-          top: calc(50% - 8px);
-          animation-delay: 0s;
-        }
-
-        &:nth-child(2) {
-          top: calc(50% - 4px);
-          animation-delay: 0.1s;
-        }
-
-        &:nth-child(3) {
-          top: calc(50% + 4px);
-          animation-delay: 0.2s;
-        }
-
-        &:nth-child(4) {
-          top: calc(50% + 8px);
-          animation-delay: 0.3s;
-        }
-      }
-      
-
       &::before {
         content: '';
         position: absolute;
@@ -982,53 +1298,19 @@ body {
         animation: pulse-glow 2s ease-in-out infinite;
       }
 
-      &::after {
-        content: '';
-        position: absolute;
-        left: -15px;
-        top: 50%;
-        transform: translateY(-50%) rotate(90deg);
-        width: 40px;
-        height: 20px;
-        background: radial-gradient(ellipse at center, 
-          rgba(255, 200, 0, 0.8) 0%,
-          rgba(231, 77, 16, 0.6) 20%,
-          rgba(255, 100, 0, 0.4) 40%,
-          transparent 70%);
-        opacity: 0.7;
-        filter: blur(4px);
-        z-index: -2;
-        animation: spark-flicker 0.3s ease-in-out infinite alternate;
-        border-radius: 50% 50% 50% 50% / 60% 40% 60% 40%;
-      }
-
       &:hover, &:active {
         transform: scale(1.08);
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5), 0 0 0 3px rgba(255, 255, 255, 0.2);
 
-        .chat-icon .wheel-icon {
-          display: none;
-        }
-
-        .chat-icon .spark-particle {
-          display: none;
+        .chat-icon .phone-icon {
+          animation: none;
         }
 
         .chat-icon .hover-icons {
           display: flex !important;
         }
 
-        .chat-icon::after {
-          opacity: 0 !important;
-          animation: none !important;
-        }
-
         &::before {
-          opacity: 0 !important;
-          animation: none !important;
-        }
-
-        &::after {
           opacity: 0 !important;
           animation: none !important;
         }
@@ -1062,42 +1344,15 @@ body {
           filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
           position: relative;
 
-          .wheel-icon {
-            width: 84px;
-            height: 84px;
-            max-width: 84px;
-            max-height: 84px;
-            animation: rotate-wheel 2s linear infinite;
+          .phone-icon {
+            width: 24px;
+            height: 24px;
+            color: white;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
             transition: all 0.3s ease;
-            position: absolute;
+            position: relative;
             z-index: 1;
-            top: 50%;
-            left: 50%;
-            margin-top: -42px;
-            margin-left: -42px;
-          }
-
-          &::after {
-            content: '';
-            position: absolute;
-            left: -12px;
-            top: 50%;
-            transform: translateY(-50%) rotate(90deg);
-            width: 35px;
-            height: 18px;
-            background: radial-gradient(ellipse at center, 
-              rgba(255, 200, 0, 0.7) 0%,
-              rgba(231, 77, 16, 0.5) 25%,
-              rgba(255, 100, 0, 0.3) 45%,
-              transparent 70%);
-            opacity: 0.6;
-            filter: blur(3px);
-            z-index: 0;
-            animation: spark-flicker 0.3s ease-in-out infinite alternate;
-            border-radius: 50% 50% 50% 50% / 60% 40% 60% 40%;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            animation: phone-shake-periodic 4s ease-in-out infinite;
           }
 
           .hover-icons {
@@ -1619,12 +1874,27 @@ body {
   }
 }
 
-@keyframes rotate-wheel {
-  from {
-    transform: rotate(0deg);
+@keyframes phone-shake {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
   }
-  to {
-    transform: rotate(360deg);
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px) rotate(-5deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px) rotate(5deg);
+  }
+}
+
+@keyframes phone-shake-periodic {
+  0%, 90%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  91%, 93%, 95%, 97% {
+    transform: translateX(-4px) rotate(-8deg);
+  }
+  92%, 94%, 96%, 98% {
+    transform: translateX(4px) rotate(8deg);
   }
 }
 
