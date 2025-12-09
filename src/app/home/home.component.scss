@@ -753,6 +753,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      flex-shrink: 0;
 
       &:active {
         background: rgba(255, 255, 255, 0.15);
@@ -952,14 +953,23 @@
   .product-card {
     .actions {
       flex-direction: row;
+      flex-wrap: wrap;
 
       .cart-button-wrapper {
         flex: 1;
+        min-width: 0;
       }
 
       .quantity-controls-card {
         flex: 1;
         max-width: 150px;
+        min-width: 0;
+      }
+
+      .btn-installment {
+        flex: 1 1 100%;
+        width: 100%;
+        margin-top: 0.5rem;
       }
     }
 
