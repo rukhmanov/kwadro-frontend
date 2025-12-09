@@ -97,11 +97,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.categoriesService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
-        // Загружаем по 5 товаров для каждой категории
+        // Загружаем по 10 товаров для каждой категории
         categories.forEach(category => {
           this.productsService.getProductsPaginated({
             categoryId: category.id,
-            limit: 5,
+            limit: 10,
             page: 1,
             sortBy: 'createdAt',
             sortOrder: 'DESC'

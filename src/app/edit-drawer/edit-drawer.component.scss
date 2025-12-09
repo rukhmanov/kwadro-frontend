@@ -215,7 +215,7 @@
       width: 20px;
       height: 20px;
       cursor: pointer;
-      accent-color: #ff0000;
+      accent-color: #e74d10;
       flex-shrink: 0;
     }
 
@@ -319,7 +319,7 @@
       z-index: 2;
 
       &:active {
-        background: #ff6b6b;
+        background: #f26b3d;
         transform: translateX(-50%) scale(0.95);
       }
     }
@@ -361,7 +361,7 @@
     .remove-spec-btn {
       background: rgba(255, 107, 107, 0.2);
       border: 1px solid rgba(255, 107, 107, 0.3);
-      color: #ff6b6b;
+      color: #f26b3d;
       border-radius: 6px;
       padding: 0.5rem 0.75rem;
       cursor: pointer;

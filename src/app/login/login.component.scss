@@ -50,14 +50,14 @@
 
         &:focus {
           outline: none;
-          border-color: #ff0000;
+          border-color: #e74d10;
           background: rgba(255, 255, 255, 0.15);
         }
       }
     }
 
     .error {
-      color: #ff6b6b;
+      color: #f26b3d;
       margin-bottom: 1rem;
       padding: 0.75rem;
       background: rgba(255, 107, 107, 0.15);
@@ -74,15 +74,15 @@
       font-size: 1.1rem;
       font-weight: 600;
       letter-spacing: 0.5px;
-      background: linear-gradient(135deg, #ff0000 0%, #cc0000 50%, #ff0000 100%);
+      background: linear-gradient(135deg, #e74d10 0%, #c43d0d 50%, #e74d10 100%);
       background-size: 200% 200%;
       color: #ffffff;
       border: none;
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4),
-                  0 0 30px rgba(255, 0, 0, 0.2),
+      box-shadow: 0 6px 20px rgba(231, 77, 16, 0.4),
+                  0 0 30px rgba(231, 77, 16, 0.2),
                   inset 0 1px 0 rgba(255, 255, 255, 0.2);
       text-transform: uppercase;
       position: relative;
@@ -102,8 +102,8 @@
       &:hover {
         background-position: 100% 0;
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5),
-                    0 0 40px rgba(255, 0, 0, 0.3),
+        box-shadow: 0 8px 25px rgba(231, 77, 16, 0.5),
+                    0 0 40px rgba(231, 77, 16, 0.3),
                     inset 0 1px 0 rgba(255, 255, 255, 0.3);
         
         &::before {
@@ -113,15 +113,15 @@
 
       &:active {
         transform: translateY(0);
-        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4),
+        box-shadow: 0 4px 15px rgba(231, 77, 16, 0.4),
                     inset 0 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       &:focus {
         outline: none;
-        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4),
-                    0 0 30px rgba(255, 0, 0, 0.2),
-                    0 0 0 3px rgba(255, 0, 0, 0.3);
+        box-shadow: 0 6px 20px rgba(231, 77, 16, 0.4),
+                    0 0 30px rgba(231, 77, 16, 0.2),
+                    0 0 0 3px rgba(231, 77, 16, 0.3);
       }
     }
 

@@ -50,7 +50,7 @@
         position: absolute;
         top: 12px;
         right: 12px;
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        background: linear-gradient(135deg, #f26b3d 0%, #e74d10 100%);
         color: white;
         padding: 0.5rem 0.75rem;
         border-radius: 20px;
@@ -273,7 +273,7 @@
               .slider-progress {
                 position: absolute;
                 height: 100%;
-                background: #ff0000;
+                background: #e74d10;
                 border-radius: 3px;
                 pointer-events: none;
               }
@@ -282,18 +282,18 @@
                 position: absolute;
                 width: 18px;
                 height: 18px;
-                background: #ff0000;
+                background: #e74d10;
                 border-radius: 50%;
                 cursor: grab;
                 transform: translate(-50%, -50%);
                 top: 50%;
-                box-shadow: 0 2px 6px rgba(255, 0, 0, 0.4);
+                box-shadow: 0 2px 6px rgba(231, 77, 16, 0.4);
                 transition: all 0.2s ease;
                 z-index: 2;
 
                 &:hover {
                   transform: translate(-50%, -50%) scale(1.2);
-                  box-shadow: 0 3px 8px rgba(255, 0, 0, 0.6);
+                  box-shadow: 0 3px 8px rgba(231, 77, 16, 0.6);
                 }
 
                 &:active {
@@ -371,7 +371,7 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 107, 107, 0.3);
         border-radius: 8px;
-        color: #ff6b6b;
+        color: #f26b3d;
         font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
@@ -452,8 +452,8 @@
         min-width: fit-content;
 
         &.active {
-          background: rgba(255, 0, 0, 0.2);
-          border-color: rgba(255, 0, 0, 0.4);
+          background: rgba(231, 77, 16, 0.2);
+          border-color: rgba(231, 77, 16, 0.4);
           color: #ffffff;
         }
 
@@ -507,22 +507,22 @@
 
         &:hover {
           h3 {
-            color: #cc0000;
+            color: #c43d0d;
           }
 
           svg {
-            color: #cc0000;
+            color: #c43d0d;
             transform: translateX(4px);
           }
         }
 
         &:active {
           h3 {
-            color: #cc0000;
+            color: #c43d0d;
           }
 
           svg {
-            color: #cc0000;
+            color: #c43d0d;
             transform: translateX(2px);
           }
         }
@@ -559,9 +559,9 @@
         }
 
         .product-card {
-          flex: 0 0 40%;
-          max-width: 40%;
-          min-width: 200px;
+          flex: 0 0 35%;
+          max-width: 35%;
+          min-width: 240px;
           scroll-snap-align: start;
         }
       }
@@ -686,7 +686,7 @@
 
     .btn-cart {
       width: 100%;
-      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      background: linear-gradient(135deg, #e74d10 0%, #c43d0d 100%);
       color: white;
       border: none;
       padding: 0.75rem 1rem;
@@ -698,8 +698,8 @@
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3),
-                  0 2px 8px rgba(255, 0, 0, 0.2);
+      box-shadow: 0 4px 15px rgba(231, 77, 16, 0.3),
+                  0 2px 8px rgba(231, 77, 16, 0.2);
       transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
@@ -717,8 +717,8 @@
 
       &:active {
         transform: translateY(1px);
-        box-shadow: 0 2px 10px rgba(255, 0, 0, 0.3),
-                    0 1px 4px rgba(255, 0, 0, 0.2);
+        box-shadow: 0 2px 10px rgba(231, 77, 16, 0.3),
+                    0 1px 4px rgba(231, 77, 16, 0.2);
 
         &::before {
           left: 100%;
@@ -840,7 +840,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 
     &:hover {
-      color: #cc0000;
+      color: #e74d10;
     }
   }
 }
@@ -907,17 +907,39 @@
       }
 
       .category-products-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        padding: 0 2rem;
-        margin: 0;
+        display: flex;
         gap: 1.5rem;
-        overflow-x: visible;
+        padding: 0 2rem;
+        margin: 0 -2rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+        &::-webkit-scrollbar {
+          height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.5);
+          }
+        }
 
         .product-card {
-          flex: none;
-          max-width: 100%;
-          min-width: 0;
+          flex: 0 0 30%;
+          max-width: 30%;
+          min-width: 280px;
+          scroll-snap-align: start;
         }
       }
     }
@@ -930,9 +952,9 @@
   }
 
   .product-card {
-    flex: 0 0 20%;
-    max-width: 20%;
-    min-width: 220px;
+    flex: 0 0 25%;
+    max-width: 25%;
+    min-width: 240px;
   }
 
   .news-grid {
@@ -991,22 +1013,22 @@
 @media (min-width: 1024px) {
   .featured-products, .latest-news, .catalog-preview {
     .container {
-      padding-left: 3rem;
-      padding-right: 3rem;
-      max-width: 1400px;
+      padding-left: 4rem;
+      padding-right: 4rem;
+      max-width: 1920px;
       margin: 0 auto;
     }
   }
 
   .products-grid {
-    padding: 0 3rem;
-    margin: 0 -3rem;
+    padding: 0 4rem;
+    margin: 0 -4rem;
   }
 
   .product-card {
-    flex: 0 0 15%;
-    max-width: 15%;
-    min-width: 220px;
+    flex: 0 0 20%;
+    max-width: 20%;
+    min-width: 240px;
   }
 
   .news-grid {
@@ -1025,10 +1047,30 @@
     }
   }
 
+  .search-filters-section {
+    .container {
+      padding-left: 4rem;
+      padding-right: 4rem;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+  }
+
+  .search-results-section {
+    .container {
+      padding-left: 4rem;
+      padding-right: 4rem;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+  }
+
   .category-nav-section {
     .container {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
+      padding-left: 4rem;
+      padding-right: 4rem;
+      max-width: 1920px;
+      margin: 0 auto;
     }
 
     .category-nav {
@@ -1053,7 +1095,7 @@
       scroll-margin-top: 150px;
 
       .category-header {
-        padding: 0 3rem;
+        padding: 0 4rem;
 
         .category-title-link {
           h3 {
@@ -1068,17 +1110,39 @@
       }
 
       .category-products-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        padding: 0 3rem;
-        margin: 0;
+        display: flex;
         gap: 2rem;
-        overflow-x: visible;
+        padding: 0 4rem;
+        margin: 0 -4rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+        &::-webkit-scrollbar {
+          height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.5);
+          }
+        }
 
         .product-card {
-          flex: none;
-          max-width: 100%;
-          min-width: 0;
+          flex: 0 0 22%;
+          max-width: 22%;
+          min-width: 300px;
+          scroll-snap-align: start;
         }
       }
     }

@@ -123,7 +123,7 @@
 
         &:focus {
           outline: none;
-          border-color: #ff0000;
+          border-color: #e74d10;
           background: rgba(255, 255, 255, 0.15);
         }
       }
@@ -147,15 +147,15 @@
         font-size: 1.05rem;
         font-weight: 600;
         letter-spacing: 0.5px;
-        background: linear-gradient(135deg, #ff0000 0%, #cc0000 50%, #ff0000 100%);
+        background: linear-gradient(135deg, #e74d10 0%, #c43d0d 50%, #e74d10 100%);
         background-size: 200% 200%;
         color: #ffffff;
         border: none;
         border-radius: 10px;
         cursor: pointer;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4),
-                    0 0 30px rgba(255, 0, 0, 0.2),
+        box-shadow: 0 6px 20px rgba(231, 77, 16, 0.4),
+                    0 0 30px rgba(231, 77, 16, 0.2),
                     inset 0 1px 0 rgba(255, 255, 255, 0.2);
         text-transform: uppercase;
         position: relative;
@@ -176,8 +176,8 @@
         &:hover:not(:disabled) {
           background-position: 100% 0;
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5),
-                      0 0 40px rgba(255, 0, 0, 0.3),
+          box-shadow: 0 8px 25px rgba(231, 77, 16, 0.5),
+                      0 0 40px rgba(231, 77, 16, 0.3),
                       inset 0 1px 0 rgba(255, 255, 255, 0.3);
           
           &::before {
@@ -187,15 +187,15 @@
 
         &:active:not(:disabled) {
           transform: translateY(0);
-          box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4),
+          box-shadow: 0 4px 15px rgba(231, 77, 16, 0.4),
                       inset 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         &:focus:not(:disabled) {
           outline: none;
-          box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4),
-                      0 0 30px rgba(255, 0, 0, 0.2),
-                      0 0 0 3px rgba(255, 0, 0, 0.3);
+          box-shadow: 0 6px 20px rgba(231, 77, 16, 0.4),
+                      0 0 30px rgba(231, 77, 16, 0.2),
+                      0 0 0 3px rgba(231, 77, 16, 0.3);
         }
 
         &:disabled {
@@ -298,7 +298,7 @@
 
                   &.out-of-stock {
                     background: rgba(220, 53, 69, 0.2);
-                    color: #ff6b6b;
+                    color: #f26b3d;
                     border: 1px solid rgba(220, 53, 69, 0.3);
                   }
                 }
@@ -507,7 +507,7 @@
         }
 
         &.active {
-          border-color: #ff0000;
+          border-color: #e74d10;
           background: rgba(255, 255, 255, 0.15);
         }
 
@@ -716,7 +716,7 @@
 
         &:focus {
           outline: none;
-          border-color: #ff0000;
+          border-color: #e74d10;
           background: rgba(255, 255, 255, 0.15);
         }
       }
@@ -724,7 +724,7 @@
       button {
         align-self: flex-end;
         padding: 0.875rem 2rem;
-        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+        background: linear-gradient(135deg, #e74d10 0%, #c43d0d 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -733,11 +733,11 @@
         white-space: nowrap;
         min-width: 120px;
         transition: background 0.2s;
-        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        box-shadow: 0 4px 15px rgba(231, 77, 16, 0.3);
 
         &:hover {
-          background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
-          box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+          background: linear-gradient(135deg, #f05d2d 0%, #e74d10 100%);
+          box-shadow: 0 6px 20px rgba(231, 77, 16, 0.4);
         }
 
         &:active {
@@ -977,7 +977,7 @@
 
     &:focus {
       outline: none;
-      border-color: #ff0000;
+      border-color: #e74d10;
       box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
     }
   }
@@ -1009,7 +1009,7 @@
       transition: all 0.3s ease;
 
       &:hover {
-        background: #cc0000;
+        background: #c43d0d;
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
       }
@@ -1048,7 +1048,7 @@
         transition: all 0.3s ease;
 
         &:hover {
-          background: #cc0000;
+          background: #c43d0d;
           transform: translateY(-1px);
           box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
         }
@@ -1088,7 +1088,7 @@
         transition: all 0.3s ease;
 
         &:hover {
-          background: #cc0000;
+          background: #c43d0d;
           transform: scale(1.05);
           box-shadow: 0 4px 8px rgba(255, 68, 68, 0.4);
         }
@@ -1195,7 +1195,7 @@
         top: 0.5rem;
         right: 0.5rem;
         padding: 0.25rem 0.5rem;
-        background: #ff0000;
+        background: #e74d10;
         color: white;
         border-radius: 4px;
         font-size: 0.75rem;
@@ -1214,7 +1214,7 @@
         transition: all 0.3s ease;
 
         &:hover {
-          background: #cc0000;
+          background: #c43d0d;
           transform: translateY(-1px);
           box-shadow: 0 4px 8px rgba(255, 68, 68, 0.3);
         }
@@ -1234,8 +1234,8 @@
   // Плейсхолдер - показывает куда будет вставлено фото
   .cdk-drag-placeholder {
     opacity: 0.5;
-    background: rgba(255, 0, 0, 0.15);
-    border: 2px dashed #ff0000;
+    background: rgba(231, 77, 16, 0.15);
+    border: 2px dashed #e74d10;
     border-radius: 8px;
     min-height: 200px;
     min-width: 150px;
@@ -1249,7 +1249,7 @@
       content: '↓';
       position: absolute;
       font-size: 2rem;
-      color: #ff0000;
+      color: #e74d10;
       opacity: 0.7;
     }
 
@@ -1265,8 +1265,8 @@
 
   @keyframes pulsePlaceholder {
     0%, 100% {
-      border-color: #ff0000;
-      background: rgba(255, 0, 0, 0.15);
+      border-color: #e74d10;
+      background: rgba(231, 77, 16, 0.15);
     }
     50% {
       border-color: #ff6666;
@@ -1281,7 +1281,7 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
     opacity: 0.95;
     transform: rotate(3deg) scale(1.05);
-    border: 2px solid #ff0000;
+    border: 2px solid #e74d10;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
   }
@@ -1348,7 +1348,7 @@
           transition: all 0.3s ease;
 
           &:hover {
-            background: #cc0000;
+            background: #c43d0d;
             transform: scale(1.05);
             box-shadow: 0 4px 8px rgba(255, 68, 68, 0.4);
           }
@@ -1406,7 +1406,7 @@
         transition: all 0.2s ease;
 
         &:active {
-          background: #cc0000;
+          background: #c43d0d;
           transform: scale(0.95);
         }
       }
@@ -1486,7 +1486,7 @@
 
         &:focus {
           outline: none;
-          border-color: #ff0000;
+          border-color: #e74d10;
           background: rgba(255, 255, 255, 0.15);
         }
 
@@ -1501,7 +1501,7 @@
       background: rgba(255, 107, 107, 0.2);
       border: 1px solid rgba(255, 107, 107, 0.5);
       border-radius: 8px;
-      color: #ff6b6b;
+      color: #f26b3d;
       margin-bottom: 1rem;
       font-size: 0.9rem;
     }
@@ -1519,7 +1519,7 @@
     .btn-primary {
       width: 100%;
       padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      background: linear-gradient(135deg, #e74d10 0%, #c43d0d 100%);
       color: white;
       border: none;
       border-radius: 8px;
@@ -1529,9 +1529,9 @@
       transition: all 0.3s ease;
 
       &:hover:not(:disabled) {
-        background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
+        background: linear-gradient(135deg, #c43d0d 0%, #a0300a 100%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+        box-shadow: 0 4px 12px rgba(231, 77, 16, 0.3);
       }
 
       &:active:not(:disabled) {
@@ -1587,7 +1587,7 @@
       font-size: 0.875rem;
 
       &:hover {
-        background: #cc0000;
+        background: #c43d0d;
       }
     }
   }
