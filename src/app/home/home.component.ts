@@ -1,25 +1,54 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { ProductsService } from '../services/products.service';
 import { NewsService } from '../services/news.service';
 import { CartService } from '../services/cart.service';
 import { CategoriesService } from '../services/categories.service';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   featuredProducts: any[] = [];
+  searchResults: any[] = [];
   latestNews: any[] = [];
   cartItems: any[] = [];
   cartItemsMap: Map<number, any> = new Map();
   categories: any[] = [];
   categoryProducts: Map<number, any[]> = new Map();
+  
+  // Поиск и фильтры
+  searchQuery: string = '';
+  sortBy: string = 'createdAt';
+  sortOrder: 'ASC' | 'DESC' = 'DESC';
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
+  priceRangeMin: number = 0;
+  priceRangeMax: number = 100000;
+  priceRangeMinLimit: number = 0;
+  priceRangeMaxLimit: number = 100000;
+  inStock: boolean | null = null;
+  showFilters: boolean = false;
+  selectedCategory: number | null = null;
+  loadingSearch: boolean = false;
+  
+  // Для drag & drop
+  private isDragging: boolean = false;
+  private dragType: 'min' | 'max' | null = null;
+  
+  // Поиск с задержкой
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+  
+  Math = Math;
 
   constructor(
     private productsService: ProductsService,
@@ -27,18 +56,20 @@ export class HomeComponent implements OnInit {
     private cartService: CartService,
     private categoriesService: CategoriesService,
     private router: Router
-  ) {}
+  ) {
+    // Настройка поиска с задержкой
+    this.searchSubject.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerm => {
+      this.loadSearchResults();
+    });
+  }
 
   ngOnInit() {
-    this.productsService.getProductsPaginated({
-      isFeatured: true,
-      limit: 10,
-      page: 1,
-      sortBy: 'createdAt',
-      sortOrder: 'DESC'
-    }).subscribe(response => {
-      this.featuredProducts = response.products || [];
-    });
+    // Загружаем популярные товары (независимо от поиска)
+    this.loadFeaturedProducts();
 
     this.newsService.getNews().subscribe(news => {
       this.latestNews = news.slice(0, 10);
@@ -53,6 +84,11 @@ export class HomeComponent implements OnInit {
 
     // Загружаем категории и товары по категориям
     this.loadCategoriesAndProducts();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadCategoriesAndProducts() {
@@ -78,9 +114,193 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  scrollToCategory(categoryId: number, event?: Event) {
+  loadFeaturedProducts() {
+    // Загружаем популярные товары независимо от поиска
+    this.productsService.getProductsPaginated({
+      isFeatured: true,
+      limit: 10,
+      page: 1,
+      sortBy: 'createdAt',
+      sortOrder: 'DESC'
+    }).subscribe({
+      next: (response) => {
+        this.featuredProducts = response.products || [];
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки популярных товаров:', err);
+        this.featuredProducts = [];
+      }
+    });
+  }
+
+  loadSearchResults() {
+    // Если поисковая строка пуста, очищаем результаты
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      this.searchResults = [];
+      return;
+    }
+
+    this.loadingSearch = true;
+    const params: any = {
+      page: 1,
+      limit: 50,
+      sortBy: this.sortBy,
+      sortOrder: this.sortOrder,
+      search: this.searchQuery.trim() // Регистронезависимый поиск на бэкенде
+    };
+
+    if (this.selectedCategory) {
+      params.categoryId = this.selectedCategory;
+    }
+    if (this.minPrice !== null) {
+      params.minPrice = this.minPrice;
+    }
+    if (this.maxPrice !== null) {
+      params.maxPrice = this.maxPrice;
+    }
+    if (this.inStock !== null) {
+      params.inStock = this.inStock;
+    }
+
+    this.productsService.getProductsPaginated(params).subscribe({
+      next: (response) => {
+        this.searchResults = response.products || [];
+        // Инициализируем диапазон цен на основе загруженных товаров
+        if (this.searchResults.length > 0 && (this.priceRangeMinLimit === 0 && this.priceRangeMaxLimit === 100000)) {
+          const prices = this.searchResults.map(p => p.price).filter(p => p != null);
+          if (prices.length > 0) {
+            const min = Math.min(...prices);
+            const max = Math.max(...prices);
+            this.priceRangeMinLimit = 0;
+            this.priceRangeMaxLimit = Math.ceil(max * 1.1);
+            if (this.minPrice === null && this.maxPrice === null) {
+              this.priceRangeMin = 0;
+              this.priceRangeMax = this.priceRangeMaxLimit;
+              this.onPriceRangeChange();
+            } else {
+              this.priceRangeMin = this.minPrice || 0;
+              this.priceRangeMax = this.maxPrice || this.priceRangeMaxLimit;
+            }
+          }
+        }
+        this.loadingSearch = false;
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки результатов поиска:', err);
+        this.searchResults = [];
+        this.loadingSearch = false;
+      }
+    });
+  }
+
+  onSearchChange(value: string) {
+    this.searchQuery = value;
+    this.searchSubject.next(value);
+  }
+
+  onSortChange() {
+    if (this.searchQuery && this.searchQuery.trim() !== '') {
+      this.loadSearchResults();
+    }
+  }
+
+  applyFilters() {
+    if (this.searchQuery && this.searchQuery.trim() !== '') {
+      this.loadSearchResults();
+    }
+  }
+
+  clearFilters() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.priceRangeMin = 0;
+    this.priceRangeMax = this.priceRangeMaxLimit || 100000;
+    this.inStock = null;
+    this.sortBy = 'createdAt';
+    this.sortOrder = 'DESC';
+    this.selectedCategory = null;
+  }
+
+  onPriceRangeChange() {
+    this.minPrice = this.priceRangeMin > 0 ? this.priceRangeMin : null;
+    this.maxPrice = this.priceRangeMax < this.priceRangeMaxLimit ? this.priceRangeMax : null;
+  }
+
+  getMinPercent(): number {
+    const range = this.priceRangeMaxLimit - 0;
+    if (range === 0) return 0;
+    return ((this.priceRangeMin - 0) / range) * 100;
+  }
+
+  getMaxPercent(): number {
+    const range = this.priceRangeMaxLimit - 0;
+    if (range === 0) return 0;
+    return ((this.priceRangeMax - 0) / range) * 100;
+  }
+
+  getRangePercent(): number {
+    return this.getMaxPercent() - this.getMinPercent();
+  }
+
+  startDrag(event: MouseEvent | TouchEvent, type: 'min' | 'max') {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+    this.dragType = type;
+    
+    const moveHandler = (e: MouseEvent | TouchEvent) => {
+      if (!this.isDragging) return;
+      
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const sliderTrack = document.querySelector('.slider-track') as HTMLElement;
+      if (!sliderTrack) return;
+      
+      const rect = sliderTrack.getBoundingClientRect();
+      const percent = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+      const range = this.priceRangeMaxLimit - 0;
+      const value = Math.round(0 + (percent / 100) * range);
+      
+      if (this.dragType === 'min') {
+        if (value >= 0 && value <= this.priceRangeMax) {
+          this.priceRangeMin = value;
+          this.onPriceRangeChange();
+        }
+      } else if (this.dragType === 'max') {
+        if (value <= this.priceRangeMaxLimit && value >= this.priceRangeMin) {
+          this.priceRangeMax = value;
+          this.onPriceRangeChange();
+        }
+      }
+    };
+    
+    const stopHandler = () => {
+      this.isDragging = false;
+      this.dragType = null;
+      document.removeEventListener('mousemove', moveHandler as any);
+      document.removeEventListener('mouseup', stopHandler);
+      document.removeEventListener('touchmove', moveHandler as any);
+      document.removeEventListener('touchend', stopHandler);
+    };
+    
+    document.addEventListener('mousemove', moveHandler);
+    document.addEventListener('mouseup', stopHandler);
+    document.addEventListener('touchmove', moveHandler);
+    document.addEventListener('touchend', stopHandler);
+  }
+
+  scrollToCategory(categoryId: number | null, event?: Event) {
     if (event) {
       event.preventDefault();
+    }
+    if (categoryId === null) {
+      // Прокручиваем к началу страницы
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      return;
     }
     const element = document.getElementById(`category-${categoryId}`);
     if (element) {
@@ -127,7 +347,8 @@ export class HomeComponent implements OnInit {
   }
 
   canIncreaseQuantity(productId: number): boolean {
-    const product = this.featuredProducts.find(p => p.id === productId);
+    const product = this.featuredProducts.find(p => p.id === productId) || 
+                    this.searchResults.find(p => p.id === productId);
     const cartItem = this.getCartItem(productId);
     if (!product || !cartItem) return false;
     return cartItem.quantity < product.stock;
@@ -140,7 +361,8 @@ export class HomeComponent implements OnInit {
   }
 
   isOutOfStock(productId: number): boolean {
-    const product = this.featuredProducts.find(p => p.id === productId);
+    const product = this.featuredProducts.find(p => p.id === productId) || 
+                    this.searchResults.find(p => p.id === productId);
     if (!product) return true;
     return product.stock <= 0;
   }
@@ -156,7 +378,8 @@ export class HomeComponent implements OnInit {
       event.stopPropagation();
     }
     
-    const product = this.featuredProducts.find(p => p.id === productId);
+    const product = this.featuredProducts.find(p => p.id === productId) || 
+                    this.searchResults.find(p => p.id === productId);
     if (!product) return;
     
     if (product.stock <= 0) {
@@ -223,7 +446,8 @@ export class HomeComponent implements OnInit {
       event.stopPropagation();
     }
     
-    const product = this.featuredProducts.find(p => p.id === productId);
+    const product = this.featuredProducts.find(p => p.id === productId) || 
+                    this.searchResults.find(p => p.id === productId);
     const cartItem = this.getCartItem(productId);
     
     if (!product || !cartItem) return;

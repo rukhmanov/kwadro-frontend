@@ -268,19 +268,25 @@ export class ContactComponent implements OnInit, AfterViewInit {
             }
           ];
 
+          // Точные координаты Гайдара 61 д, Дзержинск
+          const coordinates = [56.232929, 43.435260];
+          
           const map = new ymaps.Map('yandex-map', {
-            center: [56.2417, 43.4556], // Координаты Дзержинска (Гайдара 61 д)
-            zoom: 15,
+            center: coordinates,
+            zoom: 17,
             controls: ['zoomControl', 'fullscreenControl']
           });
 
           // Применяем темные стили к карте
           map.options.set('theme', darkStyles);
 
-          const placemark = new ymaps.Placemark([56.2417, 43.4556], {
-            balloonContent: 'MOTOмаркет<br>Гайдара 61 д, Дзержинск'
+          const placemark = new ymaps.Placemark(coordinates, {
+            balloonContent: 'MOTOмаркет<br>Гайдара 61 д, Дзержинск',
+            hintContent: 'Гайдара 61 д, Дзержинск',
+            iconCaption: 'Гайдара 61 д, Дзержинск'
           }, {
-            preset: 'islands#redIcon'
+            preset: 'islands#redIcon',
+            iconColor: '#ff0000'
           });
 
           map.geoObjects.add(placemark);
