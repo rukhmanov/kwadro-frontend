@@ -6,6 +6,7 @@ import { ProductsService } from '../services/products.service';
 import { NewsService } from '../services/news.service';
 import { CartService } from '../services/cart.service';
 import { CategoriesService } from '../services/categories.service';
+import { InstallmentModalService } from '../services/installment-modal.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -55,6 +56,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private newsService: NewsService,
     private cartService: CartService,
     private categoriesService: CategoriesService,
+    private installmentModalService: InstallmentModalService,
     private router: Router
   ) {
     // Настройка поиска с задержкой
@@ -534,5 +536,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.loadCartItems();
       });
     }
+  }
+
+  openInstallmentModal(productName: string, productPrice: number) {
+    this.installmentModalService.openModal(productName, productPrice);
   }
 }

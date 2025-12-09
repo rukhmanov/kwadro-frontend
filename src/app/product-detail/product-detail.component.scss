@@ -312,6 +312,26 @@
         .out-of-stock {
           width: 100%;
         }
+
+        .btn-installment {
+          width: 100%;
+          margin-top: 1rem;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+          padding: 1rem 1.5rem;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(0.98);
+          }
+        }
       }
     }
   }

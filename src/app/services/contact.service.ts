@@ -15,6 +15,10 @@ export class ContactService {
   requestCallback(phone: string): Observable<any> {
     return this.api.post('/contact/callback', { phone });
   }
+
+  requestInstallment(phone: string, productName?: string, productPrice?: number): Observable<any> {
+    return this.api.post('/contact/installment', { phone, productName, productPrice });
+  }
 }
 
 

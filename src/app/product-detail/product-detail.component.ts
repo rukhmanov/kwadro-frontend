@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductsService } from '../services/products.service';
 import { CartService } from '../services/cart.service';
+import { InstallmentModalService } from '../services/installment-modal.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -26,7 +27,8 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productsService: ProductsService,
-    private cartService: CartService
+    private cartService: CartService,
+    private installmentModalService: InstallmentModalService
   ) {}
 
   ngOnInit() {
@@ -146,6 +148,12 @@ export class ProductDetailComponent implements OnInit {
         this.cartService.loadCartCount();
         this.loadCartItems();
       });
+    }
+  }
+
+  openInstallmentModal() {
+    if (this.product) {
+      this.installmentModalService.openModal(this.product.name, this.product.price);
     }
   }
 }

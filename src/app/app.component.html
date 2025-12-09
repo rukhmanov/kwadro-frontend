@@ -226,3 +226,44 @@
     </div>
   </div>
 </div>
+
+<!-- Модальное окно для рассрочки -->
+<div class="order-modal-overlay" *ngIf="showInstallmentModal" (click)="closeInstallmentModal()">
+  <div class="order-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Купить в рассрочку</h2>
+      <button (click)="closeInstallmentModal()" class="close-btn" aria-label="Закрыть">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="submitInstallment()" #installmentForm="ngForm">
+        <div class="form-group" *ngIf="installmentProductName">
+          <label>Товар</label>
+          <p class="product-info-text">{{ installmentProductName }}</p>
+          <p class="product-info-text" *ngIf="installmentProductPrice">
+            Цена: {{ installmentProductPrice | number }} ₽
+          </p>
+        </div>
+        <div class="form-group">
+          <label>Телефон</label>
+          <input type="tel" [(ngModel)]="installmentPhone" name="installmentPhone"
+            (input)="onInstallmentPhoneInput($event)" (keydown)="onInstallmentPhoneKeyDown($event)"
+            (focus)="onInstallmentPhoneFocus($event)" (paste)="onInstallmentPhonePaste($event)"
+            placeholder="+7 (___) ___-__-__" maxlength="18" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" (click)="closeInstallmentModal()" class="btn-secondary">Отмена</button>
+          <button type="submit" class="btn-primary" [disabled]="!isInstallmentPhoneValid() || isSubmittingInstallment">
+            {{ isSubmittingInstallment ? 'Отправка...' : 'Отправить заявку' }}
+          </button>
+        </div>
+      </form>
+      <p *ngIf="installmentSuccess" class="success-message">Заявка отправлена! Мы свяжемся с вами в ближайшее время.</p>
+      <p *ngIf="installmentError" class="error-message">{{ installmentError }}</p>
+    </div>
+  </div>
+</div>

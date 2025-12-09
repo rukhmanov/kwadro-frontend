@@ -10,6 +10,7 @@ import { ChatService } from './services/chat.service';
 import { SettingsService } from './services/settings.service';
 import { EditDrawerService } from './services/edit-drawer.service';
 import { ContactService } from './services/contact.service';
+import { InstallmentModalService } from './services/installment-modal.service';
 import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
 import { EditDrawerComponent } from './edit-drawer/edit-drawer.component';
 import { io, Socket } from 'socket.io-client';
@@ -43,6 +44,13 @@ export class AppComponent implements OnInit, OnDestroy {
   isSubmittingCallback = false;
   callbackSuccess = false;
   callbackError = '';
+  showInstallmentModal = false;
+  installmentPhone = '';
+  installmentProductName = '';
+  installmentProductPrice: number | null = null;
+  isSubmittingInstallment = false;
+  installmentSuccess = false;
+  installmentError = '';
   private socket?: Socket;
 
   constructor(
@@ -52,6 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private settingsService: SettingsService,
     private editDrawerService: EditDrawerService,
     private contactService: ContactService,
+    private installmentModalService: InstallmentModalService,
     private router: Router
   ) {}
 
@@ -73,6 +82,11 @@ export class AppComponent implements OnInit, OnDestroy {
       this.openEditDrawer(entity, type);
     });
 
+    // Подписка на открытие модального окна рассрочки
+    this.installmentModalService.openModal$.subscribe(({ productName, productPrice }) => {
+      this.openInstallmentModal(productName, productPrice);
+    });
+
     // Подписка на изменения роута для обновления данных
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -92,21 +106,22 @@ export class AppComponent implements OnInit, OnDestroy {
         document.body.style.backgroundColor = '#1a1a1a'; // Fallback цвет
         // Добавляем затемнение для лучшей читаемости текста
         document.body.style.position = 'relative';
-        if (!document.getElementById('background-overlay')) {
-          const overlay = document.createElement('div');
+        let overlay = document.getElementById('background-overlay') as HTMLElement;
+        if (!overlay) {
+          overlay = document.createElement('div');
           overlay.id = 'background-overlay';
-          overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: -1;
-            pointer-events: none;
-          `;
           document.body.appendChild(overlay);
         }
+        overlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.85);
+          z-index: -1;
+          pointer-events: none;
+        `;
       } else {
         document.body.style.backgroundImage = '';
         document.body.style.backgroundSize = '';
@@ -254,6 +269,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isPhoneValid(): boolean {
     const phoneDigits = this.callbackPhone.replace(/\D/g, '').replace(/^7/, '');
+    return phoneDigits.length >= 10;
+  }
+
+  isInstallmentPhoneValid(): boolean {
+    const phoneDigits = this.installmentPhone.replace(/\D/g, '').replace(/^7/, '');
     return phoneDigits.length >= 10;
   }
 
@@ -418,6 +438,149 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       input.setSelectionRange(formatted.length, formatted.length);
     }, 0);
+  }
+
+  // Методы для рассрочки
+  openInstallmentModal(productName?: string, productPrice?: number) {
+    this.showInstallmentModal = true;
+    this.installmentPhone = '';
+    this.installmentProductName = productName || '';
+    this.installmentProductPrice = productPrice || null;
+    this.installmentSuccess = false;
+    this.installmentError = '';
+  }
+
+  closeInstallmentModal() {
+    this.showInstallmentModal = false;
+    this.installmentPhone = '';
+    this.installmentProductName = '';
+    this.installmentProductPrice = null;
+    this.installmentSuccess = false;
+    this.installmentError = '';
+  }
+
+  onInstallmentPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const cursorPosition = input.selectionStart || 0;
+    let value = input.value;
+    
+    let digits = value.replace(/\D/g, '');
+    
+    if (digits.startsWith('7')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('8')) {
+      digits = digits.substring(1);
+    }
+    
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    let formatted = '+7';
+    if (digits.length > 0) {
+      formatted += ' (' + digits.substring(0, 3);
+      if (digits.length > 3) {
+        formatted += ') ' + digits.substring(3, 6);
+        if (digits.length > 6) {
+          formatted += '-' + digits.substring(6, 8);
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+          }
+        }
+      } else if (digits.length === 3) {
+        formatted += ')';
+      }
+    }
+    
+    this.installmentPhone = formatted;
+    
+    setTimeout(() => {
+      input.setSelectionRange(formatted.length, formatted.length);
+    }, 0);
+  }
+
+  onInstallmentPhoneKeyDown(event: KeyboardEvent): void {
+    const input = event.target as HTMLInputElement;
+    if (event.key === 'Backspace' && input.value.length <= 3) {
+      event.preventDefault();
+      this.installmentPhone = '+7';
+    }
+  }
+
+  onInstallmentPhoneFocus(event: FocusEvent): void {
+    const input = event.target as HTMLInputElement;
+    if (!this.installmentPhone || this.installmentPhone === '+7') {
+      this.installmentPhone = '+7';
+      setTimeout(() => {
+        input.setSelectionRange(3, 3);
+      }, 0);
+    }
+  }
+
+  onInstallmentPhonePaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    
+    let digits = pastedText.replace(/\D/g, '');
+    
+    if (digits.startsWith('7')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('8')) {
+      digits = digits.substring(1);
+    }
+    
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    let formatted = '+7';
+    if (digits.length > 0) {
+      formatted += ' (' + digits.substring(0, 3);
+      if (digits.length > 3) {
+        formatted += ') ' + digits.substring(3, 6);
+        if (digits.length > 6) {
+          formatted += '-' + digits.substring(6, 8);
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+          }
+        }
+      } else if (digits.length === 3) {
+        formatted += ')';
+      }
+    }
+    
+    this.installmentPhone = formatted;
+  }
+
+  submitInstallment() {
+    if (!this.isInstallmentPhoneValid()) {
+      this.installmentError = 'Пожалуйста, введите корректный номер телефона';
+      return;
+    }
+
+    this.isSubmittingInstallment = true;
+    this.installmentError = '';
+    this.installmentSuccess = false;
+
+    this.contactService.requestInstallment(
+      this.installmentPhone,
+      this.installmentProductName || undefined,
+      this.installmentProductPrice || undefined
+    ).subscribe({
+      next: () => {
+        this.isSubmittingInstallment = false;
+        this.installmentSuccess = true;
+        
+        // Закрываем модальное окно через 2 секунды
+        setTimeout(() => {
+          this.closeInstallmentModal();
+        }, 2000);
+      },
+      error: (error) => {
+        this.isSubmittingInstallment = false;
+        this.installmentError = error.error?.message || 'Произошла ошибка. Попробуйте еще раз.';
+      }
+    });
   }
 
   ngOnDestroy() {

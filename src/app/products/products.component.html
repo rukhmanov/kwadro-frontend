@@ -165,6 +165,9 @@
               <button (click)="increaseQuantity(getCartItem(product.id).id, product.id)"
                 [disabled]="!canIncreaseQuantity(product.id)">+</button>
             </div>
+            <button (click)="openInstallmentModal(product.name, product.price)" class="btn-installment">
+              Купить в рассрочку
+            </button>
           </div>
         </div>
       </a>

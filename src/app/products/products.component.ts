@@ -7,6 +7,7 @@ import { CategoriesService } from '../services/categories.service';
 import { CartService } from '../services/cart.service';
 import { AuthService } from '../services/auth.service';
 import { EditDrawerService } from '../services/edit-drawer.service';
+import { InstallmentModalService } from '../services/installment-modal.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -63,6 +64,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private authService: AuthService,
     private editDrawerService: EditDrawerService,
+    private installmentModalService: InstallmentModalService,
     private route: ActivatedRoute
   ) {
     // Настройка поиска с задержкой
@@ -443,5 +445,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
         this.loadCartItems();
       });
     }
+  }
+
+  openInstallmentModal(productName: string, productPrice: number) {
+    this.installmentModalService.openModal(productName, productPrice);
   }
 }

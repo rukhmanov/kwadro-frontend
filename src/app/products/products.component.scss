@@ -274,11 +274,30 @@
 
                 &.slider-handle-max {
                   z-index: 3;
-                }
-              }
-            }
-          }
         }
+      }
+    }
+
+    .btn-installment {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:active {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(0.98);
+      }
+    }
+  }
+}
 
         .select-input {
           width: 100%;
