@@ -94,8 +94,8 @@ body {
     padding: 0.5rem;
     border-radius: 8px;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(192, 157, 99, 0.3);
+    border: 1px solid rgba(192, 157, 99, 0.5);
     min-width: 40px;
     height: 40px;
 
@@ -124,7 +124,7 @@ body {
     }
 
     &:active {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(192, 157, 99, 0.5);
       transform: scale(0.95);
     }
   }
@@ -162,8 +162,8 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(192, 157, 99, 0.3);
+    border: 1px solid rgba(192, 157, 99, 0.5);
 
     svg {
       flex-shrink: 0;
@@ -252,8 +252,8 @@ body {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(192, 157, 99, 0.3);
+        border: 1px solid rgba(192, 157, 99, 0.5);
         border-radius: 8px;
         color: white;
         width: 40px;
@@ -266,7 +266,7 @@ body {
         z-index: 10;
 
         &:active {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(192, 157, 99, 0.5);
           transform: scale(0.95);
         }
 
@@ -336,24 +336,24 @@ body {
     .chat-btn {
       width: 100%;
       padding: 0.875rem 1rem;
-      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      background: linear-gradient(135deg, rgba(192, 157, 99, 0.4) 0%, rgba(192, 157, 99, 0.2) 100%);
       color: white;
-      border: 2px solid rgba(231, 77, 16, 0.3);
+      border: 2px solid rgba(192, 157, 99, 0.6);
       border-radius: 8px;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       margin-bottom: 1.5rem;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3),
-                  0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 15px rgba(192, 157, 99, 0.3),
+                  0 2px 8px rgba(192, 157, 99, 0.2);
 
       &:hover {
-        background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
-        border-color: rgba(231, 77, 16, 0.5);
+        background: linear-gradient(135deg, rgba(192, 157, 99, 0.6) 0%, rgba(192, 157, 99, 0.4) 100%);
+        border-color: rgba(192, 157, 99, 0.8);
         transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
-                    0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 6px 20px rgba(192, 157, 99, 0.4),
+                    0 4px 12px rgba(192, 157, 99, 0.3);
       }
 
       &:active {
@@ -399,17 +399,17 @@ body {
         justify-content: center;
         width: 40px;
         height: 40px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(192, 157, 99, 0.3);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(192, 157, 99, 0.5);
         border-radius: 8px;
         color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
         transition: all 0.2s ease;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.15);
-          border-color: rgba(255, 255, 255, 0.3);
+          background: rgba(192, 157, 99, 0.5);
+          border-color: rgba(192, 157, 99, 0.7);
           transform: translateY(-2px);
         }
 
@@ -515,7 +515,7 @@ body {
       font-size: 1rem;
 
       &:hover, &.active {
-        background: #333;
+        background: rgba(192, 157, 99, 0.3);
       }
 
       &.logout {
@@ -567,8 +567,8 @@ body {
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(192, 157, 99, 0.5);
+        border-color: rgba(192, 157, 99, 0.7);
       }
     }
 
@@ -606,7 +606,7 @@ body {
         white-space: nowrap;
 
         &:hover, &.active {
-          background: #333;
+          background: rgba(192, 157, 99, 0.3);
         }
 
         &.desktop-only {
@@ -1677,10 +1677,10 @@ body {
       input {
         flex: 1;
         padding: 0.625rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(192, 157, 99, 0.3);
         border-radius: 6px;
         font-size: 0.875rem;
-        background: #333;
+        background: rgba(192, 157, 99, 0.15);
         color: #ffffff;
         transition: all 0.2s ease;
 
@@ -1759,12 +1759,12 @@ body {
 .btn-secondary {
   display: inline-block;
   padding: 0.875rem 1.5rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: #c09d63;
   backdrop-filter: blur(5px);
   color: white;
   text-decoration: none;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(192, 157, 99, 0.5);
   cursor: pointer;
   transition: all 0.3s;
   font-size: 1rem;
@@ -1772,11 +1772,12 @@ body {
   text-align: center;
   width: 100%;
   max-width: 300px;
+  box-shadow: 0 2px 8px rgba(192, 157, 99, 0.3);
 
   &:hover, &:active {
-    background: rgba(255, 255, 255, 0.25);
+    background: #d4b080;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(192, 157, 99, 0.4);
   }
 }
 
@@ -2230,20 +2231,21 @@ body {
     .btn-secondary {
       flex: 1;
       padding: 0.875rem 1.5rem;
-      background: rgba(255, 255, 255, 0.15);
+      background: #c09d63;
       backdrop-filter: blur(5px);
       color: white;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(192, 157, 99, 0.5);
       border-radius: 8px;
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(192, 157, 99, 0.3);
 
       &:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: #d4b080;
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 12px rgba(192, 157, 99, 0.4);
       }
 
       &:active {

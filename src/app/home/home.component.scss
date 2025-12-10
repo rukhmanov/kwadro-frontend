@@ -533,9 +533,9 @@
         justify-content: center;
         flex: 0 0 auto;
         padding: 0.5rem 0.75rem;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(192, 157, 99, 0.3);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(192, 157, 99, 0.5);
         border-radius: 6px;
         color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
@@ -554,14 +554,14 @@
         }
 
         &:hover {
-          background: rgba(255, 255, 255, 0.15);
+          background: rgba(192, 157, 99, 0.5);
           color: #ffffff;
           transform: translateY(-1px);
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 2px 6px rgba(192, 157, 99, 0.3);
         }
 
         &:active {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(192, 157, 99, 0.6);
           color: #ffffff;
           transform: translateY(0);
         }
@@ -839,9 +839,9 @@
 
     .btn-installment {
       width: 100%;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(192, 157, 99, 0.3);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(192, 157, 99, 0.5);
       color: #ffffff;
       padding: 0.75rem 1rem;
       border-radius: 8px;
@@ -850,9 +850,15 @@
       cursor: pointer;
       transition: all 0.3s ease;
       flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(192, 157, 99, 0.2);
+
+      &:hover {
+        background: rgba(192, 157, 99, 0.5);
+        box-shadow: 0 4px 12px rgba(192, 157, 99, 0.3);
+      }
 
       &:active {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(192, 157, 99, 0.6);
         transform: scale(0.98);
       }
     }
@@ -862,18 +868,18 @@
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(192, 157, 99, 0.2);
       backdrop-filter: blur(5px);
       padding: 0.5rem;
       border-radius: 10px;
       width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(192, 157, 99, 0.3);
 
       button {
         width: 36px;
         height: 36px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(192, 157, 99, 0.5);
+        background: rgba(192, 157, 99, 0.3);
         cursor: pointer;
         border-radius: 6px;
         font-size: 1.25rem;
@@ -886,10 +892,15 @@
         padding: 0;
         flex-shrink: 0;
 
+        &:hover:not(:disabled) {
+          background: rgba(192, 157, 99, 0.5);
+          border-color: rgba(192, 157, 99, 0.7);
+        }
+
         &:active:not(:disabled) {
-          background: rgba(255, 255, 255, 0.25);
+          background: rgba(192, 157, 99, 0.6);
           color: #ffffff;
-          border-color: rgba(255, 255, 255, 0.3);
+          border-color: rgba(192, 157, 99, 0.8);
           transform: scale(0.95);
         }
 
