@@ -902,6 +902,50 @@ body {
     z-index: 1;
     pointer-events: none;
   }
+
+  .sky-layer {
+    position: absolute;
+    bottom: 120px;
+    left: 0;
+    width: 100%;
+    height: 250px;
+    background: linear-gradient(to top,
+      rgba(196, 61, 13, 0.6) 0%,
+      rgba(231, 77, 16, 0.5) 5%,
+      rgba(231, 77, 16, 0.4) 15%,
+      rgba(255, 200, 150, 0.3) 25%,
+      rgba(255, 180, 120, 0.25) 35%,
+      rgba(200, 220, 240, 0.2) 50%,
+      rgba(176, 224, 230, 0.25) 65%,
+      rgba(135, 206, 250, 0.3) 80%,
+      rgba(135, 206, 250, 0.2) 90%,
+      rgba(135, 206, 235, 0.1) 95%,
+      transparent 100%);
+    background-size: 100% 100%;
+    opacity: 0;
+    animation: sky-appear 6.4s ease-in-out forwards;
+    animation-delay: 1s;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .sun {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 100px;
+    background: #e74d10;
+    border-radius: 200px 200px 0 0;
+    opacity: 0;
+    animation: sun-appear 6.4s ease-in-out forwards;
+    animation-delay: 1s;
+    z-index: 1;
+    pointer-events: none;
+    box-shadow: 0 -5px 30px rgba(231, 77, 16, 0.5);
+    filter: blur(3px);
+  }
 }
 
 .motorcycle-wrapper {
@@ -1073,6 +1117,42 @@ body {
 }
 
 @keyframes ground-appear {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sky-appear {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sun-appear {
   0% {
     opacity: 0;
   }
