@@ -27,6 +27,7 @@
     height: 100%;
     position: relative;
     overflow: hidden;
+    border-radius: 8px;
 
     img {
       width: 100%;
@@ -93,6 +94,152 @@
     }
   }
 
+}
+
+// Преимущества - Mobile First
+.advantages-section {
+  padding: 1.25rem 1rem;
+  margin-bottom: 1.5rem;
+
+  .container {
+    padding: 0;
+  }
+
+  .advantages-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .advantage-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    &:active {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .advantage-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .advantage-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .advantage-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+
+  .advantage-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    flex: 1;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  .advantage-description {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin-top: 0.25rem;
+  }
+}
+
+// Tablet
+@media (min-width: 768px) {
+  .advantages-section {
+    padding: 1.5rem 1.5rem;
+
+    .advantages-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .advantage-item {
+      padding: 1.25rem;
+    }
+
+    .advantage-content {
+      gap: 0.875rem;
+    }
+
+    .advantage-wrapper {
+      gap: 0.875rem;
+    }
+
+    .advantage-icon {
+      width: 36px;
+      height: 36px;
+    }
+
+    .advantage-title {
+      font-size: 1rem;
+    }
+
+    .advantage-description {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Desktop
+@media (min-width: 1024px) {
+  .advantages-section {
+    padding: 2rem 2rem;
+
+    .advantages-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .advantage-item {
+      padding: 1.5rem 1.25rem;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    .advantage-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .advantage-title {
+      font-size: 1.05rem;
+    }
+
+    .advantage-description {
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .featured-products, .latest-news, .catalog-preview, .search-results-section {

@@ -52,14 +52,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Слайдер
   slides = [
     {
-      image: '/assets/slides/1.jpeg',
+      image: '/assets/slides/1.jpg',
       title: 'Мототехника',
       description: 'Широкий ассортимент мототехники для любых задач'
     },
     {
       image: '/assets/slides/2.jpg',
-      title: 'Защитная экипировка',
-      description: 'Безопасность превыше всего - качественная защита'
+      title: 'MOTO MARKET',
+      description: 'Ваш надежный партнер в мире мототехники'
     },
     {
       image: '/assets/slides/3.jpg',

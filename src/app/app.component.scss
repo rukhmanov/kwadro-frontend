@@ -45,18 +45,17 @@ body {
 
 // Header - Mobile First
 .header {
-  background: linear-gradient(135deg, 
-    #1a1a1a 0%, 
-    #2a1f1a 25%, 
-    #2d2118 50%, 
-    #1f1a1a 75%, 
-    #1a1a1a 100%);
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('/assets/header-mask.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: white;
   padding: 0.75rem 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 
   .header-content {
     display: flex;
