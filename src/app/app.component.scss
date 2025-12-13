@@ -747,6 +747,8 @@ body {
     margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    width: 100%;
+    box-sizing: border-box;
 
     .footer-logo {
       height: 35px;
@@ -761,6 +763,8 @@ body {
       flex-direction: column;
       align-items: flex-start;
       gap: 0.2rem;
+      width: 100%;
+      box-sizing: border-box;
 
       .address-label {
         color: rgba(255, 255, 255, 0.6);
@@ -773,11 +777,17 @@ body {
         font-size: 0.7rem;
         font-weight: 500;
         line-height: 1.2;
+        width: 100%;
+        box-sizing: border-box;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
 
         a {
           color: rgba(255, 255, 255, 0.9);
           text-decoration: none;
           transition: color 0.3s;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
 
           &:hover {
             color: #e74d10;
