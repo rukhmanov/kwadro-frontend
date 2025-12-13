@@ -216,8 +216,17 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    // Определяем, нужно ли смещать центр карты влево (на планшетах и десктопах)
+    const isMobile = window.innerWidth < 768;
+    let mapCenter = coordinates;
+    
+    // На планшетах и десктопах смещаем центр карты влево, чтобы адрес не перекрывался блоком слева
+    if (!isMobile) {
+      // Смещаем долготу влево примерно на 0.006 градуса (около 400-600 метров)
+      mapCenter = [coordinates[0], coordinates[1] - 0.006];
+    }
     const map = new ymaps.Map('footer-yandex-map', {
-      center: coordinates,
+      center: mapCenter,
       zoom: 16,
       controls: ['zoomControl']
     });
