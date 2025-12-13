@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+
+declare var ymaps: any;
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +25,7 @@ import { environment } from '../environments/environment';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   title = 'MOTOмаркет';
   isLoggedIn = false;
   cartCount = 0;
@@ -95,6 +97,174 @@ export class AppComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       // Компоненты сами перезагрузят данные при навигации
     });
+
+    // Загрузка скрипта Яндекс.Карты
+    this.loadYandexMapsScript();
+  }
+
+  loadYandexMapsScript() {
+    if (document.getElementById('yandex-maps-script')) {
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'yandex-maps-script';
+    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=&lang=ru_RU';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  ngAfterViewInit() {
+    // Инициализация карты в футере
+    setTimeout(() => {
+      if (typeof ymaps !== 'undefined') {
+        ymaps.ready(() => {
+          this.initFooterMap();
+        });
+      } else {
+        // Если API еще не загружен, ждем и пробуем снова
+        const checkInterval = setInterval(() => {
+          if (typeof ymaps !== 'undefined') {
+            clearInterval(checkInterval);
+            ymaps.ready(() => {
+              this.initFooterMap();
+            });
+          }
+        }, 100);
+        // Останавливаем проверку через 10 секунд
+        setTimeout(() => clearInterval(checkInterval), 10000);
+      }
+    }, 1000);
+  }
+
+  initFooterMap() {
+    if (!document.getElementById('footer-yandex-map')) {
+      return;
+    }
+
+    // Темные стили для карты
+    const darkStyles = [
+      {
+        "featureType": "all",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#1a1a1a"
+          }
+        ]
+      },
+      {
+        "featureType": "all",
+        "elementType": "labels.text.fill",
+        "stylers": [
+          {
+            "color": "#ffffff"
+          }
+        ]
+      },
+      {
+        "featureType": "all",
+        "elementType": "labels.text.stroke",
+        "stylers": [
+          {
+            "color": "#1a1a1a"
+          }
+        ]
+      },
+      {
+        "featureType": "water",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#0e1626"
+          }
+        ]
+      },
+      {
+        "featureType": "road",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#2d2d2d"
+          }
+        ]
+      },
+      {
+        "featureType": "road.highway",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#3d3d3d"
+          }
+        ]
+      },
+      {
+        "featureType": "administrative",
+        "elementType": "geometry",
+        "stylers": [
+          {
+            "color": "#1a1a1a"
+          }
+        ]
+      }
+    ];
+
+    // Точные координаты Гайдара 61 д, Дзержинск
+    const coordinates = [56.232929, 43.435260];
+    
+    const mapElement = document.getElementById('footer-yandex-map');
+    if (!mapElement) {
+      return;
+    }
+
+    const map = new ymaps.Map('footer-yandex-map', {
+      center: coordinates,
+      zoom: 16,
+      controls: ['zoomControl']
+    });
+    
+    // Убеждаемся, что карта правильно отображается
+    setTimeout(() => {
+      map.container.fitToViewport();
+    }, 100);
+
+    // Перемещаем элементы управления масштабом в правый верхний угол
+    map.controls.get('zoomControl').options.set('position', {
+      top: 10,
+      right: 10
+    });
+
+    // Применяем темные стили к карте
+    map.options.set('theme', darkStyles);
+
+    // Создаем кастомный HTML-маркер в виде сообщения с хвостиком
+    const MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
+      '<div style="position: relative; display: flex; flex-direction: column; align-items: center;">' +
+        '<div style="position: relative; background: rgba(26, 26, 26, 0.95); border: 2px solid rgba(231, 77, 16, 0.9); border-radius: 12px; padding: 10px 14px; color: white; font-size: 13px; font-weight: 600; white-space: nowrap; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); margin-bottom: 8px; height: 50px; display: flex; align-items: center;">' +
+          '<div style="display: flex; align-items: center; gap: 10px; height: 100%;">' +
+            '<img src="assets/motomarketlogo.svg" alt="MOTOмаркет" style="width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; margin-top: -15px; margin-bottom: -15px;">' +
+            '<span><a href="https://yandex.ru/maps/?text=Гайдара+61+д,+Дзержинск&ll=43.435260,56.232929&z=17" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Гайдара 61 д, Дзержинск</a></span>' +
+          '</div>' +
+          '<div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid rgba(231, 77, 16, 0.9);"></div>' +
+          '<div style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid rgba(26, 26, 26, 0.95);"></div>' +
+        '</div>' +
+      '</div>'
+    );
+
+    const placemark = new ymaps.Placemark(coordinates, {
+      balloonContentHeader: '<strong>MOTOмаркет</strong>',
+      balloonContentBody: '<p><a href="https://yandex.ru/maps/?text=Гайдара+61+д,+Дзержинск&ll=43.435260,56.232929&z=17" target="_blank" rel="noopener noreferrer">Гайдара 61 д, Дзержинск</a></p>',
+      balloonContentFooter: '',
+      hintContent: 'Гайдара 61 д, Дзержинск'
+    }, {
+      iconLayout: MyIconContentLayout,
+      iconShape: {
+        type: 'Rectangle',
+        coordinates: [[-80, -60], [80, 10]]
+      },
+      iconOffset: [0, -10]
+    });
+
+    map.geoObjects.add(placemark);
   }
 
   loadBackgroundImage() {
