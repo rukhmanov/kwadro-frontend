@@ -281,7 +281,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
           map.options.set('theme', darkStyles);
 
           const placemark = new ymaps.Placemark(coordinates, {
-            balloonContent: 'MOTOмаркет<br><a href="https://yandex.ru/maps/?text=Гайдара+61+д,+Дзержинск&ll=43.435260,56.232929&z=17" target="_blank" rel="noopener noreferrer">Гайдара 61 д, Дзержинск</a>',
+            balloonContent: 'MOTOмаркет<br><a href="https://yandex.ru/navi/org/motomarket/145660961546" target="_blank" rel="noopener noreferrer">Гайдара 61 д, Дзержинск</a>',
             hintContent: 'Гайдара 61 д, Дзержинск',
             iconCaption: 'Гайдара 61 д, Дзержинск'
           }, {
