@@ -147,6 +147,7 @@
               <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
               <span class="current-price">{{ product.price | number }} ₽</span>
             </p>
+            <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
           </div>
           <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
             <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">

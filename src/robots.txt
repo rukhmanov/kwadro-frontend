@@ -1,0 +1,27 @@
+# Правила для всех поисковых роботов
+User-agent: *
+Allow: /
+
+# Запрещаем индексацию админ-панели и служебных страниц
+Disallow: /admin
+Disallow: /login
+Disallow: /cart
+
+# Разрешаем индексацию основных страниц
+Allow: /
+Allow: /products
+Allow: /products/*
+Allow: /news
+Allow: /news/*
+Allow: /about
+Allow: /contact
+
+# Специальные правила для Яндекс
+User-agent: Yandex
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /cart
+
+# Sitemap
+Sitemap: https://motomarket52.ru/sitemap.xml

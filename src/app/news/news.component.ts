@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { NewsService } from '../services/news.service';
 import { AuthService } from '../services/auth.service';
 import { EditDrawerService } from '../services/edit-drawer.service';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-news',
@@ -19,10 +20,19 @@ export class NewsComponent implements OnInit {
   constructor(
     private newsService: NewsService,
     private authService: AuthService,
-    private editDrawerService: EditDrawerService
+    private editDrawerService: EditDrawerService,
+    private seoService: SeoService
   ) {}
 
   ngOnInit() {
+    // SEO оптимизация
+    this.seoService.updateSEO({
+      title: 'Новости',
+      description: 'Актуальные новости и обновления от MOTOмаркет, Дзержинск, Нижегородская область. Следите за новинками, акциями и специальными предложениями.',
+      keywords: 'новости мототехники Дзержинск, акции мототехники, обновления каталога, специальные предложения, мототехника Нижегородская область',
+      url: `${this.seoService.siteUrl}/news`
+    });
+    
     this.authService.isAuthenticated$.subscribe(isAuth => {
       this.isAdmin = isAuth;
     });

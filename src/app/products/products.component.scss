@@ -669,6 +669,18 @@
       }
     }
 
+    .in-stock-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      margin: 0.5rem 0;
+      background: rgba(76, 175, 80, 0.2);
+      color: #4caf50;
+      border: 1px solid rgba(76, 175, 80, 0.4);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
     .actions {
       display: flex;
       flex-direction: column;

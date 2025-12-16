@@ -8,6 +8,7 @@ import { CartService } from '../services/cart.service';
 import { AuthService } from '../services/auth.service';
 import { EditDrawerService } from '../services/edit-drawer.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
+import { SeoService } from '../services/seo.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -65,6 +66,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private editDrawerService: EditDrawerService,
     private installmentModalService: InstallmentModalService,
+    private seoService: SeoService,
     private route: ActivatedRoute
   ) {
     // Настройка поиска с задержкой
@@ -78,6 +80,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // SEO оптимизация
+    this.seoService.updateSEO({
+      title: 'Каталог товаров',
+      description: 'Каталог мототехники, запчастей и аксессуаров в интернет-магазине MOTOмаркет, Дзержинск, Нижегородская область. Широкий выбор товаров с доставкой по Дзержинску и области.',
+      keywords: 'каталог мототехники Дзержинск, мотоциклы Нижегородская область, квадроциклы купить, запчасти мототехники, аксессуары мото, купить мототехнику в Дзержинске',
+      url: `${this.seoService.siteUrl}/products`
+    });
+    
     this.loading = true;
     this.error = null;
     

@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductsService } from '../services/products.service';
 import { CartService } from '../services/cart.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,7 +29,8 @@ export class ProductDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private productsService: ProductsService,
     private cartService: CartService,
-    private installmentModalService: InstallmentModalService
+    private installmentModalService: InstallmentModalService,
+    private seoService: SeoService
   ) {}
 
   ngOnInit() {
@@ -36,6 +38,8 @@ export class ProductDetailComponent implements OnInit {
     if (id) {
       this.productsService.getProduct(+id).subscribe(product => {
         this.product = product;
+        // SEO оптимизация для продукта
+        this.seoService.updateProductSEO(product);
         // Инициализируем отображение главного изображения или видео
         const hasImages = product.images && product.images.length > 0;
         if (product.video && !hasImages) {

@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContactService } from '../services/contact.service';
+import { SeoService } from '../services/seo.service';
 
 declare var ymaps: any;
 
@@ -20,7 +21,10 @@ export class ContactComponent implements OnInit, AfterViewInit {
   };
   submitted = false;
 
-  constructor(private contactService: ContactService) {}
+  constructor(
+    private contactService: ContactService,
+    private seoService: SeoService
+  ) {}
 
   isFormValid(): boolean {
     // Хотя бы одно из полей должно быть заполнено: телефон или сообщение
@@ -189,6 +193,14 @@ export class ContactComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    // SEO оптимизация
+    this.seoService.updateSEO({
+      title: 'Контакты',
+      description: 'Свяжитесь с MOTOмаркет, Дзержинск, Нижегородская область. Адрес: Дзержинск, Гайдара 61 д. Телефон, карта проезда и форма обратной связи.',
+      keywords: 'контакты MOTOмаркет Дзержинск, адрес магазина мототехники, телефон, как добраться, связаться с нами, мототехника Нижегородская область',
+      url: `${this.seoService.siteUrl}/contact`
+    });
+    
     // Загружаем Яндекс.Карты
     const script = document.createElement('script');
     script.src = 'https://api-maps.yandex.ru/2.1/?apikey=YOUR_API_KEY&lang=ru_RU';

@@ -7,6 +7,7 @@ import { NewsService } from '../services/news.service';
 import { CartService } from '../services/cart.service';
 import { CategoriesService } from '../services/categories.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
+import { SeoService } from '../services/seo.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -78,6 +79,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private categoriesService: CategoriesService,
     private installmentModalService: InstallmentModalService,
+    private seoService: SeoService,
     private router: Router
   ) {
     // Настройка поиска с задержкой
@@ -91,6 +93,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // SEO оптимизация
+    this.seoService.updateHomeSEO();
+    
     // Загружаем популярные товары (независимо от поиска)
     this.loadFeaturedProducts();
 

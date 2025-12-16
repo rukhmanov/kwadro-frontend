@@ -248,11 +248,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     // Создаем кастомный HTML-маркер в виде сообщения с хвостиком
     const MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
       '<div style="position: relative; display: flex; flex-direction: column; align-items: center;">' +
-        '<div style="position: relative; background: rgba(26, 26, 26, 0.95); border: 2px solid rgba(231, 77, 16, 0.9); border-radius: 12px; padding: 10px 14px; color: white; font-size: 13px; font-weight: 600; white-space: nowrap; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); margin-bottom: 8px; height: 50px; display: flex; align-items: center;">' +
-          '<div style="display: flex; align-items: center; gap: 10px; height: 100%;">' +
-            '<img src="assets/motomarketlogo.svg" alt="MOTOмаркет" style="width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; margin-top: -15px; margin-bottom: -15px;">' +
-            '<span><a href="https://yandex.ru/navi/org/motomarket/145660961546" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Гайдара 61 д, Дзержинск</a></span>' +
-          '</div>' +
+        '<div style="position: relative; background: rgba(26, 26, 26, 0.95); border: 2px solid rgba(231, 77, 16, 0.9); border-radius: 12px; padding: 8px 10px; color: white; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px;">' +
+          '<img src="assets/motomarketlogo.svg" alt="MOTOмаркет" style="width: 120px; height: 60px; object-fit: contain; flex-shrink: 0; margin: 0">' +
+          '<div style="display: flex; flex-direction: column; align-items: center; text-align: center;"><a href="https://yandex.ru/navi/org/motomarket/145660961546" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">Дзержинск, <br><span style="white-space: nowrap;">Гайдара 61&nbsp;д</span></a></div>' +
           '<div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid rgba(231, 77, 16, 0.9);"></div>' +
           '<div style="position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid rgba(26, 26, 26, 0.95);"></div>' +
         '</div>' +
@@ -268,9 +266,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       iconLayout: MyIconContentLayout,
       iconShape: {
         type: 'Rectangle',
-        coordinates: [[-80, -60], [80, 10]]
+        coordinates: [[-80, -180], [80, 10]]
       },
-      iconOffset: [0, -50]
+      iconOffset: [0, -120]
     });
 
     map.geoObjects.add(placemark);

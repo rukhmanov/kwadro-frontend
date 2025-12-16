@@ -231,6 +231,7 @@
             <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
             <span class="current-price">{{ product.price | number }} ₽</span>
           </p>
+          <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
           <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
             <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
               <button (click)="addToCart(product.id, $event)" class="btn-cart" [disabled]="isOutOfStock(product.id)">
@@ -273,6 +274,7 @@
             <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
             <span class="current-price">{{ product.price }} ₽</span>
           </p>
+          <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
           <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
             <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
               <button (click)="addToCart(product.id, $event)" class="btn-cart" [disabled]="isOutOfStock(product.id)">
@@ -324,6 +326,7 @@
               <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
               <span class="current-price">{{ product.price }} ₽</span>
             </p>
+            <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
             <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
               <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
                 <button (click)="addToCartFromCategory(product, $event)" class="btn-cart"
