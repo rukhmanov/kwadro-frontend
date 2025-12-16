@@ -82,6 +82,8 @@ body {
     justify-content: space-between;
     align-items: center;
     position: relative;
+    gap: 0.5rem;
+    min-width: 0;
   }
 
   .logo {
@@ -108,6 +110,8 @@ body {
     z-index: 1001;
     margin-left: auto;
     margin-right: 10px;
+    flex-shrink: 0;
+    min-width: fit-content;
   }
 
   .cart-link-header {
@@ -159,6 +163,7 @@ body {
     position: relative;
     z-index: 1001;
     display: inline-flex;
+    flex-shrink: 0;
   }
 
   .phone-link-container {
@@ -583,6 +588,10 @@ body {
 
   // Tablet - сохраняем мобильное меню
   @media (min-width: 768px) {
+    .header-content {
+      gap: 0.5rem;
+    }
+
     .phone-link-wrapper {
       margin-left: 1rem;
       margin-right: 1rem;
@@ -639,6 +648,16 @@ body {
       flex: 1;
       min-width: 0;
       justify-content: flex-end;
+      margin-right: 1rem;
+
+      // Уменьшаем gap при нехватке места
+      @media (max-width: 1400px) {
+        gap: 0.2rem;
+      }
+
+      @media (max-width: 1200px) {
+        gap: 0.15rem;
+      }
 
       &.mobile-open {
         right: auto;
@@ -649,10 +668,22 @@ body {
         margin-bottom: 0;
         font-size: 0.875rem;
         white-space: nowrap;
-        flex-shrink: 0;
+        flex-shrink: 1;
+        min-width: fit-content;
 
         &:hover, &.active {
           background: rgba(192, 157, 99, 0.3);
+        }
+
+        // Адаптивные паддинги при нехватке места
+        @media (max-width: 1400px) {
+          padding: 0.5rem 0.6rem;
+          font-size: 0.85rem;
+        }
+
+        @media (max-width: 1200px) {
+          padding: 0.45rem 0.5rem;
+          font-size: 0.8rem;
         }
 
         &.desktop-only {
@@ -2130,11 +2161,12 @@ body {
     }
 
     .nav {
-      gap: 0.3rem;
+      gap: 0.25rem;
+      margin-right: 0.75rem;
 
       a {
-        padding: 0.45rem 0.7rem;
-        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
       }
 
       .cart-badge {
@@ -2165,11 +2197,12 @@ body {
     }
 
     .nav {
-      gap: 0.4rem;
+      gap: 0.3rem;
+      margin-right: 1rem;
 
       a {
-        padding: 0.5rem 0.875rem;
-        font-size: 0.9rem;
+        padding: 0.45rem 0.7rem;
+        font-size: 0.85rem;
       }
 
       .cart-badge {
@@ -2204,11 +2237,12 @@ body {
     }
 
     .nav {
-      gap: 0.5rem;
+      gap: 0.35rem;
+      margin-right: 1.5rem;
 
       a {
-        padding: 0.625rem 1.25rem;
-        font-size: 0.95rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.9rem;
       }
 
       .cart-badge {
