@@ -30,7 +30,8 @@
               "src/favicon.svg",
               "src/assets",
               "src/robots.txt",
-              "src/sitemap.xml"
+              "src/sitemap.xml",
+              "src/yandex_cbc61fda7f529add.html"
             ],
             "styles": [
               "src/styles.scss"
