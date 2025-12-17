@@ -259,3 +259,4 @@ export class SeoService {
     this.updateStructuredData(structuredData);
   }
 }
+
