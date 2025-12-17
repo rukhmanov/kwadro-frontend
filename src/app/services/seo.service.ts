@@ -7,6 +7,9 @@ export interface SEOData {
   description?: string;
   keywords?: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  imageType?: string;
   url?: string;
   type?: string;
   siteName?: string;
@@ -20,7 +23,7 @@ export class SeoService {
   private readonly defaultTitle = 'MOTOмаркет - Интернет-магазин мототехники в Дзержинске, Нижегородская область';
   private readonly defaultDescription = 'MOTOмаркет - интернет-магазин мототехники в Дзержинске, Нижегородская область. Широкий ассортимент мотоциклов, квадроциклов, запчастей и аксессуаров. Доставка по Дзержинску и Нижегородской области. Рассрочка без переплат.';
   private readonly defaultKeywords = 'мототехника Дзержинск, мотоциклы Нижегородская область, квадроциклы купить, запчасти мототехники, аксессуары мото, купить мототехнику в Дзержинске, интернет-магазин мототехники Нижегородская область, мототехника Нижний Новгород, доставка мототехники Дзержинск, мототехника с доставкой';
-  private readonly defaultImage = '/assets/motomarketlogo.svg';
+  private readonly defaultImage = '/assets/slides/1.jpg';
   readonly siteUrl = environment.siteUrl || (environment.production ? 'https://motomarket52.ru' : 'http://localhost:4200');
   private readonly siteName = 'MOTOмаркет';
 
@@ -36,9 +39,13 @@ export class SeoService {
     
     const description = data.description || this.defaultDescription;
     const image = data.image || this.defaultImage;
+    const imageUrl = this.getFullImageUrl(image);
     const url = data.url || this.siteUrl;
     const type = data.type || 'website';
     const locale = data.locale || 'ru_RU';
+    const imageWidth = data.imageWidth || 1200;
+    const imageHeight = data.imageHeight || 630;
+    const imageType = data.imageType || 'image/jpeg';
 
     // Обновляем title
     this.title.setTitle(title);
@@ -55,7 +62,11 @@ export class SeoService {
     // Open Graph теги
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
-    this.meta.updateTag({ property: 'og:image', content: this.getFullImageUrl(image) });
+    this.meta.updateTag({ property: 'og:image', content: imageUrl });
+    this.meta.updateTag({ property: 'og:image:url', content: imageUrl });
+    this.meta.updateTag({ property: 'og:image:width', content: imageWidth.toString() });
+    this.meta.updateTag({ property: 'og:image:height', content: imageHeight.toString() });
+    this.meta.updateTag({ property: 'og:image:type', content: imageType });
     this.meta.updateTag({ property: 'og:url', content: url });
     this.meta.updateTag({ property: 'og:type', content: type });
     this.meta.updateTag({ property: 'og:site_name', content: this.siteName });
@@ -65,7 +76,7 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });
-    this.meta.updateTag({ name: 'twitter:image', content: this.getFullImageUrl(image) });
+    this.meta.updateTag({ name: 'twitter:image', content: imageUrl });
 
     // Canonical URL
     this.updateCanonicalUrl(url);
