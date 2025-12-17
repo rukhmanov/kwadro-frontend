@@ -23,7 +23,7 @@ export class SeoService {
   private readonly defaultTitle = 'MOTOмаркет - Интернет-магазин мототехники в Дзержинске, Нижегородская область';
   private readonly defaultDescription = 'MOTOмаркет - интернет-магазин мототехники в Дзержинске, Нижегородская область. Широкий ассортимент мотоциклов, квадроциклов, запчастей и аксессуаров. Доставка по Дзержинску и Нижегородской области. Рассрочка без переплат.';
   private readonly defaultKeywords = 'мототехника Дзержинск, мотоциклы Нижегородская область, квадроциклы купить, запчасти мототехники, аксессуары мото, купить мототехнику в Дзержинске, интернет-магазин мототехники Нижегородская область, мототехника Нижний Новгород, доставка мототехники Дзержинск, мототехника с доставкой';
-  private readonly defaultImage = '/assets/slides/1.jpg';
+  private readonly defaultImage = 'https://s3.twcstorage.ru/e1ba1f72-7761414f-593a-42ea-b9df-8cc7ab126345/%D0%A1%D0%BD%D0%B8%D0%BC%D0%BE%D0%BA%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202025-12-17%20%D0%B2%2022.02.30.png';
   readonly siteUrl = environment.siteUrl || (environment.production ? 'https://motomarket52.ru' : 'http://localhost:4200');
   private readonly siteName = 'MOTOмаркет';
 
@@ -45,7 +45,7 @@ export class SeoService {
     const locale = data.locale || 'ru_RU';
     const imageWidth = data.imageWidth || 1200;
     const imageHeight = data.imageHeight || 630;
-    const imageType = data.imageType || 'image/jpeg';
+    const imageType = data.imageType || 'image/png';
 
     // Обновляем title
     this.title.setTitle(title);
