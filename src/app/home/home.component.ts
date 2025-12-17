@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -18,7 +18,7 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   featuredProducts: any[] = [];
   searchResults: any[] = [];
   latestNews: any[] = [];
@@ -50,6 +50,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
   
+  // Кэш состояний скролла
+  private scrollStates: Map<string, { hasScroll: boolean; canScrollLeft: boolean; canScrollRight: boolean }> = new Map();
+  
   // Слайдер
   slides = [
     {
@@ -80,7 +83,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private categoriesService: CategoriesService,
     private installmentModalService: InstallmentModalService,
     private seoService: SeoService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     // Настройка поиска с задержкой
     this.searchSubject.pipe(
@@ -115,6 +119,30 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     // Запускаем автоматическую прокрутку слайдера
     this.startSlider();
+  }
+
+  ngAfterViewInit() {
+    // Сбрасываем горизонтальные скроллы после инициализации представления
+    setTimeout(() => {
+      this.resetHorizontalScrolls();
+      // Инициализируем состояния всех скроллов
+      this.updateAllScrollStates();
+    }, 0);
+  }
+
+  private updateAllScrollStates() {
+    // Обновляем состояния всех известных скроллов
+    const selectors = ['category-nav', 'featured-products-grid', 'search-results-grid'];
+    selectors.forEach(selector => {
+      this.updateScrollState(selector);
+    });
+    
+    // Обновляем состояния для категорий
+    this.categories.forEach(category => {
+      this.updateScrollState(`category-${category.id}`);
+    });
+    
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
@@ -165,8 +193,18 @@ export class HomeComponent implements OnInit, OnDestroy {
             sortOrder: 'DESC'
           }).subscribe(response => {
             this.categoryProducts.set(category.id, response.products || []);
+            // Обновляем состояние скролла после загрузки товаров
+            setTimeout(() => {
+              this.updateScrollState(`category-${category.id}`);
+              this.cdr.detectChanges();
+            }, 0);
           });
         });
+        // Обновляем состояние скролла после загрузки категорий
+        setTimeout(() => {
+          this.updateScrollState('category-nav');
+          this.cdr.detectChanges();
+        }, 0);
       },
       error: (err) => {
         console.error('Ошибка загрузки категорий:', err);
@@ -185,6 +223,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (response) => {
         this.featuredProducts = response.products || [];
+        // Обновляем состояние скролла после загрузки товаров
+        setTimeout(() => {
+          this.updateScrollState('featured-products-grid');
+          this.cdr.detectChanges();
+        }, 0);
       },
       error: (err) => {
         console.error('Ошибка загрузки популярных товаров:', err);
@@ -244,6 +287,11 @@ export class HomeComponent implements OnInit, OnDestroy {
           }
         }
         this.loadingSearch = false;
+        // Обновляем состояние скролла после загрузки результатов
+        setTimeout(() => {
+          this.updateScrollState('search-results-grid');
+          this.cdr.detectChanges();
+        }, 0);
       },
       error: (err) => {
         console.error('Ошибка загрузки результатов поиска:', err);
@@ -598,5 +646,115 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   openInstallmentModal(productName: string, productPrice: number) {
     this.installmentModalService.openModal(productName, productPrice);
+  }
+
+  resetHorizontalScrolls() {
+    // Сбрасываем scrollLeft для всех горизонтальных скроллов
+    const scrollableElements = document.querySelectorAll(
+      '.category-nav, .products-grid, .news-grid'
+    );
+    
+    scrollableElements.forEach((element: any) => {
+      if (element && element.scrollLeft !== undefined) {
+        element.scrollLeft = 0;
+      }
+    });
+  }
+
+  getScrollElement(selector: string): HTMLElement | null {
+    if (selector === 'category-nav') {
+      return document.querySelector('.category-nav') as HTMLElement;
+    } else if (selector === 'search-results-grid') {
+      return document.querySelector('.search-results-section .products-grid') as HTMLElement;
+    } else if (selector === 'featured-products-grid') {
+      return document.querySelector('.featured-products .products-grid') as HTMLElement;
+    } else if (selector.startsWith('category-')) {
+      const categoryId = selector.replace('category-', '');
+      return document.querySelector(`#category-grid-${categoryId}`) as HTMLElement;
+    }
+    return null;
+  }
+
+  private updateScrollState(selector: string) {
+    const element = this.getScrollElement(selector);
+    if (!element) {
+      this.scrollStates.set(selector, { hasScroll: false, canScrollLeft: false, canScrollRight: false });
+      return;
+    }
+    
+    const hasScroll = element.scrollWidth > element.clientWidth;
+    const canScrollLeft = element.scrollLeft > 0;
+    const maxScroll = element.scrollWidth - element.clientWidth;
+    const canScrollRight = element.scrollLeft < maxScroll - 1;
+    
+    this.scrollStates.set(selector, { hasScroll, canScrollLeft, canScrollRight });
+  }
+
+  canScrollLeft(selector: string): boolean {
+    const state = this.scrollStates.get(selector);
+    if (!state) {
+      // Возвращаем безопасное значение по умолчанию
+      return false;
+    }
+    return state.canScrollLeft;
+  }
+
+  canScrollRight(selector: string): boolean {
+    const state = this.scrollStates.get(selector);
+    if (!state) {
+      // Возвращаем безопасное значение по умолчанию
+      return false;
+    }
+    return state.canScrollRight;
+  }
+
+  hasScroll(selector: string): boolean {
+    const state = this.scrollStates.get(selector);
+    if (!state) {
+      // Возвращаем безопасное значение по умолчанию
+      return false;
+    }
+    return state.hasScroll;
+  }
+
+  scrollHorizontal(selector: string, direction: 'left' | 'right') {
+    const element = this.getScrollElement(selector);
+    
+    if (element) {
+      const scrollAmount = 300; // Количество пикселей для прокрутки
+      const currentScroll = element.scrollLeft;
+      const targetScroll = direction === 'left' 
+        ? currentScroll - scrollAmount 
+        : currentScroll + scrollAmount;
+      
+      element.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+      
+      // Обновляем состояние после прокрутки
+      setTimeout(() => {
+        this.updateScrollState(selector);
+        this.cdr.detectChanges();
+      }, 100);
+    }
+  }
+
+  onScroll(selector: string) {
+    // Метод для обновления состояния кнопок при скролле
+    // Вызывается из шаблона через событие scroll
+    requestAnimationFrame(() => {
+      this.updateScrollState(selector);
+      this.cdr.detectChanges();
+    });
+  }
+
+
+  @HostListener('window:load')
+  onWindowLoad() {
+    // Сбрасываем скроллы после полной загрузки страницы
+    requestAnimationFrame(() => {
+      this.resetHorizontalScrolls();
+    });
   }
 }

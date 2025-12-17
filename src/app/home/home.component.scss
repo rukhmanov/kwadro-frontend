@@ -242,6 +242,99 @@
   }
 }
 
+// Кнопки прокрутки для горизонтальных скроллов
+.scroll-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .scroll-btn {
+    position: absolute;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      
+      &:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.5;
+    }
+  }
+
+  .scroll-btn-left {
+    left: 0.5rem;
+  }
+
+  .scroll-btn-right {
+    right: 0.5rem;
+  }
+
+  // Скрываем кнопки на мобильных устройствах (до 768px)
+  @media (max-width: 767px) {
+    .scroll-btn {
+      display: none !important;
+    }
+  }
+
+  // Стили для планшетов и десктопов
+  @media (min-width: 768px) {
+    .scroll-btn {
+      width: 44px;
+      height: 44px;
+
+      svg {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    .scroll-btn-left {
+      left: 0.75rem;
+    }
+
+    .scroll-btn-right {
+      right: 0.75rem;
+    }
+  }
+}
+
 .featured-products, .latest-news, .catalog-preview, .search-results-section {
   padding: 2rem 0;
 
@@ -643,11 +736,16 @@
     box-sizing: border-box;
   }
 
+  .scroll-container {
+    padding: 0 3rem;
+    margin: 0 -0.5rem;
+  }
+
   .category-nav {
     display: flex;
     gap: 0.5rem;
     padding: 0 0.5rem 1.5rem 0;
-    margin: 0 -0.5rem;
+    margin: 0;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
@@ -772,42 +870,15 @@
       }
     }
 
-      .category-products-grid {
-        display: flex;
-        gap: 1rem;
-        padding: 0 1rem;
-        margin: 0 -1rem;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 
-        &::-webkit-scrollbar {
-          height: 8px;
-        }
+  }
+}
 
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-          
-          &:hover {
-            background: rgba(255, 255, 255, 0.5);
-          }
-        }
-
-        .product-card {
-          flex: 0 0 49%;
-          max-width: 49%;
-          min-width: 336px;
-          scroll-snap-align: start;
-        }
-      }
+.scroll-container {
+  .products-grid {
+    flex: 1;
+    padding: 0 1rem;
+    margin: 0 -1rem;
   }
 }
 
@@ -1170,13 +1241,17 @@
       padding-right: 1rem;
     }
 
+    .scroll-container {
+      padding: 0 3.5rem;
+    }
+
     .category-nav {
       display: flex;
       gap: 0.625rem;
       overflow-x: auto;
       overflow-y: hidden;
       padding: 0 0.5rem 1.5rem 0;
-      margin: 0 -0.5rem;
+      margin: 0;
 
       .category-link {
         padding: 0.625rem 1rem;
@@ -1207,42 +1282,14 @@
         }
       }
 
-      .category-products-grid {
-        display: flex;
-        gap: 1.5rem;
-        padding: 0 2rem;
-        margin: 0 -2rem;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+  }
 
-        &::-webkit-scrollbar {
-          height: 8px;
-        }
-
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-          
-          &:hover {
-            background: rgba(255, 255, 255, 0.5);
-          }
-        }
-
-        .product-card {
-          flex: 0 0 30%;
-          max-width: 30%;
-          min-width: 280px;
-          scroll-snap-align: start;
-        }
-      }
+  .scroll-container {
+    .products-grid {
+      gap: 2rem;
+      padding: 0 2rem;
+      margin: 0 -2rem;
     }
   }
 
@@ -1250,12 +1297,12 @@
     gap: 2rem;
     padding: 0 2rem;
     margin: 0 -2rem;
-  }
 
-  .product-card {
-    flex: 0 0 25%;
-    max-width: 25%;
-    min-width: 240px;
+    .product-card {
+      flex: 0 0 25%;
+      max-width: 25%;
+      min-width: 240px;
+    }
   }
 
   .news-grid {
@@ -1358,15 +1405,22 @@
     }
   }
 
+  .scroll-container {
+    .products-grid {
+      padding: 0 4rem;
+      margin: 0 -4rem;
+    }
+  }
+
   .products-grid {
     padding: 0 4rem;
     margin: 0 -4rem;
-  }
 
-  .product-card {
-    flex: 0 0 20%;
-    max-width: 20%;
-    min-width: 240px;
+    .product-card {
+      flex: 0 0 20%;
+      max-width: 20%;
+      min-width: 240px;
+    }
   }
 
   .news-grid {
@@ -1411,13 +1465,17 @@
       margin: 0 auto;
     }
 
+    .scroll-container {
+      padding: 0 4.5rem;
+    }
+
     .category-nav {
       display: flex;
       gap: 0.75rem;
       overflow-x: auto;
       overflow-y: hidden;
       padding: 0 0.5rem 1.5rem 0;
-      margin: 0 -0.5rem;
+      margin: 0;
 
       .category-link {
         padding: 0.75rem 1.25rem;
@@ -1447,42 +1505,6 @@
         }
       }
 
-      .category-products-grid {
-        display: flex;
-        gap: 2rem;
-        padding: 0 4rem;
-        margin: 0 -4rem;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-
-        &::-webkit-scrollbar {
-          height: 8px;
-        }
-
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
-          
-          &:hover {
-            background: rgba(255, 255, 255, 0.5);
-          }
-        }
-
-        .product-card {
-          flex: 0 0 22%;
-          max-width: 22%;
-          min-width: 300px;
-          scroll-snap-align: start;
-        }
-      }
     }
   }
 }
@@ -1540,11 +1562,6 @@
       }
     }
 
-    .category-products-grid {
-      display: flex;
-      overflow-x: auto;
-      overflow-y: hidden;
-    }
   }
 }
 
