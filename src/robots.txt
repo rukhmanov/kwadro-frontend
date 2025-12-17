@@ -26,3 +26,4 @@ Disallow: /cart
 # Sitemap
 Sitemap: https://motomarket52.ru/sitemap.xml
 
+
