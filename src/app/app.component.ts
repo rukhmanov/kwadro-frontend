@@ -63,6 +63,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   installmentError = '';
   showChatActionModal = false;
   private socket?: Socket;
+  private previousUrl: string = '';
 
   constructor(
     private authService: AuthService,
@@ -104,9 +105,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe((event) => {
       // Компоненты сами перезагрузят данные при навигации
       
-      // Отслеживание просмотра страницы в Яндекс.Метрике
+      // Отслеживание просмотра страницы в Яндекс.Метрике для SPA
       if (typeof window !== 'undefined' && window.ym) {
-        window.ym(105945878, 'hit', event.urlAfterRedirects);
+        const currentUrl = event.urlAfterRedirects;
+        window.ym(105945878, 'hit', currentUrl, {
+          title: document.title,
+          referer: this.previousUrl || window.location.href
+        });
+        // Сохраняем текущий URL как предыдущий для следующей навигации
+        this.previousUrl = currentUrl;
       }
     });
 
