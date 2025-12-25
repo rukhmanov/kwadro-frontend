@@ -258,15 +258,23 @@
             <div class="stock-actions-wrapper">
               <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
               <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
-                <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
-                  <button (click)="addToCart(product.id, $event)" class="btn-cart"
-                    [disabled]="isOutOfStock(product.id)">
+                <div *ngIf="!isInCart(product.id) && product.stock > 0" class="cart-button-wrapper">
+                  <button (click)="addToCart(product.id, $event)" class="btn-cart">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
                       <circle cx="9" cy="20" r="1" />
                       <circle cx="20" cy="20" r="1" />
                     </svg>
                     В корзину
+                  </button>
+                </div>
+                <div *ngIf="product.stock === 0" class="cart-button-wrapper">
+                  <button (click)="openAvailabilityModal(product)" class="btn-cart">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      <line x1="9" y1="10" x2="15" y2="10"></line>
+                    </svg>
+                    Уточнить о наличии
                   </button>
                 </div>
                 <div *ngIf="isInCart(product.id)" class="quantity-controls-card">
@@ -320,15 +328,23 @@
             <div class="stock-actions-wrapper">
               <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
               <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
-                <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
-                  <button (click)="addToCart(product.id, $event)" class="btn-cart"
-                    [disabled]="isOutOfStock(product.id)">
+                <div *ngIf="!isInCart(product.id) && product.stock > 0" class="cart-button-wrapper">
+                  <button (click)="addToCart(product.id, $event)" class="btn-cart">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
                       <circle cx="9" cy="20" r="1" />
                       <circle cx="20" cy="20" r="1" />
                     </svg>
                     В корзину
+                  </button>
+                </div>
+                <div *ngIf="product.stock === 0" class="cart-button-wrapper">
+                  <button (click)="openAvailabilityModal(product)" class="btn-cart">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      <line x1="9" y1="10" x2="15" y2="10"></line>
+                    </svg>
+                    Уточнить о наличии
                   </button>
                 </div>
                 <div *ngIf="isInCart(product.id)" class="quantity-controls-card">
@@ -392,9 +408,8 @@
               <div class="stock-actions-wrapper">
                 <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
                 <div class="actions" (click)="$event.preventDefault(); $event.stopPropagation();">
-                  <div *ngIf="!isInCart(product.id)" class="cart-button-wrapper">
-                    <button (click)="addToCartFromCategory(product, $event)" class="btn-cart"
-                      [disabled]="isOutOfStockForProduct(product)">
+                  <div *ngIf="!isInCart(product.id) && product.stock > 0" class="cart-button-wrapper">
+                    <button (click)="addToCartFromCategory(product, $event)" class="btn-cart">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
                         <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
@@ -402,6 +417,15 @@
                         <circle cx="20" cy="20" r="1" />
                       </svg>
                       В корзину
+                    </button>
+                  </div>
+                  <div *ngIf="product.stock === 0" class="cart-button-wrapper">
+                    <button (click)="openAvailabilityModal(product)" class="btn-cart">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <line x1="9" y1="10" x2="15" y2="10"></line>
+                      </svg>
+                      Уточнить о наличии
                     </button>
                   </div>
                   <div *ngIf="isInCart(product.id)" class="quantity-controls-card">

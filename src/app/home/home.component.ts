@@ -7,6 +7,7 @@ import { NewsService } from '../services/news.service';
 import { CartService } from '../services/cart.service';
 import { CategoriesService } from '../services/categories.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
+import { AvailabilityModalService } from '../services/availability-modal.service';
 import { SeoService } from '../services/seo.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -82,6 +83,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private cartService: CartService,
     private categoriesService: CategoriesService,
     private installmentModalService: InstallmentModalService,
+    private availabilityModalService: AvailabilityModalService,
     private seoService: SeoService,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -646,6 +648,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openInstallmentModal(productName: string, productPrice: number) {
     this.installmentModalService.openModal(productName, productPrice);
+  }
+
+  openAvailabilityModal(product: any) {
+    this.availabilityModalService.openModal(product.id, product.name);
   }
 
   resetHorizontalScrolls() {

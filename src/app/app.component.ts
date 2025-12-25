@@ -20,6 +20,7 @@ import { SettingsService } from './services/settings.service';
 import { EditDrawerService } from './services/edit-drawer.service';
 import { ContactService } from './services/contact.service';
 import { InstallmentModalService } from './services/installment-modal.service';
+import { AvailabilityModalService } from './services/availability-modal.service';
 import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
 import { EditDrawerComponent } from './edit-drawer/edit-drawer.component';
 import { io, Socket } from 'socket.io-client';
@@ -61,6 +62,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   isSubmittingInstallment = false;
   installmentSuccess = false;
   installmentError = '';
+  showAvailabilityModal = false;
+  availabilityPhone = '';
+  availabilityProductId: number | null = null;
+  availabilityProductName = '';
+  isSubmittingAvailability = false;
+  availabilitySuccess = false;
+  availabilityError = '';
   showChatActionModal = false;
   private socket?: Socket;
   private previousUrl: string = '';
@@ -73,6 +81,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private editDrawerService: EditDrawerService,
     private contactService: ContactService,
     private installmentModalService: InstallmentModalService,
+    private availabilityModalService: AvailabilityModalService,
     private router: Router
   ) {}
 
@@ -97,6 +106,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     // Подписка на открытие модального окна рассрочки
     this.installmentModalService.openModal$.subscribe(({ productName, productPrice }) => {
       this.openInstallmentModal(productName, productPrice);
+    });
+
+    // Подписка на открытие модального окна уточнения о наличии
+    this.availabilityModalService.openModal$.subscribe(({ productId, productName }) => {
+      this.openAvailabilityModal(productId, productName);
     });
 
     // Подписка на изменения роута для обновления данных и отслеживания просмотров
@@ -804,6 +818,153 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       error: (error) => {
         this.isSubmittingInstallment = false;
         this.installmentError = error.error?.message || 'Произошла ошибка. Попробуйте еще раз.';
+      }
+    });
+  }
+
+  // Методы для уточнения о наличии
+  openAvailabilityModal(productId: number, productName?: string) {
+    this.showAvailabilityModal = true;
+    this.availabilityPhone = '';
+    this.availabilityProductId = productId;
+    this.availabilityProductName = productName || '';
+    this.availabilitySuccess = false;
+    this.availabilityError = '';
+  }
+
+  closeAvailabilityModal() {
+    this.showAvailabilityModal = false;
+    this.availabilityPhone = '';
+    this.availabilityProductId = null;
+    this.availabilityProductName = '';
+    this.availabilitySuccess = false;
+    this.availabilityError = '';
+  }
+
+  isAvailabilityPhoneValid(): boolean {
+    const phoneDigits = this.availabilityPhone.replace(/\D/g, '').replace(/^7/, '');
+    return phoneDigits.length >= 10;
+  }
+
+  onAvailabilityPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const cursorPosition = input.selectionStart || 0;
+    let value = input.value;
+    
+    let digits = value.replace(/\D/g, '');
+    
+    if (digits.startsWith('7')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('8')) {
+      digits = digits.substring(1);
+    }
+    
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    let formatted = '+7';
+    if (digits.length > 0) {
+      formatted += ' (' + digits.substring(0, 3);
+      if (digits.length > 3) {
+        formatted += ') ' + digits.substring(3, 6);
+        if (digits.length > 6) {
+          formatted += '-' + digits.substring(6, 8);
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+          }
+        }
+      } else if (digits.length === 3) {
+        formatted += ')';
+      }
+    }
+    
+    this.availabilityPhone = formatted;
+    
+    setTimeout(() => {
+      input.setSelectionRange(formatted.length, formatted.length);
+    }, 0);
+  }
+
+  onAvailabilityPhoneKeyDown(event: KeyboardEvent): void {
+    const input = event.target as HTMLInputElement;
+    if (event.key === 'Backspace' && input.value.length <= 3) {
+      event.preventDefault();
+      this.availabilityPhone = '+7';
+    }
+  }
+
+  onAvailabilityPhoneFocus(event: FocusEvent): void {
+    const input = event.target as HTMLInputElement;
+    if (!this.availabilityPhone || this.availabilityPhone === '+7') {
+      this.availabilityPhone = '+7';
+      setTimeout(() => {
+        input.setSelectionRange(3, 3);
+      }, 0);
+    }
+  }
+
+  onAvailabilityPhonePaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    
+    let digits = pastedText.replace(/\D/g, '');
+    
+    if (digits.startsWith('7')) {
+      digits = digits.substring(1);
+    } else if (digits.startsWith('8')) {
+      digits = digits.substring(1);
+    }
+    
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    let formatted = '+7';
+    if (digits.length > 0) {
+      formatted += ' (' + digits.substring(0, 3);
+      if (digits.length > 3) {
+        formatted += ') ' + digits.substring(3, 6);
+        if (digits.length > 6) {
+          formatted += '-' + digits.substring(6, 8);
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+          }
+        }
+      }
+    }
+    
+    this.availabilityPhone = formatted;
+  }
+
+  submitAvailability() {
+    if (!this.isAvailabilityPhoneValid()) {
+      this.availabilityError = 'Пожалуйста, введите корректный номер телефона';
+      return;
+    }
+
+    if (!this.availabilityProductId) return;
+
+    this.isSubmittingAvailability = true;
+    this.availabilityError = '';
+    this.availabilitySuccess = false;
+
+    this.contactService.requestAvailability(
+      this.availabilityPhone,
+      this.availabilityProductId,
+      this.availabilityProductName || undefined
+    ).subscribe({
+      next: () => {
+        this.isSubmittingAvailability = false;
+        this.availabilitySuccess = true;
+        
+        setTimeout(() => {
+          this.closeAvailabilityModal();
+        }, 2000);
+      },
+      error: (error) => {
+        this.isSubmittingAvailability = false;
+        this.availabilityError = error.error?.message || 'Произошла ошибка. Попробуйте еще раз.';
       }
     });
   }

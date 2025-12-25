@@ -52,6 +52,49 @@
           display: block;
           background: #000;
         }
+
+        .image-nav-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          color: #ffffff;
+          cursor: pointer;
+          display: none; // Скрыто на мобильных по умолчанию
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          padding: 0;
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-50%) scale(1.1);
+          }
+
+          &:active {
+            transform: translateY(-50%) scale(0.95);
+          }
+
+          svg {
+            width: 24px;
+            height: 24px;
+          }
+
+          &.image-nav-btn-prev {
+            left: 1rem;
+          }
+
+          &.image-nav-btn-next {
+            right: 1rem;
+          }
+        }
       }
 
       .media-thumbnails {
@@ -359,6 +402,10 @@
 
           .product-video-player {
             max-height: 600px;
+          }
+
+          .image-nav-btn {
+            display: flex; // Показываем кнопки на планшетах и десктопах
           }
         }
 

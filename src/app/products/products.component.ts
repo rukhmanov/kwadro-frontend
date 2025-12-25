@@ -8,6 +8,7 @@ import { CartService } from '../services/cart.service';
 import { AuthService } from '../services/auth.service';
 import { EditDrawerService } from '../services/edit-drawer.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
+import { AvailabilityModalService } from '../services/availability-modal.service';
 import { SeoService } from '../services/seo.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -66,6 +67,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private editDrawerService: EditDrawerService,
     private installmentModalService: InstallmentModalService,
+    private availabilityModalService: AvailabilityModalService,
     private seoService: SeoService,
     private route: ActivatedRoute
   ) {
@@ -459,5 +461,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   openInstallmentModal(productName: string, productPrice: number) {
     this.installmentModalService.openModal(productName, productPrice);
+  }
+
+  openAvailabilityModal(product: any) {
+    this.availabilityModalService.openModal(product.id, product.name);
   }
 }

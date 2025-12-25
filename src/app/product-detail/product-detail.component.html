@@ -5,14 +5,32 @@
     <div class="product-content">
       <div class="product-images">
         <div class="main-image-container">
+          <button 
+            *ngIf="(selectedMediaType === 'image' && product.images && product.images.length > 1) || (selectedMediaType === 'video' && product.images && product.images.length > 0)"
+            (click)="previousImage()" 
+            class="image-nav-btn image-nav-btn-prev"
+            aria-label="Предыдущее">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
           <img
-            *ngIf="selectedMediaType === 'image' || (selectedMediaType === null && product.images && product.images.length > 0)"
-            [src]="selectedImage || (product.images && product.images.length > 0 ? product.images[0] : null) || '/assets/placeholder.svg'"
+            *ngIf="selectedMediaType === 'image'"
+            [src]="getCurrentImage() || '/assets/placeholder.svg'"
             [alt]="product.name" class="main-image" (error)="$any($event.target).src='/assets/placeholder.svg'">
           <video
-            *ngIf="selectedMediaType === 'video' || (selectedMediaType === null && product.video && (!product.images || product.images.length === 0))"
+            *ngIf="selectedMediaType === 'video'"
             [src]="product.video" controls class="product-video-player">
           </video>
+          <button 
+            *ngIf="(selectedMediaType === 'image' && product.images && product.images.length > 1) || (selectedMediaType === 'image' && product.images && product.images.length > 0 && product.video) || (selectedMediaType === 'video' && product.images && product.images.length > 0)"
+            (click)="nextImage()" 
+            class="image-nav-btn image-nav-btn-next"
+            aria-label="Следующее">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
         </div>
         <div class="media-thumbnails" *ngIf="(product.images && product.images.length > 0) || product.video">
           <div *ngFor="let img of product.images; let i = index" class="thumbnail-item"
@@ -66,13 +84,12 @@
               [disabled]="!canIncreaseQuantity()">+</button>
           </div>
           <div *ngIf="product.stock === 0" class="out-of-stock">
-            <button class="btn-cart" disabled>
+            <button (click)="openAvailabilityModal()" class="btn-cart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 2L7 6m10 0l-2-4M3 6h18l-1 7H4L3 6zM4 13h16l-1 7H5l-1-7z" />
-                <circle cx="9" cy="20" r="1" />
-                <circle cx="20" cy="20" r="1" />
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <line x1="9" y1="10" x2="15" y2="10"></line>
               </svg>
-              Нет в наличии
+              Уточнить о наличии
             </button>
           </div>
           <button (click)="openInstallmentModal()" class="btn-installment">
