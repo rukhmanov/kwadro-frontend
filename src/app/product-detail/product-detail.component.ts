@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductsService } from '../services/products.service';
 import { CartService } from '../services/cart.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
@@ -127,6 +127,7 @@ export class ProductDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productsService: ProductsService,
     private cartService: CartService,
     private installmentModalService: InstallmentModalService,
@@ -137,27 +138,41 @@ export class ProductDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.productsService.getProduct(+id).subscribe(product => {
-        this.product = product;
-        // SEO оптимизация для продукта
-        this.seoService.updateProductSEO(product);
-        // Инициализируем отображение главного изображения или видео
-        const hasImages = product.images && product.images.length > 0;
-        if (product.video && !hasImages) {
-          // Только видео, нет изображений
-          this.selectedMediaType = 'video';
-          this.selectedImage = null;
-        } else if (hasImages) {
-          // Есть изображения - показываем их (даже если есть видео)
-          this.selectedMediaType = 'image';
-          this.currentImageIndex = 0;
-          this.selectedImage = null; // null означает главное изображение (первое в массиве)
-        } else {
-          // Нет ни изображений, ни видео
-          this.selectedMediaType = null;
-          this.selectedImage = null;
+      this.productsService.getProduct(+id).subscribe({
+        next: (product) => {
+          this.product = product;
+          // SEO оптимизация для продукта
+          this.seoService.updateProductSEO(product);
+          // Инициализируем отображение главного изображения или видео
+          const hasImages = product.images && product.images.length > 0;
+          if (product.video && !hasImages) {
+            // Только видео, нет изображений
+            this.selectedMediaType = 'video';
+            this.selectedImage = null;
+          } else if (hasImages) {
+            // Есть изображения - показываем их (даже если есть видео)
+            this.selectedMediaType = 'image';
+            this.currentImageIndex = 0;
+            this.selectedImage = null; // null означает главное изображение (первое в массиве)
+          } else {
+            // Нет ни изображений, ни видео
+            this.selectedMediaType = null;
+            this.selectedImage = null;
+          }
+        },
+        error: (error) => {
+          // Если товар не найден (404), перенаправляем на страницу 404
+          if (error.status === 404) {
+            this.router.navigate(['/404'], { skipLocationChange: false });
+          } else {
+            // Для других ошибок также перенаправляем на 404
+            this.router.navigate(['/404'], { skipLocationChange: false });
+          }
         }
       });
+    } else {
+      // Если ID не указан, перенаправляем на 404
+      this.router.navigate(['/404'], { skipLocationChange: false });
     }
     this.loadCartItems();
 

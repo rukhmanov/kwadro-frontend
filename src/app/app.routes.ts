@@ -11,6 +11,7 @@ import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './login/login.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { TermsComponent } from './terms/terms.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,4 +26,6 @@ export const routes: Routes = [
   { path: 'admin', component: AdminComponent },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'terms', component: TermsComponent },
+  { path: '404', component: NotFoundComponent },
+  { path: '**', component: NotFoundComponent },
 ];

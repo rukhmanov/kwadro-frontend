@@ -1,0 +1,46 @@
+# Apache конфигурация для Angular SPA с правильной обработкой 404
+
+# Включаем mod_rewrite
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Если запрашивается существующий файл или директория, отдаем его
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  
+  # Для всех остальных запросов перенаправляем на index.html
+  # Это нужно для работы Angular SPA
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Настройка кэширования для статических файлов
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# Сжатие для ускорения загрузки
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Безопасность заголовков
+<IfModule mod_headers.c>
+  # Защита от XSS
+  Header set X-XSS-Protection "1; mode=block"
+  # Защита от MIME-sniffing
+  Header set X-Content-Type-Options "nosniff"
+  # Защита от clickjacking
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
