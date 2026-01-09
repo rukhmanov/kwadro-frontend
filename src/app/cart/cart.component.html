@@ -18,7 +18,7 @@
             </div>
             <div class="item-info">
               <h3>{{ item.product.name }}</h3>
-              <p class="price">{{ item.product.price }} ₽</p>
+              <p class="price">{{ item.product.price | number:'1.0-0' }} ₽</p>
             </div>
           </div>
           <div class="item-actions">
@@ -29,7 +29,7 @@
                 [disabled]="item.quantity >= item.product.stock">+</button>
             </div>
             <div class="item-total">
-              {{ item.product.price * item.quantity }} ₽
+              {{ (item.product.price * item.quantity) | number:'1.0-0' }} ₽
             </div>
           </div>
           <button (click)="removeItem(item.id)" class="remove-btn" aria-label="Удалить товар">
@@ -44,7 +44,7 @@
 
       <div class="cart-summary">
         <div class="total">
-          <h2>Итого: {{ total }} ₽</h2>
+          <h2>Итого: {{ total | number:'1.0-0' }} ₽</h2>
         </div>
         <div class="actions">
           <button (click)="clearCart()" class="btn-secondary">Очистить корзину</button>

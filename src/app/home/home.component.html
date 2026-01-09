@@ -187,7 +187,7 @@
           </select>
         </div>
         <div class="filter-group">
-          <label>Цена: {{ priceRangeMin }}₽ - {{ priceRangeMax }}₽</label>
+          <label>Цена: {{ priceRangeMin | number:'1.0-0' }}₽ - {{ priceRangeMax | number:'1.0-0' }}₽</label>
           <div class="price-range-container">
             <div class="dual-range-slider">
               <div class="slider-track" #sliderTrack>
@@ -252,8 +252,8 @@
             <h3>{{ product.name }}</h3>
             <p *ngIf="product.description" class="description">{{ product.description | slice:0:100 }}...</p>
             <p class="price">
-              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
-              <span class="current-price">{{ product.price | number }} ₽</span>
+              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number:'1.0-0' }} ₽</span>
+              <span class="current-price">{{ product.price | number:'1.0-0' }} ₽</span>
             </p>
             <div class="stock-actions-wrapper">
               <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
@@ -322,8 +322,8 @@
           <div class="product-content">
             <h3>{{ product.name }}</h3>
             <p class="price">
-              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
-              <span class="current-price">{{ product.price }} ₽</span>
+              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number:'1.0-0' }} ₽</span>
+              <span class="current-price">{{ product.price | number:'1.0-0' }} ₽</span>
             </p>
             <div class="stock-actions-wrapper">
               <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>
@@ -402,8 +402,8 @@
             <div class="product-content">
               <h3>{{ product.name }}</h3>
               <p class="price">
-                <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
-                <span class="current-price">{{ product.price }} ₽</span>
+                <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number:'1.0-0' }} ₽</span>
+                <span class="current-price">{{ product.price | number:'1.0-0' }} ₽</span>
               </p>
               <div class="stock-actions-wrapper">
                 <span *ngIf="product.stock >= 1" class="in-stock-badge">В наличии</span>

@@ -64,8 +64,8 @@
 
         <div class="price-section">
           <p class="price">
-            <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice }} ₽</span>
-            <span class="current-price">{{ product.price }} ₽</span>
+            <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number:'1.0-0' }} ₽</span>
+            <span class="current-price">{{ product.price | number:'1.0-0' }} ₽</span>
           </p>
           <div *ngIf="!isInCart(product.id) && product.stock > 0">
             <button (click)="addToCart()" class="btn-cart">

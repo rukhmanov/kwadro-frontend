@@ -50,7 +50,7 @@
       <!-- Панель фильтров -->
       <div class="filters-panel" [class.active]="showFilters">
         <div class="filter-group">
-          <label>Цена: {{ priceRangeMin }}₽ - {{ priceRangeMax }}₽</label>
+          <label>Цена: {{ priceRangeMin | number:'1.0-0' }}₽ - {{ priceRangeMax | number:'1.0-0' }}₽</label>
           <div class="price-range-container">
             <div class="dual-range-slider">
               <div class="slider-track" #sliderTrack>
@@ -144,8 +144,8 @@
           </div>
           <div class="price-section">
             <p class="price">
-              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number }} ₽</span>
-              <span class="current-price">{{ product.price | number }} ₽</span>
+              <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number:'1.0-0' }} ₽</span>
+              <span class="current-price">{{ product.price | number:'1.0-0' }} ₽</span>
             </p>
           </div>
           <div class="stock-actions-wrapper">

@@ -293,7 +293,7 @@
           <label>Товар</label>
           <p class="product-info-text">{{ installmentProductName }}</p>
           <p class="product-info-text" *ngIf="installmentProductPrice">
-            Цена: {{ installmentProductPrice | number }} ₽
+            Цена: {{ installmentProductPrice | number:'1.0-0' }} ₽
           </p>
         </div>
         <div class="form-group">
