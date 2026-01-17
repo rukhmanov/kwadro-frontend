@@ -11,9 +11,10 @@
       </button>
     </div>
 
-    <div class="news-list">
-      <div *ngFor="let item of news" class="news-card">
-        <div class="news-image-wrapper" *ngIf="item.image">
+    <section class="news-list">
+      <h2 class="visually-hidden">Список новостей</h2>
+      <article *ngFor="let item of news" class="news-card">
+        <figure class="news-image-wrapper" *ngIf="item.image">
           <img [src]="item.image" [alt]="item.title">
           <div *ngIf="isAdmin" class="admin-actions">
             <button (click)="openEditDrawer(item, $event)" class="edit-icon" aria-label="Редактировать">
@@ -30,7 +31,7 @@
               </svg>
             </button>
           </div>
-        </div>
+        </figure>
         <div class="news-image-wrapper news-placeholder" *ngIf="!item.image">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -55,11 +56,11 @@
             </button>
           </div>
           <h2>{{ item.title }}</h2>
-          <p class="date">{{ item.createdAt | date:'dd.MM.yyyy' }}</p>
+          <time [attr.datetime]="item.createdAt" class="date">{{ item.createdAt | date:'dd.MM.yyyy' }}</time>
           <p>{{ item.content | slice:0:200 }}...</p>
           <a [routerLink]="['/news', item.id]" class="read-more">Читать далее</a>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
   </div>
 </div>

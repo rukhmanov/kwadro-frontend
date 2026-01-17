@@ -84,17 +84,20 @@ export class SeoService {
 
   updateStructuredData(data: any): void {
     // Удаляем старые структурированные данные
-    const existingScript = document.getElementById('structured-data');
-    if (existingScript) {
-      existingScript.remove();
-    }
+    const existingScripts = document.querySelectorAll('script[id^="structured-data"]');
+    existingScripts.forEach(script => script.remove());
 
-    // Добавляем новые структурированные данные
-    const script = document.createElement('script');
-    script.id = 'structured-data';
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(data);
-    document.head.appendChild(script);
+    // Если data - массив, добавляем каждый элемент отдельно
+    // Если data - объект, добавляем как есть
+    const dataArray = Array.isArray(data) ? data : [data];
+    
+    dataArray.forEach((item, index) => {
+      const script = document.createElement('script');
+      script.id = `structured-data-${index}`;
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(item);
+      document.head.appendChild(script);
+    });
   }
 
   private updateCanonicalUrl(url: string): void {
@@ -224,50 +227,158 @@ export class SeoService {
       url: this.siteUrl
     });
 
-    // Структурированные данные для организации
-    const structuredData = {
-      '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
-      '@id': this.siteUrl,
-      name: this.siteName,
-      description: this.defaultDescription,
-      url: this.siteUrl,
-      logo: this.getFullImageUrl(this.defaultImage),
-      image: this.getFullImageUrl(this.defaultImage),
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Гайдара 61 д',
-        addressLocality: 'Дзержинск',
-        addressRegion: 'Нижегородская область',
-        postalCode: '606000',
-        addressCountry: 'RU'
-      },
-      geo: {
-        '@type': 'GeoCoordinates',
-        latitude: 56.232929,
-        longitude: 43.435260
-      },
-      telephone: '+7 (8313) 26-00-00',
-      priceRange: '$$',
-      areaServed: {
-        '@type': 'City',
-        name: 'Дзержинск'
-      },
-      areaServedRegion: {
-        '@type': 'State',
-        name: 'Нижегородская область'
-      },
-      openingHoursSpecification: [
-        {
-          '@type': 'OpeningHoursSpecification',
-          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-          opens: '09:00',
-          closes: '18:00'
+    // Структурированные данные - массив с несколькими типами
+    const structuredDataArray = [
+      // WebSite schema для лучшего понимания сайта
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': `${this.siteUrl}/#website`,
+        url: this.siteUrl,
+        name: this.siteName,
+        description: this.defaultDescription,
+        publisher: {
+          '@id': `${this.siteUrl}/#organization`
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${this.siteUrl}/products?search={search_term_string}`
+          },
+          'query-input': 'required name=search_term_string'
         }
-      ]
-    };
+      },
+      // Organization schema
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        '@id': `${this.siteUrl}/#organization`,
+        name: this.siteName,
+        url: this.siteUrl,
+        logo: {
+          '@type': 'ImageObject',
+          url: this.getFullImageUrl(this.defaultImage),
+          width: 1200,
+          height: 630
+        },
+        image: this.getFullImageUrl(this.defaultImage),
+        description: this.defaultDescription,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Гайдара 61 д',
+          addressLocality: 'Дзержинск',
+          addressRegion: 'Нижегородская область',
+          postalCode: '606000',
+          addressCountry: 'RU'
+        },
+        contactPoint: {
+          '@type': 'ContactPoint',
+          telephone: '+7-962-516-73-01',
+          contactType: 'Отдел продаж',
+          areaServed: 'RU',
+          availableLanguage: 'Russian'
+        },
+        sameAs: [
+          'https://vk.com/motomarketdzr',
+          'https://t.me/motomarket52'
+        ]
+      },
+      // LocalBusiness schema с полной информацией
+      {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        '@id': `${this.siteUrl}/#localbusiness`,
+        name: this.siteName,
+        description: this.defaultDescription,
+        url: this.siteUrl,
+        logo: {
+          '@type': 'ImageObject',
+          url: this.getFullImageUrl(this.defaultImage),
+          width: 1200,
+          height: 630
+        },
+        image: [this.getFullImageUrl(this.defaultImage)],
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Гайдара 61 д',
+          addressLocality: 'Дзержинск',
+          addressRegion: 'Нижегородская область',
+          postalCode: '606000',
+          addressCountry: 'RU'
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: 56.232929,
+          longitude: 43.435260
+        },
+        telephone: '+7-962-516-73-01',
+        priceRange: '$$',
+        areaServed: [
+          {
+            '@type': 'City',
+            name: 'Дзержинск'
+          },
+          {
+            '@type': 'State',
+            name: 'Нижегородская область'
+          }
+        ],
+        openingHoursSpecification: [
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            opens: '09:00',
+            closes: '18:00'
+          }
+        ],
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: 'Каталог мототехники',
+          itemListElement: [
+            {
+              '@type': 'OfferCatalog',
+              name: 'Мотоциклы'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Квадроциклы'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Скутеры'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Мопеды'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Снегоходы'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Запчасти'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Экипировка'
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Аксессуары'
+            }
+          ]
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          reviewCount: '150'
+        }
+      }
+    ];
 
-    this.updateStructuredData(structuredData);
+    this.updateStructuredData(structuredDataArray);
   }
 }
 

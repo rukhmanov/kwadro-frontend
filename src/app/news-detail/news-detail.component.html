@@ -3,10 +3,14 @@
     <a routerLink="/news" class="back-link">← Назад к новостям</a>
 
     <article class="news-article">
-      <h1>{{ newsItem.title }}</h1>
-      <p class="date">{{ newsItem.createdAt | date:'dd.MM.yyyy' }}</p>
-      <img *ngIf="newsItem.image" [src]="newsItem.image" [alt]="newsItem.title" class="news-image">
-      <div *ngIf="!newsItem.image" class="news-image news-placeholder">
+      <header>
+        <h1>{{ newsItem.title }}</h1>
+        <time [attr.datetime]="newsItem.createdAt" class="date">{{ newsItem.createdAt | date:'dd.MM.yyyy' }}</time>
+      </header>
+      <figure *ngIf="newsItem.image">
+        <img [src]="newsItem.image" [alt]="newsItem.title" class="news-image">
+      </figure>
+      <div *ngIf="!newsItem.image" class="news-image news-placeholder" role="img" aria-label="Нет изображения">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="3" y1="9" x2="21" y2="9"></line>
@@ -14,6 +18,9 @@
         </svg>
       </div>
       <div class="content" [innerHTML]="newsItem.content"></div>
+      <footer *ngIf="newsItem.updatedAt && newsItem.updatedAt !== newsItem.createdAt" class="article-footer">
+        <time [attr.datetime]="newsItem.updatedAt">Обновлено: {{ newsItem.updatedAt | date:'dd.MM.yyyy' }}</time>
+      </footer>
     </article>
   </div>
 </div>

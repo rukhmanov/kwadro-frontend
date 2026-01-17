@@ -3,7 +3,7 @@
     <a routerLink="/products" class="back-link">← Назад к каталогу</a>
 
     <div class="product-content">
-      <div class="product-images">
+      <figure class="product-images">
         <div class="main-image-container">
           <button 
             *ngIf="(selectedMediaType === 'image' && product.images && product.images.length > 1) || (selectedMediaType === 'video' && product.images && product.images.length > 0)"
@@ -46,23 +46,26 @@
             </div>
           </div>
         </div>
-      </div>
+        <figcaption class="visually-hidden">{{ product.name }}</figcaption>
+      </figure>
 
       <div class="product-info">
         <h1 class="product-title">{{ product.name }}</h1>
         <p class="description">{{ product.description }}</p>
 
-        <div class="specs" *ngIf="product.specifications && product.specifications.length > 0">
-          <h3>Характеристики:</h3>
+        <section class="specs" *ngIf="product.specifications && product.specifications.length > 0">
+          <h2>Характеристики товара</h2>
+          <h3>Технические параметры:</h3>
           <ul>
             <li *ngFor="let spec of product.specifications">
               {{ spec.name }}: {{ spec.value }}
             </li>
             <li>Наличие: {{ product.stock > 0 ? 'В наличии' : 'Нет в наличии' }}</li>
           </ul>
-        </div>
+        </section>
 
-        <div class="price-section">
+        <section class="price-section">
+          <h2 class="visually-hidden">Цена и покупка</h2>
           <p class="price">
             <span *ngIf="product.oldPrice" class="old-price">{{ product.oldPrice | number:'1.0-0' }} ₽</span>
             <span class="current-price">{{ product.price | number:'1.0-0' }} ₽</span>
@@ -95,7 +98,7 @@
           <button (click)="openInstallmentModal()" class="btn-installment">
             Купить в рассрочку
           </button>
-        </div>
+        </section>
       </div>
     </div>
   </div>
