@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductsService } from '../services/products.service';
@@ -14,13 +14,14 @@ import { SeoService } from '../services/seo.service';
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
-export class ProductDetailComponent implements OnInit {
+export class ProductDetailComponent implements OnInit, OnDestroy {
   product: any = null;
   cartItems: any[] = [];
   cartItemsMap: Map<number, any> = new Map();
   selectedImage: string | null = null;
   selectedMediaType: 'image' | 'video' | null = null;
   currentImageIndex: number = 0;
+  isGalleryOpen = false;
 
   selectMedia(type: 'image' | 'video', image: string | null = null) {
     this.selectedMediaType = type;
@@ -35,9 +36,16 @@ export class ProductDetailComponent implements OnInit {
       this.currentImageIndex = 0;
       this.selectedImage = null;
     } else if (type === 'video') {
-      // При выборе видео сбрасываем индекс изображения
       this.selectedImage = null;
     }
+  }
+
+  showVideo() {
+    this.selectMedia('video');
+  }
+
+  showPhotos() {
+    this.selectMedia('image', this.getCurrentImage());
   }
 
   getCurrentImage(): string | null {
@@ -48,7 +56,38 @@ export class ProductDetailComponent implements OnInit {
     return this.product.images[this.currentImageIndex] || this.product.images[0];
   }
 
+  openGallery() {
+    if (this.selectedMediaType !== 'image' || !this.getCurrentImage()) {
+      return;
+    }
+    this.isGalleryOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeGallery() {
+    if (!this.isGalleryOpen) {
+      return;
+    }
+    this.isGalleryOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  private stepGalleryImage(delta: number) {
+    if (!this.product?.images?.length) {
+      return;
+    }
+    const length = this.product.images.length;
+    this.currentImageIndex = (this.currentImageIndex + delta + length) % length;
+    this.selectedImage = this.product.images[this.currentImageIndex];
+    this.selectedMediaType = 'image';
+  }
+
   previousImage() {
+    if (this.isGalleryOpen) {
+      this.stepGalleryImage(-1);
+      return;
+    }
+
     // Если выбрано видео, переключаемся на последнее изображение
     if (this.selectedMediaType === 'video' && this.product?.images && this.product.images.length > 0) {
       this.selectedMediaType = 'image';
@@ -89,6 +128,11 @@ export class ProductDetailComponent implements OnInit {
   }
 
   nextImage() {
+    if (this.isGalleryOpen) {
+      this.stepGalleryImage(1);
+      return;
+    }
+
     // Если нет изображений, ничего не делаем
     if (!this.product?.images || this.product.images.length === 0) {
       return;
@@ -291,8 +335,18 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.closeGallery();
+  }
+
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.isGalleryOpen) {
+      event.preventDefault();
+      this.closeGallery();
+      return;
+    }
+
     // Навигация по изображениям и видео стрелками влево/вправо
     if (this.product?.images && this.product.images.length > 0) {
       if (event.key === 'ArrowLeft') {

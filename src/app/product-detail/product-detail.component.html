@@ -17,10 +17,21 @@
           <img
             *ngIf="selectedMediaType === 'image'"
             [src]="getCurrentImage() || '/assets/placeholder.svg'"
-            [alt]="product.name" class="main-image" (error)="$any($event.target).src='/assets/placeholder.svg'">
+            [alt]="product.name"
+            class="main-image"
+            role="button"
+            tabindex="0"
+            aria-label="Открыть галерею"
+            (click)="openGallery()"
+            (keydown.enter)="openGallery()"
+            (keydown.space)="$event.preventDefault(); openGallery()"
+            (error)="$any($event.target).src='/assets/placeholder.svg'">
           <video
             *ngIf="selectedMediaType === 'video'"
-            [src]="product.video" controls class="product-video-player">
+            [src]="product.video"
+            controls
+            autoplay
+            class="product-video-player">
           </video>
           <button 
             *ngIf="(selectedMediaType === 'image' && product.images && product.images.length > 1) || (selectedMediaType === 'image' && product.images && product.images.length > 0 && product.video) || (selectedMediaType === 'video' && product.images && product.images.length > 0)"
@@ -31,19 +42,36 @@
               <path d="M9 18l6-6-6-6"/>
             </svg>
           </button>
+          <button
+            *ngIf="product.video && selectedMediaType === 'image'"
+            type="button"
+            class="media-switch-btn media-switch-video"
+            (click)="showVideo(); $event.stopPropagation()"
+            aria-label="Смотреть видео">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="8 5 19 12 8 19 8 5"></polygon>
+            </svg>
+            Видео
+          </button>
+          <button
+            *ngIf="product.video && selectedMediaType === 'video' && product.images?.length"
+            type="button"
+            class="media-switch-btn media-switch-photo"
+            (click)="showPhotos(); $event.stopPropagation()"
+            aria-label="Вернуться к фото">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+              <circle cx="8.5" cy="10.5" r="1.5"></circle>
+              <path d="M21 16l-5-5-8 8"></path>
+            </svg>
+            Фото
+          </button>
         </div>
-        <div class="media-thumbnails" *ngIf="(product.images && product.images.length > 0) || product.video">
+        <div class="media-thumbnails" *ngIf="product.images && product.images.length > 0">
           <div *ngFor="let img of product.images; let i = index" class="thumbnail-item"
-            [class.active]="selectedMediaType === 'image' && selectedImage === img" (click)="selectMedia('image', img)">
+            [class.active]="selectedMediaType === 'image' && (selectedImage === img || (!selectedImage && i === currentImageIndex))"
+            (click)="selectMedia('image', img)">
             <img [src]="img" [alt]="product.name" (error)="$any($event.target).src='/assets/placeholder.svg'">
-          </div>
-          <div *ngIf="product.video" class="thumbnail-item video-thumbnail"
-            [class.active]="selectedMediaType === 'video'" (click)="selectMedia('video', null)">
-            <div class="video-thumbnail-placeholder">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-            </div>
           </div>
         </div>
         <figcaption class="visually-hidden">{{ product.name }}</figcaption>
@@ -99,6 +127,70 @@
             Купить в рассрочку
           </button>
         </section>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="gallery-overlay"
+    *ngIf="isGalleryOpen"
+    (click)="closeGallery()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'Галерея: ' + product.name">
+    <button
+      type="button"
+      class="gallery-close"
+      (click)="closeGallery(); $event.stopPropagation()"
+      aria-label="Закрыть галерею">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div class="gallery-stage">
+      <button
+        *ngIf="product.images && product.images.length > 1"
+        type="button"
+        class="gallery-nav gallery-nav-prev"
+        (click)="previousImage(); $event.stopPropagation()"
+        aria-label="Предыдущее фото">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <img
+        class="gallery-image"
+        [src]="getCurrentImage() || '/assets/placeholder.svg'"
+        [alt]="product.name"
+        (click)="$event.stopPropagation()"
+        (error)="$any($event.target).src='/assets/placeholder.svg'">
+
+      <button
+        *ngIf="product.images && product.images.length > 1"
+        type="button"
+        class="gallery-nav gallery-nav-next"
+        (click)="nextImage(); $event.stopPropagation()"
+        aria-label="Следующее фото">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="gallery-footer" (click)="$event.stopPropagation()" *ngIf="product.images?.length">
+      <p class="gallery-counter">{{ currentImageIndex + 1 }} / {{ product.images.length }}</p>
+      <div class="gallery-thumbs" *ngIf="product.images.length > 1">
+        <button
+          type="button"
+          *ngFor="let img of product.images; let i = index"
+          class="gallery-thumb"
+          [class.active]="currentImageIndex === i"
+          (click)="selectMedia('image', img)"
+          [attr.aria-label]="'Фото ' + (i + 1)">
+          <img [src]="img" [alt]="product.name" (error)="$any($event.target).src='/assets/placeholder.svg'">
+        </button>
       </div>
     </div>
   </div>
