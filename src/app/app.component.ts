@@ -468,10 +468,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onEntitySaved(entity: any) {
     this.closeEditDrawer();
-    // Перезагружаем текущую страницу для обновления данных
+    // Перезагружаем текущую страницу для обновления данных.
+    // Важно: navigateByUrl, а не navigate([url]) — иначе query (?&=) кодируется в path → 404.
     const currentUrl = this.router.url;
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate([currentUrl]);
+      this.router.navigateByUrl(currentUrl);
     });
   }
 
