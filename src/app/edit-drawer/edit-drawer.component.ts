@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { forkJoin } from 'rxjs';
 import { ProductsService } from '../services/products.service';
 import { NewsService } from '../services/news.service';
 import { CategoriesService } from '../services/categories.service';
@@ -22,6 +23,7 @@ export class EditDrawerComponent implements OnInit {
   form: any = {};
   categories: any[] = [];
   categorySpecifications: string[] = [];
+  categorySpecSuggestions: Array<{ name: string; values: string[] }> = [];
   selectedCategoryIds: number[] = [];
   loading = false;
 
@@ -60,9 +62,8 @@ export class EditDrawerComponent implements OnInit {
           isFeatured: this.entity.isFeatured || false
         };
         
-        // Загружаем спецификации для первой категории (если есть)
         if (this.selectedCategoryIds.length > 0) {
-          this.loadCategorySpecifications(this.selectedCategoryIds[0]);
+          this.loadCategorySpecifications(this.selectedCategoryIds);
         }
       } else if (this.entityType === 'news') {
         this.form = {
@@ -72,8 +73,23 @@ export class EditDrawerComponent implements OnInit {
         };
       } else if (this.entityType === 'category') {
         this.form = {
-          ...this.entity
+          ...this.entity,
+          specifications: this.prepareCategorySpecs(this.entity.specifications)
         };
+        // Всегда перезагружаем категорию: подтягиваем specs из БД
+        // (в т.ч. старые имена с товаров, которые бэкенд дозаполняет).
+        this.categoriesService.getCategory(this.entity.id).subscribe({
+          next: (category) => {
+            this.form = {
+              ...this.form,
+              ...category,
+              specifications: this.prepareCategorySpecs(category.specifications)
+            };
+          },
+          error: (err) => {
+            console.error('Ошибка загрузки характеристик категории:', err);
+          }
+        });
       }
     } else {
       // Новый объект
@@ -102,7 +118,8 @@ export class EditDrawerComponent implements OnInit {
       } else if (this.entityType === 'category') {
         this.form = {
           name: '',
-          description: ''
+          description: '',
+          specifications: []
         };
       }
     }
@@ -156,10 +173,59 @@ export class EditDrawerComponent implements OnInit {
     });
   }
 
-  loadCategorySpecifications(categoryId: number) {
-    this.productsService.getCategorySpecifications(categoryId).subscribe((specs: string[]) => {
-      this.categorySpecifications = specs;
+  loadCategorySpecifications(categoryIds: number[] = this.selectedCategoryIds) {
+    if (!categoryIds.length) {
+      this.categorySpecifications = [];
+      this.categorySpecSuggestions = [];
+      return;
+    }
+
+    forkJoin(
+      categoryIds.map((id) => this.productsService.getCategorySpecFilters(id)),
+    ).subscribe({
+      next: (results) => {
+        const byName = new Map<string, { name: string; values: Set<string> }>();
+
+        for (const filters of results) {
+          for (const filter of filters || []) {
+            const key = (filter.name || '').trim().toLowerCase();
+            if (!key) {
+              continue;
+            }
+            if (!byName.has(key)) {
+              byName.set(key, { name: filter.name.trim(), values: new Set<string>() });
+            }
+            (filter.values || []).forEach((value) => {
+              const cleaned = (value || '').trim();
+              if (cleaned) {
+                byName.get(key)!.values.add(cleaned);
+              }
+            });
+          }
+        }
+
+        this.categorySpecSuggestions = [...byName.values()]
+          .map((item) => ({
+            name: item.name,
+            values: [...item.values].sort((a, b) => a.localeCompare(b, 'ru')),
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+        this.categorySpecifications = this.categorySpecSuggestions.map((item) => item.name);
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки подсказок характеристик:', err);
+        this.categorySpecifications = [];
+        this.categorySpecSuggestions = [];
+      },
     });
+  }
+
+  getSpecValueSuggestions(specName: string | undefined): string[] {
+    const key = (specName || '').trim().toLowerCase();
+    if (!key) {
+      return [];
+    }
+    return this.categorySpecSuggestions.find((item) => item.name.trim().toLowerCase() === key)?.values || [];
   }
 
   toggleCategory(categoryId: number) {
@@ -169,13 +235,8 @@ export class EditDrawerComponent implements OnInit {
     } else {
       this.selectedCategoryIds.push(categoryId);
     }
-    
-    // Загружаем спецификации для первой выбранной категории
-    if (this.selectedCategoryIds.length > 0) {
-      this.loadCategorySpecifications(this.selectedCategoryIds[0]);
-    } else {
-      this.categorySpecifications = [];
-    }
+
+    this.loadCategorySpecifications(this.selectedCategoryIds);
   }
 
   isCategorySelected(categoryId: number): boolean {
@@ -295,6 +356,99 @@ export class EditDrawerComponent implements OnInit {
 
   removeSpecification(index: number) {
     this.form.specifications.splice(index, 1);
+  }
+
+  prepareCategorySpecs(specs: any[] | undefined) {
+    const merged = new Map<string, any>();
+    (specs || [])
+      .slice()
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0) || (a.id || 0) - (b.id || 0))
+      .forEach((spec: any) => {
+        const key = (spec.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        if (!key) {
+          return;
+        }
+        const prev = merged.get(key);
+        if (!prev) {
+          merged.set(key, {
+            id: spec.id,
+            name: (spec.name || '').trim().replace(/\s+/g, ' '),
+            showInCategory: !!spec.showInCategory,
+            image: spec.image || null,
+            imageFile: null,
+            imagePreview: null,
+            removeImage: false
+          });
+          return;
+        }
+        merged.set(key, {
+          ...prev,
+          id: prev.id || spec.id,
+          showInCategory: prev.showInCategory || !!spec.showInCategory,
+          image: prev.image || spec.image || null,
+        });
+      });
+
+    return [...merged.values()];
+  }
+
+  addCategorySpecification() {
+    if (!this.form.specifications) {
+      this.form.specifications = [];
+    }
+    this.form.specifications.push({
+      name: '',
+      showInCategory: true,
+      image: null,
+      imageFile: null,
+      imagePreview: null,
+      removeImage: false
+    });
+  }
+
+  removeCategorySpecification(index: number) {
+    this.form.specifications.splice(index, 1);
+  }
+
+  onCategorySpecImageSelected(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !file.type.startsWith('image/')) {
+      return;
+    }
+    const spec = this.form.specifications[index];
+    spec.imageFile = file;
+    spec.removeImage = false;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      spec.imagePreview = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  clearCategorySpecImage(index: number) {
+    const spec = this.form.specifications[index];
+    spec.imageFile = null;
+    spec.imagePreview = null;
+    if (spec.image) {
+      spec.removeImage = true;
+    }
+    spec.image = null;
+  }
+
+  getCategorySpecPreview(spec: any): string | null {
+    if (spec.imagePreview) {
+      return spec.imagePreview;
+    }
+    if (spec.image && !spec.removeImage) {
+      return spec.image;
+    }
+    return null;
+  }
+
+  onCategorySpecsDrop(event: CdkDragDrop<any[]>) {
+    moveItemInArray(this.form.specifications, event.previousIndex, event.currentIndex);
   }
 
   // News image handlers
@@ -531,12 +685,31 @@ export class EditDrawerComponent implements OnInit {
 
   saveCategory() {
     const formData = new FormData();
+    const specifications = (this.form.specifications || [])
+      .filter((spec: any) => spec.name && spec.name.trim())
+      .map((spec: any, index: number) => ({
+        id: spec.id,
+        name: spec.name.trim(),
+        showInCategory: !!spec.showInCategory,
+        order: index,
+        image: spec.removeImage ? null : (spec.image && !spec.imageFile ? this.extractKeyFromUrl(spec.image) : null),
+        removeImage: !!spec.removeImage && !spec.imageFile
+      }));
     
     formData.append('category', JSON.stringify({
       name: this.form.name,
       description: this.form.description,
-      image: null
+      image: null,
+      specifications
     }));
+
+    (this.form.specifications || [])
+      .filter((spec: any) => spec.name && spec.name.trim())
+      .forEach((spec: any, index: number) => {
+        if (spec.imageFile) {
+          formData.append(`specImage_${index}`, spec.imageFile);
+        }
+      });
 
     if (this.entity) {
       this.categoriesService.updateCategory(this.entity.id, formData).subscribe({

@@ -32,6 +32,7 @@ export class ProductsService {
     maxPrice?: number;
     inStock?: boolean;
     isFeatured?: boolean;
+    specs?: string;
     page?: number;
     limit?: number;
   }): Observable<{ products: any[]; total: number; page: number; limit: number; totalPages: number }> {
@@ -62,6 +63,9 @@ export class ProductsService {
     if (params?.isFeatured !== undefined) {
       queryParams.push(`isFeatured=${params.isFeatured}`);
     }
+    if (params?.specs) {
+      queryParams.push(`specs=${encodeURIComponent(params.specs)}`);
+    }
     if (params?.page !== undefined) {
       queryParams.push(`page=${params.page}`);
     }
@@ -91,6 +95,17 @@ export class ProductsService {
 
   getCategorySpecifications(categoryId: number): Observable<string[]> {
     return this.api.get(`/products/category/${categoryId}/specifications`);
+  }
+
+  getCategorySpecFilters(categoryId: number): Observable<Array<{
+    id: number;
+    name: string;
+    image: string | null;
+    showInCategory: boolean;
+    order: number;
+    values: string[];
+  }>> {
+    return this.api.get(`/products/category/${categoryId}/spec-filters`);
   }
 }
 

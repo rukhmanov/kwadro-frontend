@@ -41,11 +41,14 @@
             <option value="ASC">↑</option>
           </select>
         </div>
-        <button (click)="showFilters = !showFilters" class="filter-toggle-btn">
+        <button (click)="showFilters = !showFilters" class="filter-toggle-btn"
+          [class.has-filters]="hasActiveFilters()"
+          [attr.aria-label]="hasActiveFilters() ? 'Фильтры, применено: ' + activeFiltersCount() : 'Фильтры'">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
           </svg>
           Фильтры
+          <span class="filter-badge" *ngIf="hasActiveFilters()">{{ activeFiltersCount() }}</span>
         </button>
       </div>
 
@@ -75,6 +78,38 @@
             <option [ngValue]="true">В наличии</option>
             <option [ngValue]="false">Нет в наличии</option>
           </select>
+        </div>
+        <div class="filter-group spec-filters" *ngIf="selectedCategory && visibleSpecFilters().length">
+          <label>Характеристики</label>
+          <div class="spec-filter-list">
+            <div *ngFor="let spec of visibleSpecFilters()" class="spec-filter-item"
+              [class.focused]="spec.name === focusedSpecName"
+              [class.expanded]="isSpecExpanded(spec.name)">
+              <button type="button" class="spec-filter-toggle" (click)="toggleSpecGroup(spec.name)">
+                <span class="spec-filter-name">{{ spec.name }}</span>
+                <span class="spec-filter-meta">
+                  <span class="spec-filter-count" *ngIf="(selectedSpecValues[spec.name] || []).length">
+                    {{ (selectedSpecValues[spec.name] || []).length }}
+                  </span>
+                  <svg class="spec-filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </span>
+              </button>
+              <div class="spec-filter-values" *ngIf="isSpecExpanded(spec.name)">
+                <p *ngIf="spec.values.length === 0" class="spec-empty">Нет значений у товаров этой категории</p>
+                <label *ngFor="let value of spec.values" class="spec-value">
+                  <input type="checkbox" [checked]="isSpecValueSelected(spec.name, value)"
+                    (change)="toggleSpecValue(spec.name, value)">
+                  <span>{{ value }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group spec-filters-hint" *ngIf="!selectedCategory">
+          <p class="spec-empty">Выберите категорию ниже — тогда здесь появятся фильтры по характеристикам.</p>
         </div>
         <div class="filter-actions">
           <button (click)="applyFilters()" class="apply-filters-btn">Применить</button>

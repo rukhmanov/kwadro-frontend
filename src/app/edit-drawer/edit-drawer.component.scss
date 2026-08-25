@@ -377,6 +377,83 @@
     }
   }
 
+  .section-hint {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .category-specs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .category-spec-card {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    background: rgba(192, 157, 99, 0.08);
+    border: 1px solid rgba(192, 157, 99, 0.25);
+    border-radius: 10px;
+
+    .category-spec-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+
+    .category-spec-image {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+
+      img {
+        width: 72px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(192, 157, 99, 0.35);
+        background: #111;
+      }
+    }
+
+    .category-spec-image-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: flex-start;
+    }
+
+    .file-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      background: rgba(192, 157, 99, 0.2);
+      border: 1px solid rgba(192, 157, 99, 0.4);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .remove-spec-btn {
+      background: rgba(255, 107, 107, 0.2);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: #f26b3d;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+  }
+
   .image-preview,
   .current-image {
     margin-top: 0.75rem;

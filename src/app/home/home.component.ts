@@ -9,6 +9,7 @@ import { CategoriesService } from '../services/categories.service';
 import { InstallmentModalService } from '../services/installment-modal.service';
 import { AvailabilityModalService } from '../services/availability-modal.service';
 import { SeoService } from '../services/seo.service';
+import { ImagePreloadService } from '../services/image-preload.service';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -42,6 +43,25 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   showFilters: boolean = false;
   selectedCategory: number | null = null;
   loadingSearch: boolean = false;
+  hoveredCategory: any = null;
+  /** Последняя категория меню — держим DOM, чтобы картинки не перезагружались. */
+  lastMenuCategory: any = null;
+  private hoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
+  private categorySpecFiltersCache = new Map<number, Array<{
+    id: number;
+    name: string;
+    image: string | null;
+    showInCategory: boolean;
+    order: number;
+    values: string[];
+  }>>();
+  private categorySpecFiltersLoading = new Set<number>();
+  megaMenuGroups: Array<{
+    specName: string;
+    image: string | null;
+    values: string[];
+  }> = [];
+  megaMenuLoading = false;
   
   // Для drag & drop
   private isDragging: boolean = false;
@@ -85,6 +105,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private installmentModalService: InstallmentModalService,
     private availabilityModalService: AvailabilityModalService,
     private seoService: SeoService,
+    private imagePreload: ImagePreloadService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
@@ -101,6 +122,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     // SEO оптимизация
     this.seoService.updateHomeSEO();
+
+    // Слайдер — локальные ассеты, прогреем сразу
+    this.imagePreload.preloadMany(this.slides.map((slide) => slide.image));
     
     // Загружаем популярные товары (независимо от поиска)
     this.loadFeaturedProducts();
@@ -151,6 +175,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.stopSlider();
+    this.clearHoverCloseTimer();
   }
 
   // Методы слайдера
@@ -185,8 +210,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.categoriesService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
-        // Загружаем по 10 товаров для каждой категории
+        // Загружаем фильтры характеристик для всех категорий заранее
         categories.forEach(category => {
+          this.ensureCategorySpecFilters(category.id);
+          // Фото характеристик из ответа категорий — прогреем до hover
+          this.imagePreload.preloadMany(
+            (category.specifications || [])
+              .filter((spec: any) => this.isShowInCategoryFlag(spec.showInCategory))
+              .map((spec: any) => spec.image),
+          );
           this.productsService.getProductsPaginated({
             categoryId: category.id,
             limit: 10,
@@ -195,14 +227,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             sortOrder: 'DESC'
           }).subscribe(response => {
             this.categoryProducts.set(category.id, response.products || []);
-            // Обновляем состояние скролла после загрузки товаров
             setTimeout(() => {
               this.updateScrollState(`category-${category.id}`);
               this.cdr.detectChanges();
             }, 0);
           });
         });
-        // Обновляем состояние скролла после загрузки категорий
         setTimeout(() => {
           this.updateScrollState('category-nav');
           this.cdr.detectChanges();
@@ -225,6 +255,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }).subscribe({
       next: (response) => {
         this.featuredProducts = response.products || [];
+        // Только видимые в первом ряду популярных
+        this.imagePreload.preloadMany(
+          this.featuredProducts.slice(0, 3).map((product) => product.images?.[0]),
+        );
         // Обновляем состояние скролла после загрузки товаров
         setTimeout(() => {
           this.updateScrollState('featured-products-grid');
@@ -405,7 +439,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       event.preventDefault();
     }
     if (categoryId === null) {
-      // Прокручиваем к началу страницы
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
@@ -414,9 +447,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const element = document.getElementById(`category-${categoryId}`);
     if (element) {
-      // Определяем отступ в зависимости от размера экрана
       const isMobile = window.innerWidth < 768;
-      const headerOffset = isMobile ? 120 : 150; // Больше отступ для планшетов/десктопов
+      const headerOffset = isMobile ? 120 : 150;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -424,6 +456,264 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         top: offsetPosition,
         behavior: 'smooth'
       });
+    }
+  }
+
+  private isShowInCategoryFlag(value: unknown): boolean {
+    return value === true || value === 1 || value === 'true' || value === '1';
+  }
+
+  getVisibleSpecs(category: any): any[] {
+    const fromCategory = (category?.specifications || [])
+      .filter((spec: any) => this.isShowInCategoryFlag(spec.showInCategory));
+    if (fromCategory.length) {
+      return fromCategory.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+    }
+
+    const cached = this.categorySpecFiltersCache.get(category?.id) || [];
+    return cached
+      .filter((spec) => this.isShowInCategoryFlag(spec.showInCategory))
+      .sort((a, b) => (a.order || 0) - (b.order || 0) || a.id - b.id);
+  }
+
+  hasCategoryMenu(category: any): boolean {
+    return this.getVisibleSpecs(category).length > 0 || (
+      !!category?.id && this.megaMenuGroups.length > 0 && this.hoveredCategory?.id === category.id
+    );
+  }
+
+  private normalizeImageKey(url: string | null | undefined): string | null {
+    if (!url) {
+      return null;
+    }
+    const withoutQuery = url.split('?')[0].split('%3F')[0];
+    const marker = '/category-specs/';
+    const idx = withoutQuery.indexOf(marker);
+    if (idx >= 0) {
+      return withoutQuery.slice(idx + 1);
+    }
+    const parts = withoutQuery.split('/').filter(Boolean);
+    return parts.length >= 2 ? parts.slice(-2).join('/') : withoutQuery;
+  }
+
+  private stabilizeSpecFilterImages(
+    categoryId: number,
+    filters: Array<{
+      id: number;
+      name: string;
+      image: string | null;
+      showInCategory: boolean;
+      order: number;
+      values: string[];
+    }>,
+  ) {
+    const previous = this.categorySpecFiltersCache.get(categoryId) || [];
+    const prevByKey = new Map(
+      previous.map((spec) => [
+        (spec.name || '').trim().toLowerCase().replace(/\s+/g, ' '),
+        spec,
+      ]),
+    );
+
+    return filters.map((spec) => {
+      const key = (spec.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      const prev = prevByKey.get(key);
+      if (
+        prev?.image
+        && spec.image
+        && this.normalizeImageKey(prev.image) === this.normalizeImageKey(spec.image)
+      ) {
+        return { ...spec, image: prev.image };
+      }
+      return spec;
+    });
+  }
+
+  private buildMegaMenuGroups(category: any): Array<{
+    specName: string;
+    image: string | null;
+    values: string[];
+  }> {
+    const categoryId = category?.id;
+    const filters = this.categorySpecFiltersCache.get(categoryId) || [];
+    const source = filters.length
+      ? filters
+      : (category?.specifications || []);
+    const groups = new Map<string, { specName: string; image: string | null; values: Set<string>; order: number }>();
+
+    source
+      .filter((spec: any) => this.isShowInCategoryFlag(spec.showInCategory))
+      .forEach((spec: any) => {
+        const key = (spec.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        if (!key) {
+          return;
+        }
+        if (!groups.has(key)) {
+          groups.set(key, {
+            specName: spec.name,
+            image: spec.image || null,
+            values: new Set<string>(),
+            order: spec.order || 0,
+          });
+        }
+        const group = groups.get(key)!;
+        group.order = Math.min(group.order, spec.order || 0);
+        group.image = group.image || spec.image || null;
+        (spec.values || []).forEach((value: string) => {
+          const cleaned = (value || '').trim();
+          if (cleaned) {
+            group.values.add(cleaned);
+          }
+        });
+      });
+
+    return [...groups.values()]
+      .sort((a, b) => a.order - b.order || a.specName.localeCompare(b.specName, 'ru'))
+      .map((group) => ({
+        specName: group.specName,
+        image: group.image,
+        values: [...group.values].sort((a, b) => a.localeCompare(b, 'ru')),
+      }));
+  }
+
+  private refreshMegaMenuItems(category: any) {
+    if (!category?.id) {
+      this.megaMenuGroups = [];
+      this.megaMenuLoading = false;
+      return;
+    }
+    this.megaMenuGroups = this.buildMegaMenuGroups(category);
+    this.megaMenuLoading = this.categorySpecFiltersLoading.has(category.id)
+      && !this.categorySpecFiltersCache.has(category.id)
+      && this.megaMenuGroups.length === 0;
+  }
+
+  private ensureCategorySpecFilters(categoryId: number, force = false) {
+    if (!force && (this.categorySpecFiltersCache.has(categoryId) || this.categorySpecFiltersLoading.has(categoryId))) {
+      return;
+    }
+    if (force) {
+      this.categorySpecFiltersLoading.delete(categoryId);
+    }
+    this.categorySpecFiltersLoading.add(categoryId);
+    if (
+      this.hoveredCategory?.id === categoryId
+      && !this.categorySpecFiltersCache.has(categoryId)
+      && this.megaMenuGroups.length === 0
+    ) {
+      this.megaMenuLoading = true;
+    }
+    this.productsService.getCategorySpecFilters(categoryId).subscribe({
+      next: (filters) => {
+        const nextFilters = this.stabilizeSpecFilterImages(categoryId, filters || []);
+        this.categorySpecFiltersCache.set(categoryId, nextFilters);
+        this.categorySpecFiltersLoading.delete(categoryId);
+        this.imagePreload.preloadMany(
+          nextFilters
+            .filter((spec) => this.isShowInCategoryFlag(spec.showInCategory))
+            .map((spec) => spec.image),
+        );
+
+        const localCategory = this.categories.find((item) => item.id === categoryId);
+        if (localCategory) {
+          localCategory.specifications = nextFilters.map((filter) => ({
+            id: filter.id,
+            name: filter.name,
+            image: filter.image,
+            showInCategory: filter.showInCategory,
+            order: filter.order,
+          }));
+        }
+
+        if (this.hoveredCategory?.id === categoryId) {
+          this.refreshMegaMenuItems(this.hoveredCategory);
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки значений характеристик:', err);
+        this.categorySpecFiltersLoading.delete(categoryId);
+        if (!this.categorySpecFiltersCache.has(categoryId)) {
+          this.categorySpecFiltersCache.set(categoryId, []);
+        }
+        if (this.hoveredCategory?.id === categoryId) {
+          this.refreshMegaMenuItems(this.hoveredCategory);
+        }
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private isHoverDevice(): boolean {
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }
+
+  private clearHoverCloseTimer() {
+    if (this.hoverCloseTimer) {
+      clearTimeout(this.hoverCloseTimer);
+      this.hoverCloseTimer = null;
+    }
+  }
+
+  openCategoryMenu(category: any) {
+    this.clearHoverCloseTimer();
+    this.hoveredCategory = category;
+    this.lastMenuCategory = category;
+    // Не форсируем refetch: каждый ответ даёт новый signed URL и картинка мигает/пропадает.
+    this.ensureCategorySpecFilters(category.id);
+    this.refreshMegaMenuItems(category);
+  }
+
+  keepCategoryMenu() {
+    this.clearHoverCloseTimer();
+  }
+
+  scheduleCloseCategoryMenu() {
+    this.clearHoverCloseTimer();
+    this.hoverCloseTimer = setTimeout(() => {
+      this.hoveredCategory = null;
+      this.megaMenuLoading = false;
+      this.cdr.detectChanges();
+    }, 180);
+  }
+
+  onCategoryNavClick(category: any, event: Event) {
+    if (!this.isHoverDevice()) {
+      if (this.hoveredCategory?.id !== category.id) {
+        event.preventDefault();
+        this.openCategoryMenu(category);
+        return;
+      }
+    }
+    this.scrollToCategory(category.id, event);
+  }
+
+  openSpecCatalog(
+    category: any,
+    specName: string,
+    event: Event,
+    value?: string | null,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+    const queryParams: Record<string, string | number> = {
+      categoryId: category.id,
+      spec: specName,
+    };
+    if (value) {
+      queryParams['specs'] = JSON.stringify({ [specName]: [value] });
+    }
+    this.router.navigate(['/products'], { queryParams });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.category-nav-section')) {
+      this.hoveredCategory = null;
+      this.lastMenuCategory = null;
+      this.megaMenuGroups = [];
+      this.megaMenuLoading = false;
     }
   }
 

@@ -96,15 +96,26 @@
 
         <div class="form-section">
           <label class="section-label">Характеристики товара:</label>
+          <p class="section-hint" *ngIf="selectedCategoryIds.length">
+            Подсказки из выбранных категорий — можно выбрать из списка или ввести своё.
+          </p>
+          <p class="section-hint" *ngIf="!selectedCategoryIds.length">
+            Выберите категорию, чтобы подтянуть существующие названия и значения. Свой вариант тоже можно ввести.
+          </p>
+          <datalist id="product-spec-names">
+            <option *ngFor="let catSpec of categorySpecifications" [value]="catSpec"></option>
+          </datalist>
           <div *ngFor="let spec of form.specifications; let i = index" class="specification-item">
             <div class="spec-input-group">
-              <input type="text" [(ngModel)]="spec.name" [name]="'specName' + i" placeholder="Название характеристики"
-                [attr.list]="'specSuggestions' + i" class="form-input">
-              <datalist [attr.id]="'specSuggestions' + i">
-                <option *ngFor="let catSpec of categorySpecifications" [value]="catSpec">
+              <input type="text" [(ngModel)]="spec.name" [name]="'specName' + i"
+                placeholder="Название, например Бренд" list="product-spec-names" class="form-input"
+                autocomplete="off">
+              <input type="text" [(ngModel)]="spec.value" [name]="'specValue' + i"
+                placeholder="Значение" [attr.list]="'product-spec-values-' + i" class="form-input"
+                autocomplete="off">
+              <datalist [attr.id]="'product-spec-values-' + i">
+                <option *ngFor="let value of getSpecValueSuggestions(spec.name)" [value]="value"></option>
               </datalist>
-              <input type="text" [(ngModel)]="spec.value" [name]="'specValue' + i" placeholder="Значение"
-                class="form-input">
               <button type="button" (click)="removeSpecification(i)" class="remove-spec-btn">×</button>
             </div>
           </div>
@@ -161,13 +172,54 @@
           <textarea id="category-description" [(ngModel)]="form.description" name="description" placeholder="Описание"
             class="form-textarea"></textarea>
         </div>
+
+        <div class="form-section">
+          <label class="section-label">Характеристики категории</label>
+          <p class="section-hint">Включите «Показывать в категории», чтобы карточка появилась при наведении на эту категорию. Картинка необязательна.</p>
+          <div class="category-specs-list" cdkDropList (cdkDropListDropped)="onCategorySpecsDrop($event)">
+            <div *ngFor="let spec of form.specifications; let i = index" class="category-spec-card" cdkDrag>
+              <div class="drag-handle" cdkDragHandle>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="9" cy="12" r="1" />
+                  <circle cx="9" cy="5" r="1" />
+                  <circle cx="9" cy="19" r="1" />
+                  <circle cx="15" cy="12" r="1" />
+                  <circle cx="15" cy="5" r="1" />
+                  <circle cx="15" cy="19" r="1" />
+                </svg>
+              </div>
+              <div class="category-spec-body">
+                <input type="text" [(ngModel)]="spec.name" [name]="'categorySpecName' + i"
+                  placeholder="Название, например Двигатель" class="form-input">
+                <label class="checkbox-label">
+                  <input type="checkbox" [(ngModel)]="spec.showInCategory" [name]="'showInCategory' + i"
+                    class="form-checkbox">
+                  <span>Показывать в категории</span>
+                </label>
+                <div class="category-spec-image">
+                  <img *ngIf="getCategorySpecPreview(spec)" [src]="getCategorySpecPreview(spec)" [alt]="spec.name">
+                  <div class="category-spec-image-actions">
+                    <label class="file-btn">
+                      {{ getCategorySpecPreview(spec) ? 'Заменить фото' : 'Добавить фото' }}
+                      <input type="file" accept="image/*" (change)="onCategorySpecImageSelected($event, i)" hidden>
+                    </label>
+                    <button *ngIf="getCategorySpecPreview(spec)" type="button" class="btn-secondary"
+                      (click)="clearCategorySpecImage(i)">Удалить фото</button>
+                  </div>
+                </div>
+              </div>
+              <button type="button" (click)="removeCategorySpecification(i)" class="remove-spec-btn">×</button>
+            </div>
+          </div>
+          <button type="button" (click)="addCategorySpecification()" class="btn-secondary">+ Добавить характеристику</button>
+        </div>
+
         <div class="form-actions">
           <button type="submit" class="btn-primary" [disabled]="loading">{{ loading ? 'Сохранение...' : 'Сохранить'
             }}</button>
           <button type="button" (click)="closeDrawer()" class="btn-secondary">Отмена</button>
         </div>
       </form>
-
     </div>
   </div>
 </div>

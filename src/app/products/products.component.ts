@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ProductsService } from '../services/products.service';
 import { CategoriesService } from '../services/categories.service';
 import { CartService } from '../services/cart.service';
@@ -43,6 +43,17 @@ export class ProductsComponent implements OnInit, OnDestroy {
   priceRangeMaxLimit: number = 100000;
   inStock: boolean | null = null;
   showFilters: boolean = false;
+  focusedSpecName: string | null = null;
+  categorySpecFilters: Array<{
+    id: number;
+    name: string;
+    image: string | null;
+    showInCategory: boolean;
+    order: number;
+    values: string[];
+  }> = [];
+  selectedSpecValues: Record<string, string[]> = {};
+  expandedSpecNames: Record<string, boolean> = {};
   
   // Для drag & drop
   private isDragging: boolean = false;
@@ -69,7 +80,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
     private installmentModalService: InstallmentModalService,
     private availabilityModalService: AvailabilityModalService,
     private seoService: SeoService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     // Настройка поиска с задержкой
     this.searchSubject.pipe(
@@ -115,11 +127,34 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
     this.route.queryParams.subscribe(params => {
       const categoryId = params['categoryId'];
+      const previousCategory = this.selectedCategory;
       if (categoryId) {
         this.selectedCategory = +categoryId;
       } else {
         this.selectedCategory = null;
       }
+
+      this.focusedSpecName = params['spec'] || null;
+      this.selectedSpecValues = this.parseSpecsParam(params['specs']);
+
+      // Панель не раскрываем — только помечаем группу, чтобы открылась уже свёрнутой с индикатором
+      if (this.focusedSpecName) {
+        this.expandedSpecNames[this.focusedSpecName] = true;
+      }
+
+      if (this.selectedCategory) {
+        if (this.selectedCategory !== previousCategory) {
+          this.expandedSpecNames = {};
+          if (this.focusedSpecName) {
+            this.expandedSpecNames[this.focusedSpecName] = true;
+          }
+        }
+        this.loadCategorySpecFilters();
+      } else {
+        this.categorySpecFilters = [];
+        this.expandedSpecNames = {};
+      }
+
       this.resetAndLoad();
     });
   }
@@ -210,6 +245,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
     if (this.inStock !== null) {
       params.inStock = this.inStock;
     }
+    const specs = this.encodeSelectedSpecs();
+    if (specs) {
+      params.specs = specs;
+    }
     
     this.productsService.getProductsPaginated(params).subscribe({
       next: (response) => {
@@ -289,7 +328,29 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.inStock = null;
     this.sortBy = 'createdAt';
     this.sortOrder = 'DESC';
+    this.focusedSpecName = null;
+    this.selectedSpecValues = {};
+    this.expandedSpecNames = {};
     this.resetAndLoad();
+  }
+
+  /** Сколько фильтров сейчас активно (для бейджа на кнопке). */
+  activeFiltersCount(): number {
+    let count = 0;
+    if (this.minPrice !== null || this.maxPrice !== null) {
+      count += 1;
+    }
+    if (this.inStock !== null) {
+      count += 1;
+    }
+    Object.values(this.selectedSpecValues).forEach((values) => {
+      count += values?.length || 0;
+    });
+    return count;
+  }
+
+  hasActiveFilters(): boolean {
+    return this.activeFiltersCount() > 0;
   }
 
   onPriceRangeChange() {
@@ -360,8 +421,93 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   filterByCategory(categoryId: number | null) {
-    this.selectedCategory = categoryId;
-    this.resetAndLoad();
+    this.router.navigate(['/products'], {
+      queryParams: categoryId ? { categoryId } : {}
+    });
+  }
+
+  parseSpecsParam(raw?: string): Record<string, string[]> {
+    if (!raw) {
+      return {};
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return {};
+      }
+      const result: Record<string, string[]> = {};
+      Object.entries(parsed).forEach(([name, values]) => {
+        if (name && Array.isArray(values)) {
+          result[name] = values.filter((value): value is string => typeof value === 'string' && value.length > 0);
+        }
+      });
+      return result;
+    } catch {
+      return {};
+    }
+  }
+
+  encodeSelectedSpecs(): string | null {
+    const cleaned: Record<string, string[]> = {};
+    Object.entries(this.selectedSpecValues).forEach(([name, values]) => {
+      if (values?.length) {
+        cleaned[name] = values;
+      }
+    });
+    return Object.keys(cleaned).length ? JSON.stringify(cleaned) : null;
+  }
+
+  loadCategorySpecFilters() {
+    if (!this.selectedCategory) {
+      this.categorySpecFilters = [];
+      return;
+    }
+    this.productsService.getCategorySpecFilters(this.selectedCategory).subscribe({
+      next: (filters) => {
+        this.categorySpecFilters = filters || [];
+        if (this.focusedSpecName) {
+          this.expandedSpecNames[this.focusedSpecName] = true;
+        }
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки фильтров характеристик:', err);
+        this.categorySpecFilters = [];
+      }
+    });
+  }
+
+  toggleSpecGroup(name: string) {
+    this.expandedSpecNames[name] = !this.expandedSpecNames[name];
+  }
+
+  isSpecExpanded(name: string): boolean {
+    return !!this.expandedSpecNames[name];
+  }
+
+  isSpecValueSelected(name: string, value: string): boolean {
+    return (this.selectedSpecValues[name] || []).includes(value);
+  }
+
+  toggleSpecValue(name: string, value: string) {
+    const current = [...(this.selectedSpecValues[name] || [])];
+    const index = current.indexOf(value);
+    if (index >= 0) {
+      current.splice(index, 1);
+    } else {
+      current.push(value);
+    }
+    this.selectedSpecValues = { ...this.selectedSpecValues };
+    if (current.length === 0) {
+      delete this.selectedSpecValues[name];
+    } else {
+      this.selectedSpecValues[name] = current;
+    }
+  }
+
+  visibleSpecFilters() {
+    // Показываем все характеристики категории; пустые тоже видны,
+    // чтобы блок не пропадал без ?spec= из ссылки.
+    return this.categorySpecFilters;
   }
 
   openEditDrawer(product: any, event: Event) {
